@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form Board v22.1</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: #2a2a3a;
+    --accent: #00e5a0;
+    --accent2: #7c6fff;
+    --warn: #ff9f43;
+    --danger: #ff4d6d;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --dim: #3a3a4a;
+    --ew: #00c9ff;
+    --gold: #ffd700;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; min-height: 100vh; }
+
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--accent); letter-spacing: 0.12em; }
+  .version-badge { font-family: var(--mono); font-size: 10px; color: var(--muted); border: 1px solid var(--dim); padding: 2px 7px; border-radius: 3px; }
+
+  .main { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
+
+  .input-section { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 24px; }
+  .section-header { padding: 12px 16px; background: var(--surface2); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .section-label { font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+  textarea { width: 100%; background: var(--bg); border: none; color: var(--text); font-family: var(--mono); font-size: 11px; padding: 14px 16px; resize: vertical; min-height: 100px; outline: none; line-height: 1.6; }
+  textarea::placeholder { color: var(--muted); }
+
+  .btn-row { padding: 12px 16px; display: flex; gap: 10px; border-top: 1px solid var(--border); flex-wrap: wrap; }
+  .btn { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; padding: 8px 18px; border-radius: 4px; border: none; cursor: pointer; transition: opacity 0.15s; }
+  .btn:hover { opacity: 0.85; }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--dim); }
+  .btn-ghost:hover { color: var(--text); border-color: var(--border); }
+
+  .race-bar { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
+  .race-stat { display: flex; flex-direction: column; gap: 2px; }
+  .race-stat-label { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; }
+  .race-stat-value { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--text); }
+
+  /* BIAS PANEL */
+  .bias-panel { background: var(--surface); border: 1px solid rgba(255,159,67,0.3); border-radius: 6px; padding: 12px 16px; margin-bottom: 16px; display: flex; gap: 20px; flex-wrap: wrap; }
+  .bias-item { font-family: var(--mono); font-size: 11px; color: var(--warn); }
+  .bias-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+
+  /* TOP PICK */
+  .top-pick { border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; background: linear-gradient(135deg, rgba(0,229,160,0.04) 0%, transparent 60%); position: relative; overflow: hidden; }
+  .top-pick::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+  .top-pick-eyebrow { font-family: var(--mono); font-size: 9px; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; }
+  .top-pick-main { display: flex; justify-content: space-between; align-items: flex-start; }
+  .top-pick-name { font-size: 22px; font-weight: 600; color: var(--text); letter-spacing: -0.02em; }
+  .top-pick-meta { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .top-pick-prob { text-align: right; }
+  .top-pick-pct { font-family: var(--mono); font-size: 28px; font-weight: 600; color: var(--accent); }
+  .top-pick-odds { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .top-pick-flags { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+  /* EW CARD */
+  .ew-card { border: 1px solid var(--ew); border-radius: 8px; padding: 18px 20px; margin-bottom: 16px; background: linear-gradient(135deg, rgba(0,201,255,0.04) 0%, transparent 60%); position: relative; overflow: hidden; }
+  .ew-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--ew), transparent); }
+  .ew-eyebrow { font-family: var(--mono); font-size: 9px; color: var(--ew); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; }
+
+  /* EXOTIC PANEL */
+  .exotic-panel { background: var(--surface); border: 1px solid rgba(124,111,255,0.3); border-radius: 6px; padding: 14px 16px; margin-bottom: 16px; }
+  .exotic-title { font-family: var(--mono); font-size: 10px; color: var(--accent2); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
+  .exotic-row { font-family: var(--mono); font-size: 11px; color: var(--muted); padding: 4px 0; border-bottom: 1px solid var(--dim); display: flex; justify-content: space-between; }
+  .exotic-row:last-child { border-bottom: none; }
+  .exotic-val { color: var(--text); }
+
+  /* KELLY PANEL */
+  .kelly-panel { background: var(--surface); border: 1px solid rgba(0,229,160,0.2); border-radius: 6px; padding: 14px 16px; margin-bottom: 16px; }
+  .kelly-title { font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
+  .kelly-row { font-family: var(--mono); font-size: 11px; color: var(--muted); padding: 4px 0; border-bottom: 1px solid var(--dim); display: flex; justify-content: space-between; align-items: center; }
+  .kelly-row:last-child { border-bottom: none; }
+  .kelly-pct { color: var(--accent); font-weight: 600; }
+  .kelly-avoid { color: var(--danger); }
+
+  /* SPEED MAP */
+  .speed-map { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; margin-bottom: 16px; }
+  .speed-title { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
+  .speed-track { display: flex; gap: 0; margin-bottom: 8px; overflow: hidden; border-radius: 4px; }
+  .speed-zone { font-family: var(--mono); font-size: 9px; padding: 6px 8px; text-align: center; flex: 1; }
+  .speed-lead { background: rgba(255,77,109,0.15); color: var(--danger); border: 1px solid rgba(255,77,109,0.3); }
+  .speed-press { background: rgba(255,159,67,0.12); color: var(--warn); border: 1px solid rgba(255,159,67,0.3); }
+  .speed-mid { background: rgba(124,111,255,0.1); color: var(--accent2); border: 1px solid rgba(124,111,255,0.3); }
+  .speed-back { background: rgba(0,201,255,0.08); color: var(--ew); border: 1px solid rgba(0,201,255,0.2); }
+
+  /* SPREAD */
+  .spread-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
+  .spread-label { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; }
+  .spread-value { font-family: var(--mono); font-size: 12px; font-weight: 600; }
+  .spread-STRONG { color: var(--accent); }
+  .spread-MODERATE { color: var(--warn); }
+  .spread-WEAK { color: var(--danger); }
+
+  /* RUNNER TABLE */
+  .runner-table { display: flex; flex-direction: column; gap: 3px; }
+  .runner-row { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; display: grid; grid-template-columns: 28px 1fr auto; gap: 12px; align-items: start; cursor: default; }
+  .runner-row:hover { border-color: var(--dim); }
+  .runner-row.rank-1 { border-color: rgba(0,229,160,0.3); }
+  .runner-row.rank-2 { border-color: rgba(0,229,160,0.15); }
+  .runner-row.has-ew { border-left: 2px solid var(--ew); }
+  .runner-row.has-overlay { border-left: 2px solid var(--accent); }
+
+  .rank-num { font-family: var(--mono); font-size: 11px; color: var(--muted); padding-top: 2px; text-align: center; }
+  .rank-1 .rank-num { color: var(--accent); font-weight: 600; }
+  .rank-2 .rank-num { color: rgba(0,229,160,0.6); }
+
+  .runner-info { min-width: 0; }
+  .runner-name { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+  .runner-sub { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+  .runner-sub2 { font-family: var(--mono); font-size: 10px; color: var(--dim); margin-bottom: 6px; }
+
+  .signal-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+  .signal-tag { font-family: var(--mono); font-size: 9px; padding: 2px 6px; border-radius: 3px; border: 1px solid; }
+  .sig-up { color: var(--accent); border-color: rgba(0,229,160,0.3); background: rgba(0,229,160,0.06); }
+  .sig-down { color: var(--danger); border-color: rgba(255,77,109,0.3); background: rgba(255,77,109,0.06); }
+  .sig-neutral { color: var(--muted); border-color: var(--dim); }
+
+  .ineff-flags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+  .ineff-tag { font-family: var(--mono); font-size: 9px; padding: 2px 6px; border-radius: 3px; background: rgba(124,111,255,0.1); border: 1px solid rgba(124,111,255,0.3); color: var(--accent2); }
+
+  .runner-stats { text-align: right; min-width: 95px; }
+  .stat-prob { font-family: var(--mono); font-size: 18px; font-weight: 600; color: var(--text); }
+  .stat-place-prob { font-family: var(--mono); font-size: 12px; color: var(--ew); margin-top: 1px; }
+  .stat-odds { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .stat-kelly { font-family: var(--mono); font-size: 10px; color: var(--accent); margin-top: 3px; }
+
+  .edge-badge { font-family: var(--mono); font-size: 10px; font-weight: 600; padding: 3px 7px; border-radius: 3px; margin-top: 5px; display: inline-block; }
+  .edge-OVERLAY { background: rgba(0,229,160,0.15); color: var(--accent); border: 1px solid rgba(0,229,160,0.4); }
+  .edge-EW_BANKER { background: rgba(0,201,255,0.15); color: var(--ew); border: 1px solid rgba(0,201,255,0.4); }
+  .edge-EW_VALUE { background: rgba(0,201,255,0.08); color: var(--ew); border: 1px solid rgba(0,201,255,0.25); }
+  .edge-SLIGHT { background: rgba(255,159,67,0.1); color: var(--warn); border: 1px solid rgba(255,159,67,0.3); }
+  .edge-FAIR { background: transparent; color: var(--muted); border: 1px solid var(--dim); }
+  .edge-AVOID { background: rgba(255,77,109,0.1); color: var(--danger); border: 1px solid rgba(255,77,109,0.3); }
+  .edge-WIN_ONLY { background: rgba(0,229,160,0.08); color: rgba(0,229,160,0.7); border: 1px solid rgba(0,229,160,0.2); }
+  .edge-SAVER { background: rgba(0,201,255,0.06); color: rgba(0,201,255,0.6); border: 1px solid rgba(0,201,255,0.2); }
+
+  .conf-bar-wrap { margin-top: 6px; }
+  .conf-bar-track { height: 2px; background: var(--dim); border-radius: 1px; overflow: hidden; }
+  .conf-bar-fill { height: 100%; border-radius: 1px; transition: width 0.4s ease; }
+
+  .ineff-panel { background: var(--surface); border: 1px solid rgba(124,111,255,0.2); border-radius: 6px; padding: 12px 16px; margin-top: 16px; }
+  .ineff-title { font-family: var(--mono); font-size: 10px; color: var(--accent2); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; }
+  .ineff-item { font-family: var(--mono); font-size: 11px; color: var(--muted); padding: 3px 0; border-bottom: 1px solid var(--dim); }
+  .ineff-item:last-child { border-bottom: none; }
+  .ineff-item span { color: var(--accent2); }
+
+  .fitness-curve { display: flex; align-items: flex-end; gap: 3px; height: 24px; margin-top: 6px; }
+  .fitness-bar { width: 10px; border-radius: 2px 2px 0 0; min-height: 2px; }
+
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+  .empty-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.4; }
+  .empty-title { font-family: var(--mono); font-size: 13px; margin-bottom: 6px; color: var(--dim); }
+  .empty-sub { font-size: 12px; line-height: 1.6; max-width: 340px; margin: 0 auto; }
+
+  .error-box { background: rgba(255,77,109,0.08); border: 1px solid rgba(255,77,109,0.3); border-radius: 6px; padding: 12px 16px; font-family: var(--mono); font-size: 11px; color: var(--danger); margin-bottom: 16px; }
+
+  .sample-toggle { font-family: var(--mono); font-size: 10px; color: var(--accent2); background: none; border: none; cursor: pointer; padding: 0; text-decoration: underline; text-underline-offset: 3px; }
+  .sample-json { font-family: var(--mono); font-size: 10px; color: var(--muted); background: var(--bg); border: 1px solid var(--dim); border-radius: 4px; padding: 10px; margin-top: 8px; white-space: pre-wrap; word-break: break-all; display: none; line-height: 1.5; }
+  .field-note { font-family: var(--mono); font-size: 10px; color: var(--muted); padding: 6px 14px 10px; }
+
+  @media (max-width: 500px) {
+    .runner-row { grid-template-columns: 22px 1fr auto; gap: 8px; }
+    .top-pick-pct { font-size: 22px; }
+    .runner-stats { min-width: 80px; }
+    .stat-prob { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">FORM BOARD</div>
+  <div class="version-badge">v21.9</div>
+</div>
+
+<div class="main">
+  <div class="input-section">
+    <div class="section-header">
+      <div class="dot"></div>
+      <div class="section-label">Race JSON Input</div>
+    </div>
+    <textarea id="jsonInput" placeholder='Paste minified race JSON here...'></textarea>
+    <div class="field-note">
+      <button class="sample-toggle" onclick="toggleSample()">show schema example</button>
+      <div class="sample-json" id="sampleJson">{
+  "race": {
+    "track": "Gold Coast",
+    "distance": 1200,
+    "class": "OPEN",
+    "going": "Soft",
+    "going_trend": "stable",
+    "prize_money": 28000,
+    "rail": "true"
+  },
+  "runners": [{
+    "name": "HORSE NAME",
+    "barrier": 3,
+    "jockey": "J Smith",
+    "trainer": "T Jones",
+    "weight": 55,
+    "win_odds": 6.00,
+    "place_odds": 2.40,
+    "opening_odds": 8.00,
+    "form": "x7665",
+    "fs_rating": 82,
+    "last_run_days": 21,
+    "career_runs": 20,
+    "sire": "BETTER THAN READY",
+    "age": 7,
+    "sex": "G",
+    "prize_money": 150000,
+    "best_winning_weight": 54,
+    "track": {"wins":1,"places":1,"runs":4},
+    "dist": {"wins":0,"places":2,"runs":9},
+    "trk_dist": {"wins":0,"places":0,"runs":1},
+    "first_up": {"wins":2,"places":2,"runs":7},
+    "second_up": {"wins":0,"places":1,"runs":7},
+    "soft": {"wins":1,"places":2,"runs":15},
+    "good": {"wins":5,"places":5,"runs":24},
+    "heavy": {"wins":0,"places":0,"runs":4},
+    "last_6_results": [
+      {"pos":5,"field":8,"days_ago":21,"class":"CL6","going":"Soft","distance":1000},
+      {"pos":6,"field":9,"days_ago":42,"class":"BM78","going":"Slow","distance":1200}
+    ],
+    "sectionals": [
+      {"last_600":35.8,"going":"Soft","weight":55,"distance":1000,"winner_600":35.2,"trial":false}
+    ],
+    "gear_change": "Blinkers ON"
+  }]
+}</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="runModel()">RUN MODEL</button>
+      <button class="btn btn-ghost" onclick="clearAll()">CLEAR</button>
+    </div>
+  </div>
+
+  <div id="errorBox" class="error-box" style="display:none;"></div>
+  <div id="results"></div>
+</div>
+
+<script>
+// ============================================================
+// FORM BOARD v21.9 — 27 Signals + meta_data support
+// New: meta_data block per runner with:
+//   market_movement: fractional drift/firm (+0.4 = firmed 40%)
+//   track_strike_rate_jockey: jockey SR at this specific track (0.0-1.0)
+//   class_diff: direct class step (-1=drop, 0=same, +1=rise)
+//   days_since_run: alias for last_run_days
+// metaMarketMult replaces marketMoveMult (falls back if no meta)
+// metaJockeyTrackMult: track-specific SR overrides generic tier
+// metaClassDiffMult: direct class diff overrides inferred trajectory
+// ============================================================
+
+// ============================================================
+// UTILS
+// ============================================================
+const GOING_MAP = { 'firm':0, 'good':1, 'good to soft':2, 'soft':3, 'heavy':4, 'synthetic':2, 'slow':3 };
+function normGoing(g) { if (!g) return 'good'; return g.toLowerCase().replace(/\s*\d+\s*/g,'').trim(); }
+function goingDistance(a,b) { const ga=GOING_MAP[normGoing(a)]??1; const gb=GOING_MAP[normGoing(b)]??1; return Math.abs(ga-gb); }
+function recencyDecay(d) { if (!d&&d!==0) return 0.5; if(d<=90) return 1.0; if(d<=180) return 0.75; if(d<=365) return 0.5; return 0.25; }
+function sampleConf(runs,fullAt=8) { if(!runs||runs===0) return 0; return Math.min(1,runs/fullAt); }
+function clamp(v,mn,mx) { return Math.max(mn,Math.min(mx,v)); }
+function confLerp(signal,conf) { return 1.0+(signal-1.0)*conf; }
+
+// ============================================================
+// JOCKEY TIERS — National + QLD focus
+// ============================================================
+const JOCKEY_TIERS = {
+  // Elite (1.12)
+  'mcevoy':1.12,'bowman':1.12,'mcdonald':1.12,'lane':1.12,'oliver':1.12,
+  // Very Strong (1.08)
+  'mallyon':1.08,'allen':1.08,'purton':1.08,'staple':1.08,'mo':1.08,
+  'shinn':1.08,'bayliss':1.08,'peers':1.08,
+  // Strong QLD (1.05)
+  'callow':1.05,'smith':1.05,'noonan':1.05,'hellyer':1.05,'thornton':1.05,
+  'hamilton':1.05,'zechner':1.05,'patel':1.05,'jonker':1.05,
+  // Average (1.0) — default
+  // Weak (0.96)
+  'sheargold':0.97,'brooker':0.97,
+};
+
+function jockeyMult(runner) {
+  if (!runner.jockey) return 1.0;
+  const j = runner.jockey.toLowerCase();
+  for (const [key,val] of Object.entries(JOCKEY_TIERS)) {
+    if (j.includes(key)) return val;
+  }
+  return 1.0;
+}
+
+// Jockey × Trainer combo boost
+const JT_COMBOS = {
+  'mcevoy+hayes':1.08,'bowman+waller':1.10,'mcdonald+maher':1.08,
+  'lane+maher':1.07,'callow+kemp':1.05,'smith+strazzieri':1.04,
+  'zechner+chau':1.05,'hellyer+bruce':1.02,
+};
+function jockeyTrainerCombo(runner) {
+  if (!runner.jockey || !runner.trainer) return 1.0;
+  const key = runner.jockey.toLowerCase().split(' ').pop() + '+' + runner.trainer.toLowerCase().split(' ').pop();
+  return JT_COMBOS[key] || 1.0;
+}
+
+// Apprentice claim — weight reduction benefit (separate from jockey tier)
+function apprenticeBoost(runner) {
+  const claim = runner.apprentice_claim || 0;
+  if (claim >= 3) return 1.04;
+  if (claim >= 2) return 1.025;
+  if (claim >= 1) return 1.01;
+  return 1.0;
+}
+
+// ============================================================
+// TRAINER TIERS
+// ============================================================
+const TRAINER_TIERS = {
+  'mcevoy':1.10,'maher':1.10,'waller':1.10,'eustace':1.08,
+  'snowden':1.06,'cunningham':1.06,'hayes':1.05,
+  'chau':1.04,'sargent':1.04,'attard':1.04,'nolen':1.04,
+  'robl':1.02,'lees':1.02,'archibald':1.02,'freedman':1.02,'kelly':1.02,
+  'kemp':1.01,'bruce':1.01,'strazzieri':1.01,'campton':1.01,'brosnan':1.00,
+  'chalmers':0.98,'zahra':0.98,'goodwin':0.98,
+};
+function trainerMult(runner) {
+  if (!runner.trainer) return 1.0;
+  const t = runner.trainer.toLowerCase();
+  for (const [key,val] of Object.entries(TRAINER_TIERS)) {
+    if (t.includes(key)) return val;
+  }
+  return 1.0;
+}
+
+// ============================================================
+// BARRIER DRAW — per track/distance/going
+// ============================================================
+const BARRIER_PROFILES = {
+  // Format: 'track_distance_going': [b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15,b16+]
+  // Score > 1.0 = advantage, < 1.0 = disadvantage
+  'goldcoast_1200_soft':  [1.08,1.06,1.07,1.05,1.03,1.01,0.99,0.97,0.95,0.93,0.91,0.89,0.87,0.85,0.83,0.81],
+  'goldcoast_1200_good':  [1.05,1.06,1.05,1.04,1.03,1.02,1.00,0.99,0.97,0.95,0.93,0.91,0.89,0.87,0.85,0.83],
+  'goldcoast_1200_heavy': [1.10,1.08,1.07,1.06,1.04,1.02,1.00,0.97,0.94,0.92,0.90,0.88,0.86,0.84,0.82,0.80],
+  'goldcoast_1400_soft':  [1.06,1.07,1.06,1.05,1.04,1.03,1.01,1.00,0.98,0.96,0.94,0.92,0.90,0.88,0.86,0.84],
+  'goldcoast_1400_good':  [1.04,1.05,1.05,1.04,1.03,1.02,1.01,1.00,0.98,0.97,0.95,0.93,0.91,0.89,0.87,0.85],
+  'eaglefarm_1200_soft':  [1.07,1.06,1.06,1.05,1.03,1.01,0.99,0.97,0.95,0.93,0.91,0.89,0.87,0.85,0.83,0.81],
+  'eaglefarm_1200_good':  [1.04,1.05,1.05,1.04,1.03,1.02,1.01,1.00,0.98,0.96,0.94,0.92,0.90,0.88,0.86,0.84],
+  'eaglefarm_1400_good':  [1.03,1.04,1.05,1.05,1.04,1.03,1.02,1.01,0.99,0.97,0.95,0.93,0.91,0.89,0.87,0.85],
+  'doomben_1200_good':    [1.05,1.06,1.05,1.04,1.03,1.02,1.00,0.99,0.97,0.95,0.93,0.91,0.89,0.87,0.85,0.83],
+  'doomben_1200_soft':    [1.08,1.07,1.06,1.05,1.03,1.01,0.99,0.97,0.95,0.93,0.91,0.89,0.87,0.85,0.83,0.81],
+  'doomben_1350_good':    [1.04,1.05,1.05,1.04,1.03,1.02,1.01,1.00,0.99,0.97,0.95,0.93,0.91,0.89,0.87,0.85],
+  'flemington_1200_good': [1.02,1.03,1.04,1.05,1.05,1.04,1.03,1.02,1.01,1.00,0.98,0.96,0.94,0.92,0.90,0.88],
+  'flemington_1600_good': [1.01,1.02,1.03,1.04,1.04,1.04,1.03,1.02,1.01,1.00,0.99,0.98,0.96,0.94,0.92,0.90],
+  'randwick_1200_good':   [1.03,1.04,1.05,1.05,1.04,1.03,1.02,1.01,1.00,0.98,0.96,0.94,0.92,0.90,0.88,0.86],
+  'randwick_1200_soft':   [1.06,1.06,1.05,1.04,1.03,1.01,0.99,0.97,0.95,0.93,0.91,0.89,0.87,0.85,0.83,0.81],
+  'warwick_1200_soft':    [1.07,1.06,1.06,1.05,1.03,1.01,0.99,0.97,0.95,0.93,0.91,0.89,0.87,0.85,0.83,0.81],
+  'warwick_1200_good':    [1.04,1.05,1.05,1.04,1.03,1.02,1.01,1.00,0.98,0.96,0.94,0.92,0.90,0.88,0.86,0.84],
+};
+
+function barrierMult(runner, race) {
+  const b = runner.barrier;
+  if (!b) return 1.0;
+  const track = (race.track||'').toLowerCase().replace(/\s/g,'');
+  const dist = race.distance;
+  // At 1500m+ barrier draw matters significantly less — horses find position
+  const distanceDampener = dist >= 1500 ? 0.55 : dist >= 1400 ? 0.75 : 1.0;
+  // Round distance to nearest 200m bracket
+  const distBracket = Math.round(dist/200)*200;
+  const going = normGoing(race.going);
+  const keys = [
+    `${track}_${distBracket}_${going}`,
+    `${track}_${distBracket}_good`,
+    `${track}_1200_${going}`,
+  ];
+  let profile = null;
+  for (const k of keys) {
+    if (BARRIER_PROFILES[k]) { profile = BARRIER_PROFILES[k]; break; }
+  }
+  if (!profile) {
+    const wetBoost = (going==='soft'||going==='heavy'||going==='slow') ? 1.5 : 1.0;
+    const outsidePenalty = Math.max(0, b - 4) * 0.015 * wetBoost * distanceDampener;
+    return clamp(1.0 - outsidePenalty, 0.82, 1.10);
+  }
+  const idx = Math.min(b-1, profile.length-1);
+  const raw = profile[idx];
+  // Dampen the barrier signal at longer trips
+  const dampened = 1.0 + (raw - 1.0) * distanceDampener;
+  const wet = (going==='soft'||going==='heavy'||going==='slow');
+  if (wet && dampened < 1.0) return clamp(1.0-(1.0-dampened)*1.4, 0.86, 1.12);
+  if (wet && dampened > 1.0) return clamp(1.0+(dampened-1.0)*1.3, 0.86, 1.12);
+  return clamp(dampened, 0.86, 1.10);
+}
+
+// ============================================================
+// SIRE WET TRACK PREFERENCE
+// ============================================================
+const SIRE_WET = {
+  // Strong wet sires (>1.0 = prefers wet)
+  'better than ready':1.12,'russian revolution':1.10,'dundeel':1.10,
+  'capitalist':1.08,'deep field':1.08,'toronado':1.08,'zoustar':1.06,
+  'pierro':1.06,'snitzel':1.04,'i am invincible':1.04,'star turn':1.03,
+  'merchant navy':1.06,'winning rupert':1.08,'husson':1.10,
+  'free eagle':1.05,'lonhro':1.04,'street boss':1.06,
+  'real impact':1.08,'epaulette':1.06,'red god':1.05,
+  'smart missile':1.05,'flying artie':1.04,'hawkbill':1.05,
+  // Dry track sires (<1.0 on wet)
+  'exceed and excel':0.94,'fastnet rock':0.95,'redoute':0.96,
+  'danehill':0.94,'galileo':0.97,'kingman':0.96,'frankel':0.97,
+  'medaglia doro':0.95,'more than ready':0.97,'casino prince':0.95,
+  'road to rock':0.96,'stratum':0.95,'nicconi':0.96,
+  'star turn':0.93,'not a single doubt':0.94,'sebring':0.95,
+  'savabeel':0.94,'zed':0.95,'iffraaj':0.96,'showcasing':0.95,
+  'reliable man':0.96,'animal kingdom':0.95,'medaglia':0.95,
+};
+
+function sireMult(runner, race) {
+  if (!runner.sire) return 1.0;
+  const s = runner.sire.toLowerCase();
+  const going = normGoing(race.going);
+  const isSoft = going==='soft'||going==='heavy'||going==='slow';
+  if (!isSoft) return 1.0; // only applies on wet
+  for (const [key,val] of Object.entries(SIRE_WET)) {
+    if (s.includes(key)) return val;
+  }
+  return 1.0;
+}
+
+// ============================================================
+// SIGNAL 1: RECENT FORM
+// ============================================================
+function recentFormMult(runner, race) {
+  let score=0, totalWeight=0;
+  const weights=[3,2.5,2,1.5,1,0.75];
+
+  if (runner.last_6_results && runner.last_6_results.length > 0) {
+    const raceLevel = classLevel(race ? race.class : 'OPEN');
+    const results = runner.last_6_results.slice(0,6);
+    results.forEach((r,i) => {
+      const w = weights[i]||0.5;
+      const decay = recencyDecay(r.days_ago||60);
+      const fieldSize = r.field||10;
+      let posScore;
+      if(r.pos===1) posScore=1.0;
+      else if(r.pos===2) posScore=0.75;
+      else if(r.pos===3) posScore=0.55;
+      else if(r.pos/fieldSize<=0.4) posScore=0.25;
+      else posScore=0.0;
+      // Class context: if running in stronger class than today, soften penalty
+      const runLevel = classLevel(r.class);
+      const classDiff = runLevel - raceLevel; // positive = was in stronger class
+      let classContext = 1.0;
+      if(classDiff >= 10 && posScore < 0.55) classContext = 1.30; // big class drop — forgive bad run
+      else if(classDiff >= 5 && posScore < 0.55) classContext = 1.15; // moderate class drop
+      else if(classDiff <= -10 && posScore >= 0.55) classContext = 1.10; // placed in stronger = extra credit
+      score += posScore * classContext * w * decay;
+      totalWeight += w*decay;
+    });
+  } else if (runner.form) {
+    const chars = runner.form.replace(/[^0-9x]/gi,'').split('').slice(-6).reverse();
+    chars.forEach((c,i) => {
+      const w = weights[i]||0.5;
+      let posScore;
+      if(c==='1') posScore=1.0;
+      else if(c==='2') posScore=0.75;
+      else if(c==='3') posScore=0.55;
+      else if(c==='x'||c==='0') posScore=0.05;
+      else { const n=parseInt(c); posScore=n<=4?0.3:n<=6?0.15:0.0; }
+      score += posScore*w;
+      totalWeight += w;
+    });
+  }
+
+  if (totalWeight===0) return 1.0;
+  const raw = score/totalWeight;
+  // Wider range: 0.60 → 1.65
+  const mult = 0.60 + raw * 1.05;
+
+  // Recent win kicker
+  let kicker = 1.0;
+  if (runner.last_6_results && runner.last_6_results.length > 0) {
+    const mr = runner.last_6_results[0];
+    if(mr.pos===1 && (mr.days_ago||99)<=21) kicker=1.20;
+    else if(mr.pos===1 && (mr.days_ago||99)<=35) kicker=1.12;
+    else if(mr.pos<=3 && (mr.days_ago||99)<=21) kicker=1.06;
+  } else {
+    const formStr = runner.form||'';
+    const lastChars = formStr.slice(-3);
+    if(lastChars.includes('1') && runner.last_run_days<=21) kicker=1.20;
+    else if(lastChars.includes('1') && runner.last_run_days<=35) kicker=1.10;
+  }
+
+  return clamp(mult*kicker, 0.60, 1.80);
+}
+
+// ============================================================
+// SIGNAL 2: CLASS / FS RATING
+// ============================================================
+function classMult(runner, allRunners) {
+  const ratings = allRunners.map(r=>r.fs_rating).filter(r=>r!=null&&r>0);
+  if(ratings.length===0||!runner.fs_rating) return 1.0;
+  const avg = ratings.reduce((a,b)=>a+b,0)/ratings.length;
+  const diff = runner.fs_rating - avg;
+  const raw = Math.sign(diff)*Math.log1p(Math.abs(diff))/Math.log1p(20)*0.30;
+  return clamp(1.0+raw, 0.72, 1.38);
+}
+
+// ============================================================
+// SIGNAL 3: CLASS TRAJECTORY
+// ============================================================
+function classLevel(cls) {
+  if(!cls) return 70;
+  const c=cls.toLowerCase().trim();
+  if(/\bcl6\b/.test(c)) return 78; if(/\bcl5\b/.test(c)) return 74;
+  if(/\bcl4\b/.test(c)) return 70; if(/\bcl3\b/.test(c)) return 66;
+  if(/\bcl2\b/.test(c)) return 62; if(/\bcl1\b/.test(c)) return 58;
+  if(c.includes('maiden')||c.includes('mdn')) return 52;
+  if(c.includes('group 1')||c.includes('g1')) return 110;
+  if(c.includes('group 2')||c.includes('g2')) return 100;
+  if(c.includes('group 3')||c.includes('g3')) return 95;
+  if(c.includes('listed')||c.includes('lr')) return 90;
+  if(c.includes('open')) return 88;
+  if(c.includes('barrier')||c.includes('trial')) return 70;
+  const bm=c.match(/bm\s*(\d+)/); if(bm) return parseInt(bm[1]);
+  if(c.includes('qlty')||c.includes('quality')) return 72;
+  if(c.includes('hcp')||c.includes('handicap')) return 65;
+  const m=c.match(/(\d+)/); if(m) return parseInt(m[1]);
+  return 70;
+}
+
+function classTrajMult(runner, race) {
+  if(!runner.last_6_results||runner.last_6_results.length===0) return 1.0;
+  const raceLevel = classLevel(race.class);
+  const lastClass = classLevel(runner.last_6_results[0].class);
+  const diff = lastClass - raceLevel;
+  if(diff>=15) return 1.20; if(diff>=8) return 1.12; if(diff>=2) return 1.05;
+  if(diff>=-3) return 1.0; if(diff>=-10) return 0.92; return 0.83;
+}
+
+// ============================================================
+// SIGNAL 4: GOING PREFERENCE
+// ============================================================
+function goingMult(runner, race) {
+  const going = race.going||'Good';
+  const goingTrend = race.going_trend||'stable';
+  let targetGoing = going;
+  const levels=['Firm','Good','Good to Soft','Soft','Heavy'];
+  if(goingTrend==='deteriorating') {
+    const idx=levels.findIndex(g=>going.toLowerCase().startsWith(g.toLowerCase().split(' ')[0]));
+    if(idx>=0&&idx<levels.length-1) targetGoing=levels[idx+1];
+  }
+  if(goingTrend==='improving') {
+    const idx=levels.findIndex(g=>going.toLowerCase().startsWith(g.toLowerCase().split(' ')[0]));
+    if(idx>0) targetGoing=levels[idx-1];
+  }
+  const gNorm=normGoing(targetGoing);
+  const isSoft=gNorm==='soft'||gNorm==='heavy'||gNorm==='slow'||gNorm==='good to soft';
+  const isHeavy=gNorm==='heavy';
+
+  let goingWins=0,goingPlaces=0,goingRuns=0;
+  if(isHeavy) {
+    goingWins=(runner.heavy?.wins||0)+(runner.soft?.wins||0)*0.4;
+    goingPlaces=(runner.heavy?.places||0)+(runner.soft?.places||0)*0.4;
+    goingRuns=(runner.heavy?.runs||0)+(runner.soft?.runs||0)*0.4;
+  } else if(isSoft) {
+    goingWins=(runner.soft?.wins||0)+(runner.heavy?.wins||0)*0.5;
+    goingPlaces=(runner.soft?.places||0)+(runner.heavy?.places||0)*0.5;
+    goingRuns=(runner.soft?.runs||0)+(runner.heavy?.runs||0)*0.5;
+  } else {
+    goingWins=(runner.good?.wins||0);
+    goingPlaces=(runner.good?.places||0);
+    goingRuns=(runner.good?.runs||0);
+  }
+
+  // Cap penalty: minimum ×0.82 (was 0.68) — going alone can't destroy a runner
+  if(goingRuns<0.5) return 1.0;
+  // Firm up confidence when sample is meaningful (4+ runs zero wins = real signal)
+  let conf=sampleConf(goingRuns,6);
+  if(goingRuns>=4 && goingWins===0) conf=Math.max(conf, 0.75); // don't soften zero wins with 4+ runs
+  const winRate=goingWins/goingRuns;
+  const placeRate=(goingWins+goingPlaces)/goingRuns;
+  const goingScore=winRate*0.6+placeRate*0.4;
+  const raw=0.72+goingScore*0.80; // raised floor from 0.68 to 0.72
+  let result=clamp(confLerp(raw,conf),0.82,1.52); // floor raised to 0.82
+
+  // Recent wet win boost
+  if(isSoft && runner.last_6_results) {
+    const recentWetWin = runner.last_6_results.find(r=>
+      (normGoing(r.going)==='soft'||normGoing(r.going)==='heavy'||normGoing(r.going)==='slow')&&
+      r.pos===1&&(r.days_ago||999)<=60
+    );
+    if(recentWetWin) result=clamp(result*1.12,0.82,1.52);
+  }
+  return result;
+}
+
+// ============================================================
+// SIGNAL 5: TRACK AFFINITY
+// ============================================================
+function trackMult(runner, race) {
+  const tW=runner.track?.wins||0, tP=runner.track?.places||0, tR=runner.track?.runs||0;
+  const tdW=runner.trk_dist?.wins||0, tdP=runner.trk_dist?.places||0, tdR=runner.trk_dist?.runs||0;
+  if(tR===0&&tdR===0) return 1.0;
+  const conf=sampleConf(tR+tdR,6);
+  const trackScore=tR>0?(tW*0.6+tP*0.3)/tR:0;
+  const trkDistScore=tdR>0?(tdW*0.7+tdP*0.35)/tdR:0;
+  const combined=trkDistScore*0.6+trackScore*0.4;
+  const raw=0.85+combined*0.60;
+  return clamp(confLerp(raw,conf),0.84,1.42);
+}
+
+// ============================================================
+// SIGNAL 6: DISTANCE PREFERENCE
+// ============================================================
+function distMult(runner, race) {
+  const rDist=race.distance;
+  const dW=runner.dist?.wins||0, dP=runner.dist?.places||0, dR=runner.dist?.runs||0;
+  if(dR===0) return 1.0;
+  const conf=sampleConf(dR,5);
+  const distScore=(dW*0.6+dP*0.35)/dR;
+  const raw=0.85+distScore*0.50;
+  let result=clamp(confLerp(raw,conf),0.85,1.37);
+  // Step-up exemption: recent shorter trip within 28 days
+  if(runner.last_6_results&&runner.last_6_results.length>0) {
+    const lastRun=runner.last_6_results[0];
+    const distDiff=rDist-(lastRun.distance||0);
+    if(distDiff>0&&distDiff<=200&&(lastRun.days_ago||99)<=28) result=clamp(result*1.08,0.85,1.37);
+  }
+  // Won at this distance
+  if(dW>0) result=clamp(result*1.03,0.85,1.37);
+  return result;
+}
+
+// ============================================================
+// SIGNAL 7: PREP CYCLE
+// ============================================================
+function prepCycleMult(runner, race) {
+  const days=runner.last_run_days;
+  if(days==null) return 1.0;
+  let runInPrep=0;
+  if(runner.last_6_results&&runner.last_6_results.length>0) {
+    runInPrep=runner.last_6_results.filter(r=>(r.days_ago||999)<=90).length;
+  }
+  // Short trip fitness builder
+  if(runner.last_6_results&&runner.last_6_results.length>0) {
+    const lastRun=runner.last_6_results[0];
+    const wasShortTrip=(lastRun.distance||0)>0&&(lastRun.distance||0)<(race.distance||9999)-100;
+    if(runInPrep===1&&wasShortTrip&&days>=14&&days<=28) return 1.14;
+  }
+  if(runInPrep===1&&days>=10&&days<=28) return 1.08;
+  if(runInPrep===2&&days>=7&&days<=21) return 1.05;
+  if(runInPrep>=4) return 0.95;
+  if(days<=6) return 0.88;
+  return 1.0;
+}
+
+// ============================================================
+// SIGNAL 8: SPELL / RESUMPTION
+// ============================================================
+function spellMult(runner) {
+  const days=runner.last_run_days;
+  if(days==null) return 1.0;
+
+  // Not resuming from spell — return neutral immediately
+  if(days<=28) return 1.0;
+
+  const fu=runner.first_up;
+  const fuRuns=fu?.runs||0, fuWins=fu?.wins||0, fuPlaces=fu?.places||0;
+
+  // Proven fresh performer override — only fires when actually resuming
+  if(fuRuns>=3) {
+    const fuWinRate=fuWins/fuRuns;
+    if(fuWinRate>=0.50) return 0.95; // great fresh — slight rust discount
+    if((fuWins+fuPlaces)/fuRuns>=0.60) return 0.90;
+  }
+
+  if(days>200) { return runner.last_6_results?.some(r=>r.trial)?0.82:0.70; }
+  if(days>120) { return runner.last_6_results?.some(r=>r.trial)?0.88:0.78; }
+  if(days>60) return 0.90;
+  if(days>28) return 0.97;
+  return 1.0;
+}
+
+// ============================================================
+// SIGNAL 9: SECTIONALS
+// ============================================================
+function sectionalsMult(runner, race) {
+  if(!runner.sectionals||runner.sectionals.length===0) return 1.0;
+  const validSects=(Array.isArray(runner.sectionals)?runner.sectionals:[runner.sectionals])
+    .filter(s=>s.last_600!=null&&s.trial!==true);
+  if(validSects.length===0) return 1.0;
+  const s=validSects[0];
+  const distDiff=Math.abs((s.distance||race.distance)-race.distance);
+  if(distDiff>200) return 0.92;
+  const goingAdj=goingDistance(s.going,race.going)*0.008;
+  const weightDiff=(s.weight||runner.weight||57)-(runner.weight||57);
+  const weightAdj=weightDiff*0.001;
+  const adjustedLast600=s.last_600-goingAdj-weightAdj;
+  if(s.winner_600) {
+    const gap=adjustedLast600-s.winner_600;
+    if(gap<=0) return 1.18; if(gap<=0.3) return 1.10;
+    if(gap<=0.6) return 1.04; if(gap<=1.0) return 0.97; return 0.88;
+  }
+  const goingBench={firm:33.5,good:34.5,'good to soft':35.0,soft:35.5,heavy:37.0,synthetic:34.0,slow:36.0};
+  const bench=goingBench[normGoing(race.going)]||35.0;
+  const gap=adjustedLast600-bench;
+  if(gap<=-1.0) return 1.18; if(gap<=-0.3) return 1.10;
+  if(gap<=0.3) return 1.03; if(gap<=1.0) return 0.95; return 0.85;
+}
+
+// ============================================================
+// SIGNAL 10: PLACE HISTORY
+// ============================================================
+function placeHistMult(runner) {
+  const allWins=(runner.good?.wins||0)+(runner.soft?.wins||0)+(runner.heavy?.wins||0);
+  const allPlaces=(runner.good?.places||0)+(runner.soft?.places||0)+(runner.heavy?.places||0);
+  const allRuns=(runner.good?.runs||0)+(runner.soft?.runs||0)+(runner.heavy?.runs||0);
+  if(allRuns===0) return 1.0;
+  const conf=sampleConf(allRuns,10);
+  const placeRate=(allWins+allPlaces)/allRuns;
+  const raw=0.85+placeRate*0.45;
+  return clamp(confLerp(raw,conf),0.85,1.30);
+}
+
+// ============================================================
+// SIGNAL 11: WEIGHT IN FIELD (wet amplified)
+// ============================================================
+function weightMult(runner, allRunners, race) {
+  const weights=allRunners.map(r=>r.weight).filter(w=>w!=null);
+  if(weights.length===0||!runner.weight) return 1.0;
+  const avg=weights.reduce((a,b)=>a+b,0)/weights.length;
+  const diff=avg-runner.weight;
+  const goingN=normGoing(race?race.going:'good');
+  const wetMult=(goingN==='soft'||goingN==='heavy'||goingN==='slow')?1.8:1.0;
+  return clamp(1.0+diff*0.005*wetMult,0.85,1.18);
+}
+
+// ============================================================
+// SIGNAL 12: WEIGHT VS CAREER BEST WINNING WEIGHT
+// ============================================================
+function weightCareerMult(runner) {
+  if(!runner.best_winning_weight||!runner.weight) return 1.0;
+  const diff=runner.best_winning_weight-runner.weight; // positive = carrying less than best win weight
+  // Carrying lighter than when won = good signal
+  if(diff>=2) return 1.06;
+  if(diff>=0) return 1.03;
+  if(diff>=-2) return 0.99;
+  return 0.95; // carrying more than best win weight
+}
+
+// ============================================================
+// SIGNAL 13: MARKET MOVEMENT
+// ============================================================
+function marketMoveMult(runner) {
+  if(!runner.opening_odds||!runner.win_odds) return 1.0;
+  const movement=(runner.opening_odds-runner.win_odds)/runner.opening_odds;
+  // Firming = smart money = boost
+  if(movement>=0.25) return 1.12; // firmed 25%+
+  if(movement>=0.15) return 1.07;
+  if(movement>=0.08) return 1.03;
+  // Drifting = negative signal
+  if(movement<=-0.20) return 0.92;
+  if(movement<=-0.10) return 0.96;
+  return 1.0;
+}
+
+// ============================================================
+// SIGNAL 14: STABLE CONFIDENCE INDEX
+// ============================================================
+function stableConfMult(runner) {
+  let score=0;
+  // Same jockey as last win
+  if(runner.last_6_results) {
+    const lastWin=runner.last_6_results.find(r=>r.pos===1);
+    if(lastWin&&lastWin.jockey&&runner.jockey&&
+       lastWin.jockey.toLowerCase().includes(runner.jockey.toLowerCase().split(' ').pop())) score++;
+  }
+  // First or second run of prep
+  const days=runner.last_run_days||0;
+  if(days>=14&&days<=35) score++;
+  // Weight same or lighter than last start
+  if(runner.weight&&runner.last_weight&&runner.weight<=runner.last_weight) score++;
+  // Prize money indicator (higher = more targeted)
+  if(runner.prize_money&&runner.prize_money>=300000) score++;
+  // Gear change ON (trainer trying something new)
+  if(runner.gear_change&&runner.gear_change.toUpperCase().includes('ON')) score++;
+
+  if(score>=4) return 1.08;
+  if(score>=3) return 1.04;
+  if(score>=2) return 1.02;
+  return 1.0;
+}
+
+// ============================================================
+// SIGNAL 15: GEAR CHANGE
+// ============================================================
+function gearChangeMult(runner) {
+  if(!runner.gear_change) return 1.0;
+  const g=runner.gear_change.toUpperCase();
+  // Blinkers/Winkers ON = trainer intent signal — boosted v22.0
+  if(g.includes('BLINKERS ON')||g.includes('WINKERS ON')) return 1.10;
+  // YES = generic gear change from pipeline JSON
+  if(g==='YES') return 1.07;
+  // Barrier trial = fitness boost
+  if(g.includes('TRIAL')) return 1.04;
+  // Blinkers AGAIN = already using, neutral
+  if(g.includes('AGAIN')) return 1.01;
+  // Blinkers OFF = sometimes good
+  if(g.includes('OFF')) return 1.02;
+  return 1.0;
+}
+
+// ============================================================
+// SIGNAL 24: LAST START MARGIN
+// Beaten margin tells a different story than finishing position alone
+// ============================================================
+function lastMarginMult(runner) {
+  // Support both field names
+  const margin = runner.last_start_margin ?? runner.last_margin ?? null;
+  if (margin == null) return 1.0;
+  const lastPos = runner.last_6_results?.[0]?.pos ?? null;
+
+  // Won by margin — extra credit for dominant wins
+  if (lastPos === 1 || margin < 0) {
+    const winMargin = Math.abs(margin);
+    if (winMargin >= 3.0) return 1.10; // dominant win
+    if (winMargin >= 1.5) return 1.06; // comfortable win
+    if (winMargin >= 0.5) return 1.03; // solid win
+    return 1.01; // narrow win
+  }
+
+  // Beaten by margin — short margins = unlucky, long = beaten off
+  if (margin <= 0.5) return 1.08;  // desperately close, likely wins next
+  if (margin <= 1.0) return 1.05;  // very close
+  if (margin <= 1.5) return 1.02;  // competitive
+  if (margin <= 2.5) return 0.99;  // held off
+  if (margin <= 4.0) return 0.96;  // beaten comfortably
+  if (margin <= 6.0) return 0.92;  // well beaten
+  return 0.87;                      // easily beaten
+}
+
+// track_dist_win boolean shortcut helper — boosted v22.0
+function trackDistWinBoost(runner) {
+  if (runner.track_dist_win === true) return 1.10;
+  // Fall back to structured data
+  const tdW = runner.trk_dist?.wins || 0;
+  if (tdW > 0) return 1.06;
+  return 1.0;
+}
+
+// ============================================================
+// META DATA SIGNALS
+// ============================================================
+
+// Market movement: positive = firming, negative = drifting
+// Value is fractional change e.g. 0.4 = firmed 40%, -0.4 = drifted 40%
+function metaMarketMult(runner) {
+  const meta = runner.meta_data;
+  // Prefer meta_data.market_movement if present
+  const movement = meta?.market_movement ?? null;
+  if (movement != null) {
+    if (movement >= 0.30) return 1.12;  // firmed 30%+ = strong market support
+    if (movement >= 0.15) return 1.07;
+    if (movement >= 0.08) return 1.03;
+    if (movement <= -0.30) return 0.90; // drifted 30%+ = market concern
+    if (movement <= -0.15) return 0.95;
+    if (movement <= -0.08) return 0.98;
+    return 1.0;
+  }
+  // Fall back to opening_odds vs win_odds
+  if (!runner.opening_odds || !runner.win_odds) return 1.0;
+  const fallback = (runner.opening_odds - runner.win_odds) / runner.opening_odds;
+  if (fallback >= 0.25) return 1.12;
+  if (fallback >= 0.15) return 1.07;
+  if (fallback >= 0.08) return 1.03;
+  if (fallback <= -0.20) return 0.92;
+  if (fallback <= -0.10) return 0.96;
+  return 1.0;
+}
+
+// Jockey track strike rate — specific to this track
+// More precise than tier list alone
+function metaJockeyTrackMult(runner) {
+  const meta = runner.meta_data;
+  const sr = meta?.track_strike_rate_jockey ?? null;
+  if (sr == null) return 1.0; // fall through to tier list
+  // Strike rate at this specific track overrides generic tier
+  if (sr >= 0.25) return 1.12;  // elite at this track
+  if (sr >= 0.18) return 1.07;  // strong at this track
+  if (sr >= 0.12) return 1.03;  // above average
+  if (sr >= 0.08) return 1.0;   // average
+  if (sr >= 0.04) return 0.97;  // below average
+  return 0.94;                   // struggles here
+}
+
+// Class differential — direct input instead of inferring from last_6_results
+// Positive = stepping up, negative = dropping down
+function metaClassDiffMult(runner) {
+  const meta = runner.meta_data;
+  const diff = meta?.class_diff ?? null;
+  if (diff == null) return 1.0; // fall through to classTrajMult
+  if (diff <= -2) return 1.18;  // dropping 2+ classes = major advantage
+  if (diff <= -1) return 1.10;  // dropping one class
+  if (diff === 0) return 1.0;   // same class
+  if (diff >= 2)  return 0.88;  // jumping 2+ classes = tough ask
+  if (diff >= 1)  return 0.94;  // stepping up one class
+  return 1.0;
+}
+
+// days_since_run from meta — alias handler
+function metaDaysSinceRun(runner) {
+  const meta = runner.meta_data;
+  if (meta?.days_since_run != null && runner.last_run_days == null) {
+    runner.last_run_days = meta.days_since_run;
+  }
+}
+// ============================================================
+function fitnessCurveMult(runner) {
+  if(!runner.last_6_results||runner.last_6_results.length<3) return 1.0;
+  const results=runner.last_6_results.slice(0,6);
+  const scores=results.map(r=>{
+    const fs=r.field||10;
+    if(r.pos===1) return 1.0;
+    if(r.pos===2) return 0.75;
+    if(r.pos===3) return 0.55;
+    if(r.pos/fs<=0.4) return 0.3;
+    return 0.0;
+  });
+  const recent=scores.slice(0,Math.floor(scores.length/2));
+  const older=scores.slice(Math.floor(scores.length/2));
+  const recentAvg=recent.reduce((a,b)=>a+b,0)/recent.length;
+  const olderAvg=older.reduce((a,b)=>a+b,0)/older.length;
+  const trend=recentAvg-olderAvg;
+
+  // "On the way up" bonus: 2+ wins in last 3 starts = strongly improving
+  const last3=results.slice(0,3);
+  const winsInLast3=last3.filter(r=>r.pos===1).length;
+  const mostRecentWinDays=last3.find(r=>r.pos===1)?.days_ago||99;
+
+  // Strong momentum — 2 wins in last 3 regardless of which run was most recent
+  if(winsInLast3>=2&&mostRecentWinDays<=42) return 1.18;
+  if(winsInLast3>=2&&mostRecentWinDays<=60) return 1.12;
+  if(winsInLast3>=1&&results[0]?.pos===1&&(results[0].days_ago||99)<=21) return 1.10;
+  if(winsInLast3>=1&&results[0]?.pos<=2&&(results[0].days_ago||99)<=21) return 1.06;
+
+  // Standard trend
+  if(trend>=0.3) return 1.08;
+  if(trend>=0.15) return 1.04;
+  if(trend>=-0.1) return 1.0;
+  if(trend>=-0.25) return 0.96;
+  return 0.92;
+}
+
+// ============================================================
+// SIGNAL 17: AGE & EXPERIENCE
+// ============================================================
+function ageMult(runner, race) {
+  const age=runner.age||5;
+  const runs=runner.career_runs||20;
+  const going=normGoing(race.going);
+  const isSoft=going==='soft'||going==='heavy'||going==='slow';
+  const raceLevel=classLevel(race.class);
+
+  // 3YO YOUTH MOMENTUM — improving young horse stepping up in class
+  if (age===3) {
+    const last6=runner.last_6_results||[];
+    const winsInLast3=last6.slice(0,3).filter(r=>r.pos===1).length;
+    const recentWinDays=last6[0]?.pos===1?(last6[0].days_ago||99):99;
+
+    // Detect class rise into open/Highway company
+    const prevClass=last6.length>0?classLevel(last6[0].class):raceLevel;
+    const isClassRise=raceLevel>prevClass+5;
+    const isOpenHighway=raceLevel>=78; // BM78+ or OPEN = tough Highway level
+
+    // Young horse firing on all cylinders stepping up
+    if(winsInLast3>=2&&recentWinDays<=42&&isClassRise) return 1.14;
+    if(winsInLast3>=2&&recentWinDays<=42) return 1.10;
+    if(winsInLast3>=1&&recentWinDays<=21&&isClassRise) return 1.08;
+    if(winsInLast3>=1&&recentWinDays<=21) return 1.05;
+
+    // Standard 3YO on wet — small discount if inexperienced
+    if(isSoft&&runs<10) return 0.96;
+    if(isSoft) return 0.98;
+    return 1.02; // 3YOs improving generally
+  }
+
+  // Prime age 4-6
+  if(age>=4&&age<=6&&runs>=15) return 1.03;
+  // Older horses (7+)
+  if(age>=8) return 0.97;
+  return 1.0;
+}
+
+// ============================================================
+// SPEED MAP CALCULATOR
+// ============================================================
+function buildSpeedMap(runners, race) {
+  const positions={lead:[],press:[],mid:[],back:[]};
+  runners.forEach(runner=>{
+    const b=runner.barrier||8;
+    const form=runner.form||'';
+    // Detect on-pace tendency from form (many 1s/2s = on pace)
+    const chars=form.replace(/[^0-9]/g,'').split('').slice(-4);
+    const avgPos=chars.length>0?chars.reduce((a,c)=>a+parseInt(c),0)/chars.length:5;
+    // Barrier + tendency
+    const onPaceScore=(avgPos<=3?2:avgPos<=5?1:0)+(b<=4?2:b<=7?1:0);
+    if(onPaceScore>=4) positions.lead.push(runner.name);
+    else if(onPaceScore>=2) positions.press.push(runner.name);
+    else if(onPaceScore>=1) positions.mid.push(runner.name);
+    else positions.back.push(runner.name);
+  });
+  return positions;
+}
+
+// ============================================================
+// TRACK BIAS DETECTOR
+// ============================================================
+function detectBias(race) {
+  const going=normGoing(race.going);
+  const isSoft=going==='soft'||going==='heavy'||going==='slow';
+  const dist=race.distance;
+  const bias=[];
+  if(isSoft) bias.push('Inside barrier advantage amplified on wet');
+  if(isSoft&&dist<=1200) bias.push('On-pace runners favoured — wet short course');
+  if(isSoft&&dist>=1400) bias.push('Closers can get home — wet middle distance');
+  if(going==='heavy') bias.push('Wet track specialists only — sire line critical');
+  if(race.rail&&race.rail!=='true') bias.push(`Rail: ${race.rail}`);
+  return bias;
+}
+
+// ============================================================
+// MARKET INEFFICIENCY FLAGS
+// ============================================================
+function detectInefficiencies(runner, race, allRunners) {
+  const flags=[];
+  const days=runner.last_run_days;
+  const going=normGoing(race.going);
+  const isSoft=going==='soft'||going==='heavy'||going==='slow';
+  const fu=runner.first_up;
+  const wetWins=(runner.soft?.wins||0)+(runner.heavy?.wins||0);
+  const wetRuns=(runner.soft?.runs||0)+(runner.heavy?.runs||0);
+  const tW=runner.track?.wins||0, tR=runner.track?.runs||0;
+
+  if(days!=null&&days>60&&fu?.wins>0) flags.push('PROVEN FRESH');
+  if(isSoft&&wetWins>=2&&wetRuns>=3) flags.push('WET SPECIALIST');
+  if(runner.last_6_results?.length>0) {
+    const lastClass=runner.last_6_results[0].class||'';
+    const lastNum=parseInt(lastClass.match(/(\d+)/)?.[1]||'0');
+    const raceNum=parseInt(race.class?.match(/(\d+)/)?.[1]||'0');
+    if(lastNum>0&&raceNum>0&&lastNum-raceNum>=8) flags.push('CLASS DROP');
+    if(lastNum>0&&raceNum>0&&lastNum-raceNum>=8&&tW>0) flags.push('CLASS DROP + TRACK FORM');
+  }
+  if(tR>=3&&tW/tR>=0.33&&runner.win_odds>=8) flags.push('TRACK SPEC @ODDS');
+  if(days!=null&&days>60&&runner.last_6_results?.some(r=>r.trial)) flags.push('TRIALLED RESUMING');
+  if(isSoft&&wetWins===0&&wetRuns===0&&runner.win_odds<=4) flags.push('FAV NO WET FORM');
+  if(runner.opening_odds&&runner.win_odds&&(runner.opening_odds-runner.win_odds)/runner.opening_odds>=0.20) flags.push('MARKET FIRMER');
+  if(runner.opening_odds&&runner.win_odds&&(runner.win_odds-runner.opening_odds)/runner.opening_odds>=0.20) flags.push('MARKET DRIFTER');
+  if(runner.gear_change&&runner.gear_change.toUpperCase().includes('ON')) flags.push(`GEAR: ${runner.gear_change}`);
+  // Lightweight on wet
+  const weights=allRunners.map(r=>r.weight).filter(w=>w!=null);
+  if(weights.length>0&&runner.weight) {
+    const avg=weights.reduce((a,b)=>a+b,0)/weights.length;
+    if(isSoft&&avg-runner.weight>=3) flags.push('LIGHTEST ON WET');
+  }
+  if(runner.sire) {
+    const s=runner.sire.toLowerCase();
+    for(const [key,val] of Object.entries(SIRE_WET)) {
+      if(s.includes(key)&&val>=1.08&&isSoft) { flags.push('WET SIRE LINE'); break; }
+    }
+  }
+  return flags;
+}
+
+// ============================================================
+// PLACE PROBABILITY
+// ============================================================
+function calcPlaceProb(winProb, runner, race, fieldSize) {
+  const ewPlaces=fieldSize>=8?3:fieldSize>=5?2:1;
+  const ewBase=ewPlaces/fieldSize;
+  const allRuns=(runner.good?.runs||0)+(runner.soft?.runs||0)+(runner.heavy?.runs||0);
+  const allWins=(runner.good?.wins||0)+(runner.soft?.wins||0)+(runner.heavy?.wins||0);
+  const allPlaces=(runner.good?.places||0)+(runner.soft?.places||0)+(runner.heavy?.places||0);
+  const placeRate=allRuns>0?(allWins+allPlaces)/allRuns:0.3;
+  const consistencyBoost=1.0+(placeRate-0.3)*0.8;
+  const blended=winProb*0.55+ewBase*0.45;
+  return clamp(blended*consistencyBoost,winProb,Math.min(0.85,winProb*3.5));
+}
+
+// ============================================================
+// SIGNAL 29: TOP-N PROBABILITY (v22.1)
+// Generalised place-probability engine for bookmaker bonus-place
+// markets (e.g. bet365/Sportsbet offering top 4/5/6 in big fields).
+// race.places_offered (int) overrides the standard 3-place assumption.
+// ============================================================
+function calcTopNProb(winProb, runner, race, fieldSize, N) {
+  if (!N || N < 1) return null;
+  const n = Math.min(N, fieldSize);
+  const topNBase = n / fieldSize;
+  const allRuns=(runner.good?.runs||0)+(runner.soft?.runs||0)+(runner.heavy?.runs||0);
+  const allWins=(runner.good?.wins||0)+(runner.soft?.wins||0)+(runner.heavy?.wins||0);
+  const allPlaces=(runner.good?.places||0)+(runner.soft?.places||0)+(runner.heavy?.places||0);
+  const placeRate=allRuns>0?(allWins+allPlaces)/allRuns:0.3;
+  const consistencyBoost=1.0+(placeRate-0.3)*0.8;
+  const nRatio = n / fieldSize;
+  const winWeight = clamp(0.55 - (nRatio - 0.25) * 0.6, 0.25, 0.55);
+  const blended = winProb*winWeight + topNBase*(1-winWeight);
+  return clamp(blended*consistencyBoost, winProb, 0.95);
+}
+
+// ============================================================
+// EDGE CLASSIFICATION
+// ============================================================
+function classifyEdge(winProb, placeProb, runner, fieldSize) {
+  const impliedWin=runner.win_odds>0?1/(runner.win_odds*1.17):0;
+  const impliedPlace=runner.place_odds>0?1/(runner.place_odds*1.12):0;
+  const winEdge=winProb-impliedWin;
+  const placeEdge=placeProb-impliedPlace;
+  let flag='FAIR';
+  if(winEdge>=0.08&&winProb>=0.10) flag='OVERLAY';
+  else if(placeEdge>=0.10&&placeProb>=0.20) flag='EW BANKER';
+  else if(placeEdge>=0.06&&placeProb>=0.15) flag='EW VALUE';
+  else if(winEdge>=0.04) flag='SLIGHT';
+  else if(winEdge>=0.02&&placeEdge>=0.03) flag='WIN ONLY';
+  else if(placeEdge>=0.03) flag='SAVER';
+  else if(winEdge<=-0.10) flag='AVOID';
+  return {flag,winEdge,placeEdge,impliedWin,impliedPlace};
+}
+
+// ============================================================
+// KELLY CRITERION
+// ============================================================
+function kellyStake(winProb, odds) {
+  if(!odds||odds<=1) return 0;
+  const b=odds-1;
+  const q=1-winProb;
+  const k=(b*winProb-q)/b;
+  return Math.max(0,Math.min(k*0.5,0.15)); // half Kelly, capped at 15%
+}
+
+// ============================================================
+// EXOTIC COVERAGE
+// ============================================================
+function buildExoticCoverage(ranked) {
+  const top3=ranked.slice(0,3).map(r=>r.runner.name);
+  const top4=ranked.slice(0,4).map(r=>r.runner.name);
+  const top6=ranked.slice(0,6).map(r=>r.runner.name);
+  // Quinella: top 2
+  const quinella=`${top3[0]} / ${top3[1]}`;
+  // Exacta: 1 over 2,3
+  const exacta=`${top3[0]} → ${top3[1]}, ${top3[2]||'-'}`;
+  // Trifecta: 1,2 over 3,4
+  const trifecta=`${top3[0]},${top3[1]} / ${top3[2]||'-'},${top4[3]||'-'} / ALL`;
+  // First four: top 4 box
+  const firstFour=`BOX: ${top4.join(', ')}`;
+  // Quaddie suggestion
+  const quaddie=`Use top 2: ${top3[0]}, ${top3[1]}`;
+  return {quinella,exacta,trifecta,firstFour,quaddie};
+}
+
+// ============================================================
+// SIGNAL TAGS
+// ============================================================
+function buildSignalTags(signals) {
+  const tags=[];
+  Object.entries(signals).forEach(([name,val])=>{
+    if(val>1.05) tags.push({label:`↑ ${name} ×${val.toFixed(2)}`,type:'up'});
+    else if(val<0.94) tags.push({label:`↓ ${name} ×${val.toFixed(2)}`,type:'down'});
+  });
+  return tags;
+}
+
+// ============================================================
+// SPREAD QUALITY
+// ============================================================
+function spreadQuality(probs) {
+  const sorted=[...probs].sort((a,b)=>b-a);
+  if(sorted.length<2) return 'WEAK';
+  const gap12=sorted[0]-sorted[1];
+  const gap23=sorted.length>=3?sorted[1]-sorted[2]:0;
+  if(gap12>=0.08&&gap23>=0.04) return 'STRONG';
+  if(gap12>=0.04) return 'MODERATE';
+  return 'WEAK';
+}
+
+// ============================================================
+// MAIN MODEL — v21.1 Bayesian Market-Anchored Architecture
+// Market implied true probability = BASE
+// 23 form signals = MULTIPLIERS on top of base
+// Final prob = Bayesian normalisation (no softmax)
+// ============================================================
+const OVERROUND = 1.17; // TAB typical overround
+
+function marketImpliedProb(runner, fieldSize) {
+  // Convert win odds to true probability, adjusted for overround
+  if (!runner.win_odds || runner.win_odds <= 1) return 1 / fieldSize;
+  return 1 / (runner.win_odds * OVERROUND);
+}
+
+// ============================================================
+// SIGNAL 28: CLASS DROP MULTIPLIER (v22.0)
+// Fires when horse drops in class from last start
+// Compound bonus when combined with track form or gear change
+// ============================================================
+function classDropMult(runner, race) {
+  const results = runner.last_6_results || [];
+  if (results.length === 0) return 1.0;
+
+  const lastClass = results[0].class || '';
+  const raceClass = race.class || '';
+
+  const lastNum = parseInt(lastClass.match(/(\d+)/)?.[1] || '0');
+  const raceNum = parseInt(raceClass.match(/(\d+)/)?.[1] || '0');
+
+  if (lastNum <= 0 || raceNum <= 0) return 1.0;
+  const drop = lastNum - raceNum;
+
+  if (drop < 8) return 1.0; // not a meaningful class drop
+
+  // Base class drop boost
+  let mult = 1.0;
+  if (drop >= 20) mult = 1.18;      // big class drop e.g. BM66 -> CL1
+  else if (drop >= 12) mult = 1.14; // solid class drop
+  else if (drop >= 8) mult = 1.10;  // moderate class drop
+
+  // Compound bonus: class drop + track/dist form
+  const trkDistWins = (runner.trk_dist?.wins || 0);
+  const trackWins = (runner.track?.wins || 0);
+  const distWins = (runner.dist?.wins || 0);
+  if (trkDistWins > 0 || (trackWins > 0 && distWins > 0)) {
+    mult *= 1.08; // proven at track AND distance AND dropping class = strong signal
+  } else if (trackWins > 0 || distWins > 0) {
+    mult *= 1.04; // proven at track or distance
+  }
+
+  // Compound bonus: class drop + gear change
+  const gear = runner.gear_change?.toUpperCase() || '';
+  if (gear.includes('ON') || gear === 'YES') {
+    mult *= 1.05; // gear change on a class dropper = trainer intent
+  }
+
+  return mult;
+}
+
+function runFormBoard(data) {
+  const race=data.race;
+  const runners=data.runners.filter(r=>!r.scratched);
+  const fieldSize=runners.length;
+
+  const scored=runners.map(runner=>{
+    // Field aliases — support both naming conventions
+    if (runner.days_since_run != null && runner.last_run_days == null) runner.last_run_days = runner.days_since_run;
+    if (runner.gear != null && runner.gear_change == null) runner.gear_change = runner.gear;
+    // Apply meta_data aliases
+    metaDaysSinceRun(runner);
+
+    // STEP 1: Market implied true probability as base
+    const baseProbRaw = marketImpliedProb(runner, fieldSize);
+
+    // STEP 2: All 27 signals as multipliers
+    const s={
+      form:         recentFormMult(runner,race),
+      class:        classMult(runner,runners),
+      trajectory:   classTrajMult(runner,race),
+      going:        goingMult(runner,race),
+      track:        trackMult(runner,race),
+      distance:     distMult(runner,race),
+      prep:         prepCycleMult(runner,race),
+      spell:        spellMult(runner),
+      sectionals:   sectionalsMult(runner,race),
+      placement:    placeHistMult(runner),
+      weight:       weightMult(runner,runners,race),
+      wtCareer:     weightCareerMult(runner),
+      barrier:      barrierMult(runner,race),
+      jockey:       jockeyMult(runner),
+      jockeyAppr:   apprenticeBoost(runner),
+      jkTrainer:    jockeyTrainerCombo(runner),
+      trainer:      trainerMult(runner),
+      sire:         sireMult(runner,race),
+      market:       metaMarketMult(runner),      // replaces marketMoveMult, uses meta if available
+      jkyTrackSR:   metaJockeyTrackMult(runner), // jockey track strike rate
+      classDiff:    metaClassDiffMult(runner),   // direct class differential
+      stableConf:   stableConfMult(runner),
+      gear:         gearChangeMult(runner),
+      fitness:      fitnessCurveMult(runner),
+      age:          ageMult(runner,race),
+      margin:       lastMarginMult(runner),
+      trkDistWin:   trackDistWinBoost(runner),
+      classDrop:    classDropMult(runner, race),
+    };
+
+    // STEP 3: Multiply all signals together
+    const signalProduct = Object.values(s).reduce((a,b)=>a*b,1.0);
+
+    // STEP 4: Apply signal product to market base
+    // Raw score = market implied prob × signal multipliers
+    const rawScore = baseProbRaw * signalProduct;
+
+    return {runner, signals:s, rawScore, baseProbRaw, signalProduct};
+  });
+
+  // STEP 5: Bayesian normalisation — preserve relative signal separation
+  // Normalise so probabilities sum to 1 but stay anchored to market
+  const totalRaw = scored.reduce((a,b)=>a+b.rawScore,0);
+
+  // Blend: 95% signal-adjusted / 5% pure market anchor
+  // Signals dominate entirely — market is tiebreaker only
+  const withProbs = scored.map(item=>({
+    ...item,
+    winProb: totalRaw > 0
+      ? (item.rawScore / totalRaw) * 0.95 + item.baseProbRaw * 0.05
+      : 1 / fieldSize,
+  }));
+
+  const withPlace=withProbs.map(item=>({
+    ...item,
+    placeProb:calcPlaceProb(item.winProb,item.runner,race,fieldSize),
+    topNProb:race.places_offered?calcTopNProb(item.winProb,item.runner,race,fieldSize,race.places_offered):null,
+  }));
+
+  const withEdge=withPlace.map(item=>({
+    ...item,
+    edge:classifyEdge(item.winProb,item.placeProb,item.runner,fieldSize),
+    inefficiencies:detectInefficiencies(item.runner,race,runners),
+    kelly:kellyStake(item.winProb,item.runner.win_odds),
+    kellyPlace:kellyStake(item.placeProb,item.runner.place_odds),
+  }));
+
+  withEdge.sort((a,b)=>b.winProb-a.winProb);
+  withEdge.forEach((item,i)=>{item.rank=i+1;});
+
+  const spread=spreadQuality(withEdge.map(i=>i.winProb));
+  const ewPick=[...withEdge].sort((a,b)=>b.edge.placeEdge-a.edge.placeEdge)[0];
+  const speedMap=buildSpeedMap(runners,race);
+  const bias=detectBias(race);
+  const exotics=buildExoticCoverage(withEdge);
+
+  return {race,runners:withEdge,spread,ewPick,fieldSize,speedMap,bias,exotics};
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function render(result) {
+  const {race,runners,spread,ewPick,fieldSize,speedMap,bias,exotics}=result;
+  const top=runners[0];
+  let html='';
+
+  // Race bar
+  html+=`<div class="race-bar">
+    <div class="race-stat"><div class="race-stat-label">Track</div><div class="race-stat-value">${race.track||'—'}</div></div>
+    <div class="race-stat"><div class="race-stat-label">Distance</div><div class="race-stat-value">${race.distance}m</div></div>
+    <div class="race-stat"><div class="race-stat-label">Class</div><div class="race-stat-value">${race.class||'—'}</div></div>
+    <div class="race-stat"><div class="race-stat-label">Going</div><div class="race-stat-value">${race.going||'—'}</div></div>
+    <div class="race-stat"><div class="race-stat-label">Runners</div><div class="race-stat-value">${fieldSize}</div></div>
+    <div class="race-stat"><div class="race-stat-label">Trend</div><div class="race-stat-value">${race.going_trend||'stable'}</div></div>
+    <div class="race-stat"><div class="race-stat-label">Prize</div><div class="race-stat-value">$${(race.prize_money||0).toLocaleString()}</div></div>
+  </div>`;
+
+  // Bias panel
+  if(bias.length>0) {
+    html+=`<div class="bias-panel">
+      <div><div class="bias-label">Track Bias</div></div>
+      ${bias.map(b=>`<div class="bias-item">◈ ${b}</div>`).join('')}
+    </div>`;
+  }
+
+  // Speed map
+  html+=`<div class="speed-map">
+    <div class="speed-title">Speed Map</div>
+    <div class="speed-track">
+      <div class="speed-zone speed-lead"><div style="font-size:8px;opacity:0.7">LEAD</div>${speedMap.lead.map(n=>`<div>${n}</div>`).join('')||'—'}</div>
+      <div class="speed-zone speed-press"><div style="font-size:8px;opacity:0.7">PRESS</div>${speedMap.press.map(n=>`<div>${n}</div>`).join('')||'—'}</div>
+      <div class="speed-zone speed-mid"><div style="font-size:8px;opacity:0.7">MID</div>${speedMap.mid.map(n=>`<div>${n}</div>`).join('')||'—'}</div>
+      <div class="speed-zone speed-back"><div style="font-size:8px;opacity:0.7">BACK</div>${speedMap.back.map(n=>`<div>${n}</div>`).join('')||'—'}</div>
+    </div>
+  </div>`;
+
+  // Top pick
+  html+=`<div class="top-pick">
+    <div class="top-pick-eyebrow">▲ TOP PICK</div>
+    <div class="top-pick-main">
+      <div>
+        <div class="top-pick-name">${top.runner.name} <span style="font-size:14px;color:var(--muted)">(B${top.runner.barrier||'?'})</span></div>
+        <div class="top-pick-meta">${top.runner.trainer||'Unknown'} · ${top.runner.jockey||'Unknown'} · ${top.runner.weight||'?'}kg · F:${top.runner.form||'—'}</div>
+      </div>
+      <div class="top-pick-prob">
+        <div class="top-pick-pct">${(top.winProb*100).toFixed(1)}%</div>
+        <div class="top-pick-odds">WIN $${top.runner.win_odds||'?'}</div>
+        <div class="top-pick-odds" style="color:var(--ew)">PLACE ${(top.placeProb*100).toFixed(1)}%</div>
+        ${top.kelly>0?`<div class="top-pick-odds" style="color:var(--accent)">KELLY ${(top.kelly*100).toFixed(1)}%</div>`:''}
+      </div>
+    </div>
+    <div class="top-pick-flags">
+      <span class="edge-badge edge-${top.edge.flag.replace(/ /g,'_')}">${top.edge.flag}</span>
+      <span style="font-family:var(--mono);font-size:10px;color:var(--muted);align-self:center">
+        win edge ${top.edge.winEdge>=0?'+':''}${(top.edge.winEdge*100).toFixed(1)}%
+        &nbsp;|&nbsp; place edge ${top.edge.placeEdge>=0?'+':''}${(top.edge.placeEdge*100).toFixed(1)}%
+      </span>
+    </div>
+  </div>`;
+
+  // EW pick
+  if(ewPick&&ewPick.runner.name!==top.runner.name&&ewPick.edge.placeEdge>0.03) {
+    html+=`<div class="ew-card">
+      <div class="ew-eyebrow">◈ EW VALUE PICK</div>
+      <div class="top-pick-main">
+        <div>
+          <div class="top-pick-name" style="font-size:18px">${ewPick.runner.name} <span style="font-size:13px;color:var(--muted)">(B${ewPick.runner.barrier||'?'})</span></div>
+          <div class="top-pick-meta">${ewPick.runner.trainer||'Unknown'} · ${ewPick.runner.jockey||'Unknown'} · ${ewPick.runner.weight||'?'}kg</div>
+        </div>
+        <div class="top-pick-prob">
+          <div style="font-family:var(--mono);font-size:20px;font-weight:600;color:var(--ew)">${(ewPick.placeProb*100).toFixed(1)}%</div>
+          <div class="top-pick-odds">PLACE $${ewPick.runner.place_odds||'?'}</div>
+          <div class="top-pick-odds">WIN ${(ewPick.winProb*100).toFixed(1)}% · $${ewPick.runner.win_odds||'?'}</div>
+          ${ewPick.kellyPlace>0?`<div class="top-pick-odds" style="color:var(--ew)">KELLY PLACE ${(ewPick.kellyPlace*100).toFixed(1)}%</div>`:''}
+        </div>
+      </div>
+      <div class="top-pick-flags">
+        <span class="edge-badge edge-${ewPick.edge.flag.replace(/ /g,'_')}">${ewPick.edge.flag}</span>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--muted);align-self:center">
+          place edge ${ewPick.edge.placeEdge>=0?'+':''}${(ewPick.edge.placeEdge*100).toFixed(1)}%
+        </span>
+      </div>
+    </div>`;
+  }
+
+  // Spread quality
+  html+=`<div class="spread-bar">
+    <div class="spread-label">Spread Quality</div>
+    <div class="spread-value spread-${spread}">${spread}</div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:auto">
+      field size ${fieldSize} · ${race.places_offered?`${race.places_offered}-place bonus market`:fieldSize>=8?'3-place':fieldSize>=5?'2-place':'1-place'} EW market
+    </div>
+  </div>`;
+
+  // Runner table
+  html+=`<div class="runner-table">`;
+  runners.forEach(item=>{
+    const {runner,signals,winProb,placeProb,topNProb,edge,rank,inefficiencies,kelly,kellyPlace}=item;
+    const isEwFlag=edge.flag==='EW BANKER'||edge.flag==='EW VALUE'||edge.flag==='SAVER';
+    const isOverlay=edge.flag==='OVERLAY'||edge.flag==='SLIGHT';
+    const tags=buildSignalTags(signals);
+
+    // Fitness curve bars
+    let curveHtml='';
+    if(runner.last_6_results&&runner.last_6_results.length>0) {
+      const reversed=[...runner.last_6_results].reverse();
+      curveHtml=`<div class="fitness-curve">`;
+      reversed.forEach(r=>{
+        const fs=r.field||10;
+        const score=r.pos===1?100:r.pos===2?75:r.pos===3?55:Math.max(0,100-(r.pos/fs)*100);
+        const col=score>=70?'var(--accent)':score>=40?'var(--warn)':'var(--danger)';
+        curveHtml+=`<div class="fitness-bar" style="height:${Math.max(3,score*0.24)}px;background:${col}" title="P${r.pos}/${fs} ${r.days_ago}d ago"></div>`;
+      });
+      curveHtml+=`</div>`;
+    }
+
+    html+=`<div class="runner-row rank-${rank} ${isEwFlag?'has-ew':''} ${isOverlay?'has-overlay':''}">
+      <div class="rank-num">${rank}</div>
+      <div class="runner-info">
+        <div class="runner-name">${runner.name}</div>
+        <div class="runner-sub">B${runner.barrier||'?'} · ${runner.jockey||'?'} · ${runner.trainer||'?'} · ${runner.weight||'?'}kg · F:${runner.form||'—'}</div>
+        <div class="runner-sub2">${runner.sire?`Sire: ${runner.sire} · `:''}${runner.opening_odds?`Opened: $${runner.opening_odds} → $${runner.win_odds}`:`$${runner.win_odds}`} · Base: ${(item.baseProbRaw*100).toFixed(1)}% · Signals: ×${item.signalProduct.toFixed(2)}</div>
+        <div class="signal-row">${tags.map(t=>`<span class="signal-tag sig-${t.type}">${t.label}</span>`).join('')}</div>
+        ${inefficiencies.length>0?`<div class="ineff-flags">${inefficiencies.map(f=>`<span class="ineff-tag">◈ ${f}</span>`).join('')}</div>`:''}
+        ${curveHtml}
+        <div class="conf-bar-wrap" style="margin-top:6px">
+          <div class="conf-bar-track" style="width:120px">
+            <div class="conf-bar-fill" style="width:${Math.round(winProb*100*3)}%;max-width:100%;background:${rank===1?'var(--accent)':rank===2?'rgba(0,229,160,0.5)':'var(--dim)'}"></div>
+          </div>
+        </div>
+      </div>
+      <div class="runner-stats">
+        <div class="stat-prob">${(winProb*100).toFixed(1)}%</div>
+        <div class="stat-place-prob">P: ${(placeProb*100).toFixed(1)}%</div>
+        ${topNProb!=null?`<div class="stat-place-prob" style="color:var(--ew2,#a78bfa)">Top${race.places_offered}: ${(topNProb*100).toFixed(1)}%</div>`:''}
+        <div class="stat-odds">$${runner.win_odds||'?'} / $${runner.place_odds||'?'}</div>
+        <div><span class="edge-badge edge-${edge.flag.replace(/ /g,'_')}">${edge.flag}</span></div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:3px">
+          W ${edge.winEdge>=0?'+':''}${(edge.winEdge*100).toFixed(1)}% P ${edge.placeEdge>=0?'+':''}${(edge.placeEdge*100).toFixed(1)}%
+        </div>
+        ${kelly>0?`<div class="stat-kelly">K:${(kelly*100).toFixed(1)}%</div>`:''}
+      </div>
+    </div>`;
+  });
+  html+=`</div>`;
+
+  // Kelly summary
+  const kellyRunners=runners.filter(r=>r.kelly>0.01||r.kellyPlace>0.01);
+  if(kellyRunners.length>0) {
+    html+=`<div class="kelly-panel" style="margin-top:16px">
+      <div class="kelly-title">Kelly Criterion Sizing</div>
+      ${kellyRunners.map(r=>`<div class="kelly-row">
+        <span>${r.runner.name} (B${r.runner.barrier||'?'})</span>
+        <span>
+          ${r.kelly>0.01?`<span class="kelly-pct">WIN ${(r.kelly*100).toFixed(1)}%</span> `:''}
+          ${r.kellyPlace>0.01?`<span style="color:var(--ew)">EW ${(r.kellyPlace*100).toFixed(1)}%</span>`:''}
+        </span>
+      </div>`).join('')}
+      <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:8px">Half-Kelly applied. % of betting bank per bet.</div>
+    </div>`;
+  }
+
+  // Exotic coverage
+  html+=`<div class="exotic-panel" style="margin-top:16px">
+    <div class="exotic-title">Exotic Coverage Suggestions</div>
+    <div class="exotic-row"><span>Quinella</span><span class="exotic-val">${exotics.quinella}</span></div>
+    <div class="exotic-row"><span>Exacta</span><span class="exotic-val">${exotics.exacta}</span></div>
+    <div class="exotic-row"><span>Trifecta</span><span class="exotic-val">${exotics.trifecta}</span></div>
+    <div class="exotic-row"><span>First Four</span><span class="exotic-val">${exotics.firstFour}</span></div>
+    <div class="exotic-row"><span>Quaddie Leg</span><span class="exotic-val">${exotics.quaddie}</span></div>
+  </div>`;
+
+  // Market inefficiency panel
+  const allIneff=runners.flatMap(item=>
+    item.inefficiencies.map(f=>({flag:f,name:item.runner.name,odds:item.runner.win_odds}))
+  );
+  if(allIneff.length>0) {
+    html+=`<div class="ineff-panel" style="margin-top:16px">
+      <div class="ineff-title">Market Inefficiency Flags</div>
+      ${allIneff.map(i=>`<div class="ineff-item"><span>${i.flag}</span> — ${i.name} ($${i.odds})</div>`).join('')}
+    </div>`;
+  }
+
+  document.getElementById('results').innerHTML=html;
+}
+
+// ============================================================
+// UI CONTROLS
+// ============================================================
+function runModel() {
+  const input=document.getElementById('jsonInput').value.trim();
+  const errBox=document.getElementById('errorBox');
+  errBox.style.display='none';
+  document.getElementById('results').innerHTML='';
+  if(!input) { errBox.textContent='No JSON provided.'; errBox.style.display='block'; return; }
+  let data;
+  try { data=JSON.parse(input); } catch(e) { errBox.textContent=`JSON parse error: ${e.message}`; errBox.style.display='block'; return; }
+  if(!data.race||!data.runners||!Array.isArray(data.runners)) { errBox.textContent='Invalid structure. Requires { race: {...}, runners: [...] }'; errBox.style.display='block'; return; }
+  if(data.runners.length===0) { errBox.textContent='No runners found.'; errBox.style.display='block'; return; }
+  try { const result=runFormBoard(data); render(result); } catch(e) { errBox.textContent=`Model error: ${e.message}`; errBox.style.display='block'; console.error(e); }
+}
+function clearAll() { document.getElementById('jsonInput').value=''; document.getElementById('results').innerHTML=''; document.getElementById('errorBox').style.display='none'; }
+function toggleSample() { const el=document.getElementById('sampleJson'); el.style.display=el.style.display==='none'?'block':'none'; }
+document.addEventListener('keydown',e=>{ if(e.ctrlKey&&e.key==='Enter') runModel(); });
+</script>
+</body>
+</html>
