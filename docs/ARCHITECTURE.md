@@ -2,7 +2,7 @@
 
 **Status:** Draft v1.0
 **Owner:** Engineering
-**Stack:** Next.js (App Router) · TypeScript · Tailwind · shadcn/ui · Next.js API routes · PostgreSQL · Prisma · Auth.js · Vercel · Resend · Twilio · PostHog · OpenAI API
+**Stack:** Next.js (App Router) · TypeScript · Tailwind · shadcn/ui · Next.js API routes · PostgreSQL (Neon) · Prisma · Auth.js · Vercel · Resend · Twilio · PostHog · OpenAI API · Inngest (background jobs)
 **Design target:** hundreds of thousands of leads/enquiries, Melbourne launch → national scale
 
 ---
@@ -15,7 +15,7 @@ PropertyConnect is a single Next.js application (App Router) deployed on Vercel,
 2. **Professional workspace** — authenticated, moderate traffic, read/write heavy on a narrow slice of data (their own leads).
 3. **Admin console** — authenticated, low traffic, broad read access, sensitive write access (fees, verification, reassignment).
 
-The system deliberately separates **request/response work** (serving pages, validating and persisting a submitted enquiry) from **asynchronous work** (matching, notification dispatch, SLA timeout re-routing, AI enrichment). Next.js API routes on Vercel are serverless functions with bounded execution time — they are well suited to "validate and persist," poorly suited to "orchestrate a multi-step workflow with retries and delays." That asynchronous work is handled by a durable background job runner (Inngest is the concrete recommendation — first-class Next.js/Vercel support, step functions, cron, retries; QStash/Trigger.dev are acceptable alternatives) rather than by long-running API route handlers.
+The system deliberately separates **request/response work** (serving pages, validating and persisting a submitted enquiry) from **asynchronous work** (matching, notification dispatch, SLA timeout re-routing, AI enrichment). Next.js API routes on Vercel are serverless functions with bounded execution time — they are well suited to "validate and persist," poorly suited to "orchestrate a multi-step workflow with retries and delays." That asynchronous work is handled by a durable background job runner — **Inngest** (decision and rationale in §8.8) — rather than by long-running API route handlers.
 
 ```
                          ┌───────────────────────┐
@@ -565,7 +565,7 @@ Implementation: a single `can(user, action, resource)` function in `lib/rbac.ts`
 
 ## 7. Security considerations
 
-- **Transport & storage:** TLS everywhere (Vercel default); database encryption at rest (managed Postgres provider default — Neon/Supabase/RDS all provide this); no PII in logs (structured logging with explicit allow-listed fields, not `console.log(req.body)`).
+- **Transport & storage:** TLS everywhere (Vercel default); database encryption at rest (Neon provides this by default — see §8.8 for provider decision); no PII in logs (structured logging with explicit allow-listed fields, not `console.log(req.body)`).
 - **Secrets:** all third-party keys (Resend, Twilio, OpenAI, database URL, Auth.js secret, Inngest signing key) in Vercel environment variables, scoped per environment (dev/preview/prod), never committed; PostHog uses a public client key by design (client-side analytics) but server-side capture uses a separate server key.
 - **Input validation:** every public endpoint validates with zod before touching the database; address/phone/email formats validated server-side (never trust client-side validation alone) per the PRD's AU-format NFRs.
 - **Rate limiting & bot protection:** Upstash Ratelimit at the edge middleware layer on all `/api/enquiries/*` routes, keyed by IP and by a hash of phone/email to catch distributed-but-same-identity abuse; consider a CAPTCHA/challenge (e.g. Cloudflare Turnstile) on intake forms if bot volume becomes material — flagged as a launch-readiness decision, not deferred indefinitely, since hundreds of thousands of leads at scale makes the platform a bot target.
@@ -584,7 +584,7 @@ Implementation: a single `can(user, action, resource)` function in `lib/rbac.ts`
 The target — hundreds of thousands of leads — is comfortably within PostgreSQL's capability with correct indexing; the real risks are (a) serverless connection exhaustion, (b) the fastest-growing tables becoming unindexed scan targets, and (c) synchronous work blocking the public intake path. Addressed in order:
 
 ### 8.1 Database connections
-Vercel serverless functions scale horizontally by spinning up many concurrent function instances, each historically opening its own DB connection — this exhausts Postgres's connection limit fast under real traffic. Mitigation: use a serverless-native Postgres provider with built-in pooling (**Neon** or **Vercel Postgres**, both pool via PgBouncer-style proxying transparently) or front a standard Postgres instance with **Prisma Accelerate** / **PgBouncer** in transaction mode. The Prisma client is instantiated as a single module-level singleton (`lib/db.ts`) to avoid connection-per-invocation churn within a warm function instance.
+Vercel serverless functions scale horizontally by spinning up many concurrent function instances, each historically opening its own DB connection — this exhausts Postgres's connection limit fast under real traffic. Mitigation: use a serverless-native Postgres provider with built-in pooling. Two connection strings are used per Prisma's recommended pattern for this class of provider: a pooled connection (PgBouncer-style, transaction mode) for the app's runtime queries, and a direct connection reserved for migrations. The Prisma client is instantiated as a single module-level singleton (`lib/db.ts`) to avoid connection-per-invocation churn within a warm function instance. Provider choice: see §8.8.
 
 ### 8.2 Read/write separation
 Admin dashboard and reporting queries (broad, filterable, can tolerate slight staleness) are routed to a **read replica** once volume justifies it, keeping the write path (enquiry creation, match updates) on the primary uncontended. Not needed at MVP Melbourne volume; the schema and connection layer are structured so it's a configuration change (a second Prisma datasource) rather than a rearchitecture later.
@@ -607,6 +607,14 @@ Vercel's serverless model auto-scales the stateless app tier without capacity pl
 
 ### 8.7 Multi-region / national expansion
 Suburb/postcode/state are already plain data columns (§3.2), not hardcoded assumptions — expanding beyond Melbourne/Victoria is a data and matching-rule change (new `ProfessionalServiceArea` rows, new state values), not a schema migration. Vercel's edge network already serves the frontend close to users nationally; the database region becomes the only thing to reconsider (single Australian region, e.g. Sydney, is fine for a national AU-only product — no need for multi-region DB complexity unless expanding outside Australia).
+
+### 8.8 Decided: job runner and database provider
+
+Two choices flagged as open in earlier drafts are now decided:
+
+**Job runner: Inngest.** The workflow in §4.3 needs multi-step orchestration with automatic per-step retries and a native delayed-execution primitive (`sleepUntil` the SLA deadline, rather than a separately-run cron doing date-math on every sweep). Inngest gives us that plus first-class Next.js/Vercel support and a local dev server for testing workflows without deploying. Trigger.dev is a reasonable second choice but has been through multiple breaking architectural rewrites (v2→v3), which is a stability signal to weigh against for infrastructure a startup will depend on for years. QStash is simpler but is a plain queue/scheduler — it would push step-orchestration and retry logic back into our own code, which is exactly the complexity we want Inngest to absorb.
+
+**Database: Neon**, provisioned through Vercel's native Postgres integration (Vercel's own "Vercel Postgres" offering is Neon under the hood, so this is really one decision, not two). Reasons: (1) database branching — every preview deployment can get its own ephemeral DB branch off production data, which matters a lot for a schema that will iterate quickly through MVP; (2) serverless-native pooling built in, directly addressing §8.1 without bolting on a separate PgBouncer instance to operate; (3) tight Vercel env-var wiring reduces deploy-config surface area. Supabase was considered and rejected for this project specifically because it bundles an auth/storage/realtime platform we don't need — we've already committed to Auth.js, and a second overlapping platform identity invites scope creep (someone reaching for Supabase Auth "since it's already there") rather than reducing complexity.
 
 ---
 
@@ -637,7 +645,8 @@ Scoped deliberately narrow at MVP — **enrichment, not decisioning**:
 | Decision | Chosen approach | Alternative considered | Why |
 |---|---|---|---|
 | Enquiry data model | Base table + JSONB payload | One table per enquiry type | Avoids schema churn as journeys evolve; common fields still indexed |
-| Async workflow | Durable job runner (Inngest) | Inline `await` in API route / bare cron | Serverless timeouts + third-party flakiness make inline orchestration unreliable at scale |
+| Async workflow | Durable job runner (Inngest) | Trigger.dev, QStash, inline `await`/bare cron | Native step retries + `sleepUntil` fit the SLA-timeout workflow directly; Trigger.dev's repeated breaking rewrites and QStash's lack of step-orchestration were both weighed and rejected |
+| Database provider | Neon (via Vercel's native Postgres integration) | Supabase, self-managed Postgres + PgBouncer | Serverless-native pooling + DB branching per preview deploy, without bundling an unused auth/storage platform |
 | Auth session strategy | Database sessions | JWT sessions | Immediate effect when suspending a professional/admin account |
 | Audit trail | Append-only `EnquiryEvent`/`AdminActionLog`, DB-level no-update/delete | Mutable status field only | Fee disputes and security incidents both need an unforgeable history |
 | AI role | Enrichment only, non-blocking, additive | AI-driven matching decisions | Keeps the core revenue-critical path deterministic and debuggable; AI failure can't stop a lead being routed |
