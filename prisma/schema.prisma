@@ -1,0 +1,723 @@
+// PropertyConnect — canonical database schema
+// This file is the source of truth for the data model. docs/DATABASE.md explains
+// every table and relationship in prose; docs/ARCHITECTURE.md's §3 sketch is
+// superseded by this file where the two differ (naming: Enquiry -> Lead,
+// ProfessionalProfile -> Partner, Match -> LeadAssignment, EnquiryEvent -> LeadStatusHistory).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL") // pooled connection (Neon, transaction mode) — runtime queries
+  directUrl = env("DIRECT_URL") // unpooled connection — migrations only
+}
+
+// =========================================================================
+// ENUMS
+// =========================================================================
+
+enum UserRole {
+  CONSUMER
+  PARTNER
+  SUPPORT_ADMIN
+  ADMIN
+}
+
+enum PartnerType {
+  AGENT
+  MORTGAGE_BROKER
+  INSPECTOR
+  CONVEYANCER
+}
+
+enum AgentType {
+  SELLING
+  BUYERS
+  BOTH
+}
+
+enum LicenseStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  SUSPENDED
+}
+
+enum LeadType {
+  SELL
+  BUY
+  FINANCE
+  INSPECTION
+  CONVEYANCING
+  PROPERTY_MANAGEMENT
+}
+
+enum LeadStatus {
+  NEW
+  MATCHING
+  ASSIGNED
+  ACCEPTED
+  IN_PROGRESS
+  OUTCOME_PENDING
+  CLOSED_WON
+  CLOSED_LOST
+  UNMATCHED
+  UNSERVICEABLE
+  WITHDRAWN
+}
+
+enum PropertyType {
+  HOUSE
+  UNIT
+  TOWNHOUSE
+  LAND
+  RURAL
+  OTHER
+}
+
+enum AssignmentStatus {
+  ASSIGNED
+  ACCEPTED
+  DECLINED
+  EXPIRED
+  WITHDRAWN
+}
+
+enum ActorType {
+  SYSTEM
+  CONSUMER
+  PARTNER
+  ADMIN
+}
+
+enum AppointmentType {
+  APPRAISAL
+  INSPECTION
+  CONSULTATION
+  SETTLEMENT_MEETING
+  OTHER
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum TransactionType {
+  SALE
+  PURCHASE
+  LOAN
+  INSPECTION_COMPLETED
+  CONVEYANCING_COMPLETED
+  MANAGEMENT_AGREEMENT
+}
+
+enum TransactionStatus {
+  PENDING
+  UNCONDITIONAL
+  SETTLED
+  FELL_THROUGH
+}
+
+enum FeeType {
+  FLAT
+  PERCENTAGE
+  TIERED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  VOID
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER
+  CREDIT_CARD
+  DIRECT_DEBIT
+  OTHER
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum DocumentCategory {
+  CONTRACT
+  ID_VERIFICATION
+  LICENSE
+  INSPECTION_REPORT
+  OTHER
+}
+
+enum NotificationChannel {
+  EMAIL
+  SMS
+}
+
+enum NotificationStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  FAILED
+  BOUNCED
+}
+
+enum RecipientType {
+  CONSUMER
+  PARTNER
+  ADMIN
+}
+
+// =========================================================================
+// AUTH.JS REQUIRED MODELS
+// =========================================================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String?   @unique
+  phone         String?   @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  passwordHash  String? // set for PARTNER/ADMIN (Credentials provider); null for CONSUMER (magic link only)
+  role          UserRole  @default(CONSUMER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+  consumer Consumer?
+  partner  Partner?
+
+  notes         Note[]
+  documents     Document[]
+  notifications Notification[]
+
+  @@index([role])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// =========================================================================
+// CONSUMERS
+// =========================================================================
+
+model Consumer {
+  id        String   @id @default(cuid())
+  userId    String?  @unique // null until/unless the consumer creates a self-service account
+  user      User?    @relation(fields: [userId], references: [id])
+  email     String?
+  phone     String?
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  leads         Lead[]
+  notifications Notification[]
+
+  @@index([email])
+  @@index([phone])
+}
+
+// =========================================================================
+// PARTNERS (base) + type-specific extensions
+// =========================================================================
+
+model Partner {
+  id                String        @id @default(cuid())
+  userId            String        @unique
+  user              User          @relation(fields: [userId], references: [id])
+  type              PartnerType
+  businessName      String
+  abn               String
+  licenseNumber     String?
+  licenseStatus     LicenseStatus @default(PENDING)
+  active            Boolean       @default(false)
+  capacity          Int           @default(10) // max concurrent open leads
+  responseRateScore Float         @default(1.0) // decays on decline/timeout, feeds routing priority
+  avgResponseMins   Int?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  agent          Agent?
+  mortgageBroker MortgageBroker?
+  inspector      Inspector?
+  conveyancer    Conveyancer?
+
+  serviceAreas       PartnerServiceArea[]
+  leadAssignments    LeadAssignment[]
+  appointments       Appointment[]
+  transactions       Transaction[]
+  referralAgreements ReferralAgreement[]
+  invoices           Invoice[]
+  payments           Payment[]
+  notes              Note[]
+  documents          Document[]
+  notifications      Notification[]
+
+  @@index([type, active])
+}
+
+model Agent {
+  id              String    @id @default(cuid())
+  partnerId       String    @unique
+  partner         Partner   @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  agentType       AgentType @default(SELLING)
+  agencyName      String
+  yearsExperience Int?
+  specialties     String[]  @default([])
+}
+
+model MortgageBroker {
+  id                  String  @id @default(cuid())
+  partnerId           String  @unique
+  partner             Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  aggregatorName      String?
+  creditLicenseNumber String // ACL/ACR number — required for NCCP compliance, see docs/DATABASE.md
+  lenderPanelSize     Int?
+}
+
+model Inspector {
+  id              String   @id @default(cuid())
+  partnerId       String   @unique
+  partner         Partner  @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  qualifications  String?
+  inspectionTypes String[] @default([]) // e.g. ["PRE_PURCHASE", "PRE_SALE", "PEST"]
+}
+
+model Conveyancer {
+  id                          String  @id @default(cuid())
+  partnerId                   String  @unique
+  partner                     Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  firmName                    String?
+  practicingCertificateNumber String
+}
+
+// =========================================================================
+// SUBURBS & PROPERTIES
+// =========================================================================
+
+model Suburb {
+  id        String   @id @default(cuid())
+  name      String
+  postcode  String
+  state     String   @default("VIC")
+  lga       String? // local government area — used for some professional coverage rules
+  region    String? // reporting grouping, e.g. "Melbourne - Inner East"
+  createdAt DateTime @default(now())
+
+  properties          Property[]
+  partnerServiceAreas PartnerServiceArea[]
+  leadSuburbPrefs     LeadSuburbPreference[]
+  analyticsRows       AnalyticsDailyMetric[]
+
+  @@unique([name, postcode, state])
+}
+
+model PartnerServiceArea {
+  id        String  @id @default(cuid())
+  partnerId String
+  partner   Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  suburbId  String
+  suburb    Suburb  @relation(fields: [suburbId], references: [id])
+
+  @@unique([partnerId, suburbId])
+}
+
+model Property {
+  id             String       @id @default(cuid())
+  suburbId       String
+  suburb         Suburb       @relation(fields: [suburbId], references: [id])
+  streetAddress  String
+  unitNumber     String?
+  propertyType   PropertyType
+  bedrooms       Int?
+  bathrooms      Int?
+  carSpaces      Int?
+  landSizeSqm    Float?
+  estimatedValue Decimal?     @db.Decimal(12, 2)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  leads        Lead[]
+  transactions Transaction[]
+  documents    Document[]
+
+  @@index([suburbId])
+}
+
+// =========================================================================
+// LEADS
+// =========================================================================
+
+model ConsentRecord {
+  id          String   @id @default(cuid())
+  textVersion String
+  consentType String // e.g. "GENERAL_CONTACT", "FINANCIAL_DISCLOSURE"
+  acceptedAt  DateTime @default(now())
+  ipAddress   String
+  lead        Lead?
+}
+
+model Lead {
+  id     String     @id @default(cuid())
+  type   LeadType
+  status LeadStatus @default(NEW)
+
+  consumerId String
+  consumer   Consumer @relation(fields: [consumerId], references: [id])
+
+  propertyId String? // set for SELL/INSPECTION/CONVEYANCING/PROPERTY_MANAGEMENT; usually null for BUY
+  property   Property? @relation(fields: [propertyId], references: [id])
+
+  // Type-specific fields (estimated value, timeframe, budget, income, inspection type, etc.)
+  // that don't merit their own indexed column live here. See docs/DATABASE.md §Lead for the
+  // documented payload shape per LeadType.
+  payload Json
+
+  sourceLeadId String? // set when created via cross-sell (e.g. a BUY lead spawning a FINANCE lead)
+  sourceLead   Lead?   @relation("LeadCrossSell", fields: [sourceLeadId], references: [id])
+  crossSoldTo  Lead[]  @relation("LeadCrossSell")
+
+  consentRecordId String?        @unique
+  consentRecord   ConsentRecord? @relation(fields: [consentRecordId], references: [id])
+
+  suburbPreferences LeadSuburbPreference[] // BUY leads: multiple preferred suburbs
+  assignments       LeadAssignment[]
+  statusHistory     LeadStatusHistory[]
+  appointments      Appointment[]
+  transactions      Transaction[]
+  notes             Note[]
+  documents         Document[]
+  notifications     Notification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([type, status])
+  @@index([status, createdAt])
+}
+
+model LeadSuburbPreference {
+  id       String @id @default(cuid())
+  leadId   String
+  lead     Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  suburbId String
+  suburb   Suburb @relation(fields: [suburbId], references: [id])
+
+  @@unique([leadId, suburbId])
+}
+
+// =========================================================================
+// LEAD ASSIGNMENT & STATUS HISTORY
+// =========================================================================
+
+model LeadAssignment {
+  id          String           @id @default(cuid())
+  leadId      String
+  lead        Lead             @relation(fields: [leadId], references: [id])
+  partnerId   String
+  partner     Partner          @relation(fields: [partnerId], references: [id])
+  status      AssignmentStatus @default(ASSIGNED)
+  slaDeadline DateTime
+  assignedAt  DateTime         @default(now())
+  respondedAt DateTime?
+  assignedBy  String? // "SYSTEM" or an admin User.id — audit of manual overrides
+
+  appointments Appointment[]
+
+  @@index([partnerId, status])
+  @@index([status, slaDeadline]) // SLA-timeout sweep query
+}
+
+model LeadStatusHistory {
+  id         String      @id @default(cuid())
+  leadId     String
+  lead       Lead        @relation(fields: [leadId], references: [id])
+  fromStatus LeadStatus?
+  toStatus   LeadStatus
+  actorType  ActorType
+  actorId    String?
+  note       String?
+  createdAt  DateTime    @default(now())
+
+  @@index([leadId, createdAt])
+}
+
+// =========================================================================
+// APPOINTMENTS
+// =========================================================================
+
+model Appointment {
+  id               String            @id @default(cuid())
+  leadId           String
+  lead             Lead              @relation(fields: [leadId], references: [id])
+  partnerId        String
+  partner          Partner           @relation(fields: [partnerId], references: [id])
+  leadAssignmentId String?
+  leadAssignment   LeadAssignment?   @relation(fields: [leadAssignmentId], references: [id])
+  type             AppointmentType
+  status           AppointmentStatus @default(SCHEDULED)
+  scheduledAt      DateTime
+  durationMinutes  Int               @default(30)
+  location         String?
+  notes            String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@index([partnerId, scheduledAt])
+}
+
+// =========================================================================
+// TRANSACTIONS, REFERRAL AGREEMENTS, INVOICES, PAYMENTS
+// =========================================================================
+
+model ReferralAgreement {
+  id             String    @id @default(cuid())
+  partnerId      String
+  partner        Partner   @relation(fields: [partnerId], references: [id])
+  leadType       LeadType
+  feeType        FeeType
+  flatAmount     Decimal?  @db.Decimal(12, 2)
+  percentageRate Decimal?  @db.Decimal(6, 4) // e.g. 0.2000 = 20% of professional's commission/fee
+  minFee         Decimal?  @db.Decimal(12, 2)
+  maxFee         Decimal?  @db.Decimal(12, 2)
+  effectiveFrom  DateTime  @default(now())
+  effectiveTo    DateTime?
+  active         Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+
+  transactions Transaction[]
+
+  @@index([partnerId, leadType, active])
+}
+
+model Transaction {
+  id                  String             @id @default(cuid())
+  leadId              String
+  lead                Lead               @relation(fields: [leadId], references: [id])
+  propertyId          String?
+  property            Property?          @relation(fields: [propertyId], references: [id])
+  partnerId           String
+  partner             Partner            @relation(fields: [partnerId], references: [id])
+  referralAgreementId String?
+  referralAgreement   ReferralAgreement? @relation(fields: [referralAgreementId], references: [id])
+
+  type             TransactionType
+  status           TransactionStatus @default(PENDING)
+  contractDate     DateTime?
+  settlementDate   DateTime?
+  transactionValue Decimal?          @db.Decimal(12, 2) // sale price / loan amount, per type
+  referralFeeOwed  Decimal?          @db.Decimal(12, 2) // computed from ReferralAgreement at outcome time
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  invoiceLineItems InvoiceLineItem[]
+  notes            Note[]
+  documents        Document[]
+
+  @@index([partnerId, status])
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  partnerId     String
+  partner       Partner       @relation(fields: [partnerId], references: [id])
+  invoiceNumber String        @unique
+  status        InvoiceStatus @default(DRAFT)
+  issueDate     DateTime      @default(now())
+  dueDate       DateTime
+  subtotal      Decimal       @db.Decimal(12, 2)
+  tax           Decimal       @db.Decimal(12, 2) // GST
+  total         Decimal       @db.Decimal(12, 2)
+  currency      String        @default("AUD")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  lineItems InvoiceLineItem[]
+  payments  Payment[]
+
+  @@index([partnerId, status])
+}
+
+model InvoiceLineItem {
+  id            String       @id @default(cuid())
+  invoiceId     String
+  invoice       Invoice      @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  transactionId String?
+  transaction   Transaction? @relation(fields: [transactionId], references: [id])
+  description   String
+  amount        Decimal      @db.Decimal(12, 2)
+  createdAt     DateTime     @default(now())
+}
+
+model Payment {
+  id        String        @id @default(cuid())
+  invoiceId String
+  invoice   Invoice       @relation(fields: [invoiceId], references: [id])
+  partnerId String
+  partner   Partner       @relation(fields: [partnerId], references: [id])
+  amount    Decimal       @db.Decimal(12, 2)
+  method    PaymentMethod
+  status    PaymentStatus @default(PENDING)
+  paidAt    DateTime?
+  reference String? // external payment-processor reference
+  createdAt DateTime      @default(now())
+
+  @@index([partnerId, status])
+}
+
+// =========================================================================
+// NOTES & DOCUMENTS (attachable to Lead, Partner, or Transaction)
+// =========================================================================
+
+model Note {
+  id            String       @id @default(cuid())
+  authorType    ActorType
+  authorId      String?
+  author        User?        @relation(fields: [authorId], references: [id])
+  body          String
+  leadId        String?
+  lead          Lead?        @relation(fields: [leadId], references: [id])
+  partnerId     String?
+  partner       Partner?     @relation(fields: [partnerId], references: [id])
+  transactionId String?
+  transaction   Transaction? @relation(fields: [transactionId], references: [id])
+  createdAt     DateTime     @default(now())
+
+  @@index([leadId])
+  @@index([partnerId])
+}
+
+model Document {
+  id            String           @id @default(cuid())
+  uploaderType  ActorType
+  uploaderId    String?
+  uploader      User?            @relation(fields: [uploaderId], references: [id])
+  fileName      String
+  fileUrl       String // blob storage key/URL
+  mimeType      String
+  sizeBytes     Int
+  category      DocumentCategory
+  leadId        String?
+  lead          Lead?            @relation(fields: [leadId], references: [id])
+  partnerId     String?
+  partner       Partner?         @relation(fields: [partnerId], references: [id])
+  transactionId String?
+  transaction   Transaction?     @relation(fields: [transactionId], references: [id])
+  propertyId    String?
+  property      Property?        @relation(fields: [propertyId], references: [id])
+  createdAt     DateTime         @default(now())
+
+  @@index([leadId])
+  @@index([partnerId])
+}
+
+// =========================================================================
+// NOTIFICATIONS
+// =========================================================================
+
+model Notification {
+  id                String              @id @default(cuid())
+  recipientType     RecipientType
+  consumerId        String?
+  consumer          Consumer?           @relation(fields: [consumerId], references: [id])
+  partnerId         String?
+  partner           Partner?            @relation(fields: [partnerId], references: [id])
+  userId            String? // ADMIN recipient
+  user              User?               @relation(fields: [userId], references: [id])
+  leadId            String?
+  lead              Lead?               @relation(fields: [leadId], references: [id])
+  channel           NotificationChannel
+  template          String
+  status            NotificationStatus  @default(QUEUED)
+  providerMessageId String?
+  sentAt            DateTime?
+  createdAt         DateTime            @default(now())
+
+  @@index([consumerId])
+  @@index([partnerId])
+  @@index([status])
+}
+
+// =========================================================================
+// ANALYTICS (precomputed rollups — raw event capture lives in PostHog)
+// =========================================================================
+
+model AnalyticsDailyMetric {
+  id         String    @id @default(cuid())
+  metricDate DateTime  @db.Date
+  metricName String // e.g. "LEADS_CREATED", "CONVERSION_RATE", "AVG_RESPONSE_TIME_MINS", "REFERRAL_REVENUE"
+  leadType   LeadType?
+  suburbId   String?
+  suburb     Suburb?   @relation(fields: [suburbId], references: [id])
+  partnerId  String?
+  value      Decimal   @db.Decimal(14, 4)
+  createdAt  DateTime  @default(now())
+
+  @@unique([metricDate, metricName, leadType, suburbId, partnerId])
+  @@index([metricDate, metricName])
+}
+
+// =========================================================================
+// ADMIN AUDIT (supporting table, not in the requested entity list, but
+// required to satisfy the security posture committed to in docs/ARCHITECTURE.md §7)
+// =========================================================================
+
+model AdminActionLog {
+  id         String   @id @default(cuid())
+  adminId    String
+  action     String // REASSIGN_LEAD, VERIFY_LICENSE, VERIFY_FEE, SUSPEND_PARTNER, ...
+  targetType String
+  targetId   String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([targetType, targetId])
+}

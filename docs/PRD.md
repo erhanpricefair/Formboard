@@ -5,6 +5,8 @@
 **Market:** Melbourne, Victoria (launch) → national (scale)
 **Last updated:** 2026-07-09
 
+**Terminology note:** this document calls the core object an "Enquiry." `docs/ARCHITECTURE.md` and `docs/DATABASE.md` (written later) call the same concept a "Lead" (`Lead` model in `prisma/schema.prisma`), matching the entity name used when the database schema was specified. Treat "Enquiry" here and "Lead" in the technical docs as the same thing — not left inconsistent, this file just predates the naming decision.
+
 ---
 
 ## 1. Product Overview
