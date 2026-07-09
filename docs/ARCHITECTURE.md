@@ -68,18 +68,20 @@ propertyconnect/
 │   │   │   │   ├── conveyancing/page.tsx
 │   │   │   │   └── property-management/page.tsx
 │   │   │   └── confirmation/[leadId]/page.tsx
-│   │   ├── (partner)/
+│   │   ├── (partner)/                    # layout.tsx here auth-gates everything under partner/*
 │   │   │   ├── layout.tsx                # auth-gated layout, role=PARTNER
-│   │   │   ├── dashboard/page.tsx
-│   │   │   ├── leads/[assignmentId]/page.tsx
-│   │   │   └── settings/page.tsx
-│   │   ├── (admin)/
+│   │   │   └── partner/
+│   │   │       ├── dashboard/page.tsx
+│   │   │       ├── leads/[assignmentId]/page.tsx
+│   │   │       └── settings/page.tsx
+│   │   ├── (admin)/                      # layout.tsx here auth-gates everything under admin/*
 │   │   │   ├── layout.tsx                # auth-gated layout, role=ADMIN|SUPPORT_ADMIN
-│   │   │   ├── dashboard/page.tsx
-│   │   │   ├── leads/[id]/page.tsx
-│   │   │   ├── partners/page.tsx
-│   │   │   ├── partners/[id]/page.tsx
-│   │   │   └── fees/page.tsx
+│   │   │   └── admin/
+│   │   │       ├── dashboard/page.tsx
+│   │   │       ├── leads/[id]/page.tsx
+│   │   │       ├── partners/page.tsx
+│   │   │       ├── partners/[id]/page.tsx
+│   │   │       └── fees/page.tsx
 │   │   ├── api/
 │   │   │   ├── auth/[...nextauth]/route.ts
 │   │   │   ├── leads/
@@ -144,7 +146,7 @@ propertyconnect/
 ```
 
 **Rationale for a few choices:**
-- **Route groups `(consumer)/(partner)/(admin)`** keep three very different auth/layout/traffic profiles cleanly separated without leaking into the URL path.
+- **Route groups `(consumer)/(partner)/(admin)`** keep three very different auth/layout/traffic profiles cleanly separated in the filesystem. `(consumer)` doesn't add a URL segment — `sell`, `buy`, etc. stay at the root, since those are the public-facing paths. `(partner)` and `(admin)` each nest an actual `partner/` and `admin/` path segment inside the group (not just the parenthesized group name) — route groups themselves are stripped from the URL, so without a real segment inside, both groups' `dashboard/page.tsx` would collide on the same `/dashboard` route. This was caught by an actual `next build` while scaffolding, not by inspection — worth calling out since it's an easy mistake to make from the sketch alone.
 - **`lib/services/` is framework-agnostic** — API routes and Inngest job functions both call into the same service layer, so business logic (e.g. "what does it mean to accept a lead assignment") is defined once, not duplicated between the HTTP handler and the background job.
 - **`lib/validations/` shared client+server** — the same zod schema drives `react-hook-form` client validation and server-side validation in the route handler, so the two can never drift.
 - A single `api/jobs/inngest/route.ts` endpoint is standard for Inngest — it serves the function registry; individual job logic lives in `lib/jobs/*`, not inline in the route.
