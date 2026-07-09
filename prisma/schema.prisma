@@ -519,8 +519,8 @@ model Appointment {
 
 model ReferralAgreement {
   id             String    @id @default(cuid())
-  partnerId      String
-  partner        Partner   @relation(fields: [partnerId], references: [id])
+  partnerId      String? // null = platform default for this leadType; set = partner-specific negotiated override
+  partner        Partner?  @relation(fields: [partnerId], references: [id])
   leadType       LeadType
   feeType        FeeType
   flatAmount     Decimal?  @db.Decimal(12, 2)
@@ -535,6 +535,7 @@ model ReferralAgreement {
   transactions Transaction[]
 
   @@index([partnerId, leadType, active])
+  @@index([leadType, active]) // supports the "partnerId IS NULL" default-row lookup
 }
 
 model Transaction {

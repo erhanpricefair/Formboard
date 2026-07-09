@@ -127,6 +127,8 @@ This is the revenue-critical cluster — the part of the schema that turns "a le
 
 **`ReferralAgreement`** is the *contract*: what fee structure applies to a given partner for a given lead type (`FLAT`, `PERCENTAGE`, or `TIERED`, with `minFee`/`maxFee` guardrails), and for what date range (`effectiveFrom`/`effectiveTo`). This exists as its own table — separate from the transaction that eventually references it — because fee terms can be negotiated per partner and can change over time; a `Transaction` needs to record *which* agreement (and therefore which terms) applied at the time, not just today's default rate.
 
+`partnerId` is **nullable**: `partnerId = null` represents the platform's default fee for that `leadType`, seeded by `prisma/seed.ts`; a non-null `partnerId` represents a partner-specific negotiated override. The fee-service resolves partner-specific first, falling back to the default row — see `docs/FEE_SCHEDULE.md` for the actual default numbers and the full resolution algorithm.
+
 **`Transaction`** is the *outcome record* — a specific sale, purchase, loan, completed inspection, completed conveyancing job, or signed management agreement, linked to the `Lead` that produced it, the `Property` and `Partner` involved, and the `ReferralAgreement` whose terms apply. `referralFeeOwed` is the computed amount once the agreement's terms are applied to `transactionValue` — computed and stored (not derived on every read) because it needs to survive the agreement itself later changing.
 
 `status` (`PENDING → UNCONDITIONAL → SETTLED`, or `FELL_THROUGH`) exists because — as flagged in the earlier CTO-level risk analysis — a transaction that looked done can still collapse (finance declined, contract falls over) after a fee was already anticipated; `FELL_THROUGH` is a first-class state, not a deletion.
@@ -179,7 +181,7 @@ Lead 1───* LeadStatusHistory
 Lead 1───* Appointment ───* Partner
 Lead 1───* Transaction ───* Partner, ─── Property, ─── ReferralAgreement
 
-Partner 1───* ReferralAgreement
+Partner 0───* ReferralAgreement       (partner-specific overrides; partnerId IS NULL rows are platform defaults)
 ReferralAgreement 1───* Transaction
 
 Partner 1───* Invoice 1───* InvoiceLineItem ─── Transaction
@@ -198,5 +200,5 @@ Suburb, LeadType, Partner(soft ref) ── AnalyticsDailyMetric (rollup, no lead
 
 - **Property Manager and dedicated Buyers Agent extension tables** are not yet modeled (see §4) — needed before `PROPERTY_MANAGEMENT` leads or distinct buyers-agent matching go live for real, per the earlier PRD's noted future scope.
 - **`Note`/`Document`'s "exactly one parent FK" invariant** is enforced at the application layer only; add a Postgres `CHECK` constraint via a raw migration if this proves error-prone in practice.
-- **Referral fee calculation logic** (turning a `ReferralAgreement`'s `feeType`/`percentageRate`/`flatAmount` into `Transaction.referralFeeOwed`) is a service-layer concern (`lib/services/fee-service.ts` per `docs/ARCHITECTURE.md`'s folder structure) — not modeled further here since it's business logic, not schema.
+- **Referral fee calculation logic** (turning a `ReferralAgreement`'s `feeType`/`percentageRate`/`flatAmount` into `Transaction.referralFeeOwed`) — **resolved**, see `docs/FEE_SCHEDULE.md` for the default fee schedule and the resolution algorithm `lib/services/fee-service.ts` implements.
 - **Prisma 7 migration** — revisit the version pin in §0 once Auth.js's adapter and the broader ecosystem have caught up to the new `prisma.config.ts`/driver-adapter model.
