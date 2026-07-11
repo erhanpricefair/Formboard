@@ -164,17 +164,58 @@ and consider a third-party phone-validity check before SMS send to control cost.
 
 ---
 
-## 5. What an admin console still needs to do (not built in this scaffold)
+## 5. Admin console
 
-This scaffold implements the consumer, professional-dashboard, and database layers. It does **not** yet include an
-admin console. Before launch, an admin surface needs to:
-- Verify new professional profiles (ABN lookup, license check) before flipping `verification_status` to `verified`
-  — currently that column can only be moved by direct service-role/database action.
-- Reconcile `fee_transactions` (`pending` → `invoiced` → `paid`), including verifying self-reported outcome values
-  before invoicing them.
-- Handle disputes (`fee_transactions.status = 'disputed'`) — e.g. a professional claims a lead was never actually
-  contactable, or a consumer complains about conduct.
-- Manually adjust/reassign a `lead_tracking` row if needed (e.g. a professional's number bounces).
+Migration `0002_admin.sql` and `src/app/admin/` implement the admin surface referenced throughout this document.
 
-All of the schema needed for this (RLS denies public access, but the service-role client has full access) is
-already in place; it's the UI and the verification workflow that remain.
+**Admin identity is not self-serve.** Access is membership in the `admins` table (`auth_user_id` → `auth.users.id`),
+and there is no UI, API route, or RLS policy anywhere in the app that can insert a row into `admins` — it's
+provisioned out-of-band by whoever holds direct database access (see README "Provisioning an admin"). Every admin
+API route calls `requireAdmin()` (`src/lib/services/admin-service.ts`), which re-derives the caller's identity from
+their own session (never trusts a client-supplied flag) and checks `admins` membership before doing anything
+privileged.
+
+**Professional verification** (`/admin/professionals`, `PATCH /api/admin/professionals/[id]/verification`) is the
+only path that can move `professionals.verification_status` to `verified` — and therefore into the public
+directory (`public_professional_directory` only shows `verified` + `active` rows). This closes a gap that existed
+in the original `0001` RLS: `professionals_update_own` let a professional update *any* column on their own row,
+including `verification_status` and `active`, i.e. a professional could have self-verified. Migration `0002`'s
+`protect_verification_fields` trigger blocks that — verification/active fields can only change under
+`auth.role() = 'service_role'` — independent of which route or client attempts the write, the same pattern already
+used for fee fields (§3). Verified with a real Postgres instance: an `authenticated` session editing its own
+tagline succeeds; the same session attempting to set `verification_status = 'verified'` on itself is rejected.
+
+**Fee reconciliation** (`/admin/fees`, `PATCH /api/admin/fees/[id]/status`) moves a `fee_transactions` row through
+`pending → invoiced → paid` (or `disputed` at any point, with a required reason). This is what turns a
+professional's self-reported "Completed" outcome value (§3 "Provisional vs. verified outcomes") into an actual
+invoiced, collectible amount — nothing is paid on a professional's say-so alone.
+
+**Leads overview** (`/admin/leads`) is a read-only, platform-wide view across `lead_tracking` for the "who has this
+lead and what happened to it" dispute-resolution requirement. It is deliberately read-only in this scaffold —
+building reassignment (a professional's number bounces, a lead needs to move to someone else) requires deciding
+commercial semantics this brief didn't specify (does the original lead fee get refunded? charged again to the new
+professional? split?), so it's left as a flagged decision rather than guessed at.
+
+**Admin read access without admin write access.** Migration `0002` adds RLS policies letting a session with an
+`admins` row read `professionals` (any status), `leads`, `lead_tracking`, `lead_status_audit`, `fee_transactions`,
+`consent_log`, and `unsubscribes` in full — but reading is all these policies grant. Every actual mutation an admin
+performs still goes through the service-role client after `requireAdmin()`, so the trigger-enforced protections in
+§2–3 apply to admin actions exactly the same as anyone else's; "admin" is a read-visibility and API-authorization
+concept, not a bypass of the write-protection triggers.
+
+---
+
+## 6. What's still not built
+
+- **Lead reassignment.** `/admin/leads` is read-only (see §5) — reassigning a lead to a different professional
+  needs a commercial decision (refund/re-charge/split the lead fee) that this brief didn't specify.
+- **Production-grade rate limiting** on the public `POST /api/leads` route. Currently just a honeypot field; add an
+  IP/phone-based limiter (e.g. Upstash Ratelimit) before launch to stop SMS-bombing via the verification send.
+- **Automated tests.** Given the compliance-sensitive surface, prioritize: `findBannedClaim` (banned-claims regex
+  parity between Zod and the DB trigger), the `z.literal(true)` consent checks, and the three protective triggers
+  (`protect_fee_fields`, `protect_verification_fields`, `stamp_and_audit_lead_tracking`) via a local Supabase
+  instance or pgTAP — these were verified manually against a local Postgres instance while building this scaffold
+  (see README "Verifying this scaffold") but that verification isn't repeatable/CI-enforced yet.
+- **A live Supabase project.** Everything here has been verified against a locally-stubbed Postgres instance, not
+  an actual hosted Supabase project or through the JS client's session-scoped requests — see README for exactly
+  what that gap covers.

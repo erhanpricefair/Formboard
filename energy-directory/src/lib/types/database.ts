@@ -141,11 +141,18 @@ export type Unsubscribe = {
   requested_at: string;
 };
 
+export type Admin = {
+  id: string;
+  auth_user_id: string;
+  created_at: string;
+};
+
 type NoRelationships = { Relationships: [] };
 
-// Lets `.select("*, leads(...)")` on lead_tracking resolve — matches the
-// `lead_tracking.lead_id -> leads.id` foreign key from migration 0001
-// (default Postgres constraint name: `<table>_<column>_fkey`).
+// Lets `.select("*, leads(...), professionals(...)")` on lead_tracking
+// resolve — matches the `lead_tracking.lead_id -> leads.id` and
+// `lead_tracking.professional_id -> professionals.id` foreign keys from
+// migration 0001 (default Postgres constraint name: `<table>_<column>_fkey`).
 type LeadTrackingRelationships = {
   Relationships: [
     {
@@ -153,6 +160,34 @@ type LeadTrackingRelationships = {
       columns: ["lead_id"];
       isOneToOne: false;
       referencedRelation: "leads";
+      referencedColumns: ["id"];
+    },
+    {
+      foreignKeyName: "lead_tracking_professional_id_fkey";
+      columns: ["professional_id"];
+      isOneToOne: false;
+      referencedRelation: "professionals";
+      referencedColumns: ["id"];
+    },
+  ];
+};
+
+// Lets admin fee-ledger queries embed `lead_tracking(...)` and
+// `professionals(...)` off fee_transactions.
+type FeeTransactionRelationships = {
+  Relationships: [
+    {
+      foreignKeyName: "fee_transactions_lead_tracking_id_fkey";
+      columns: ["lead_tracking_id"];
+      isOneToOne: false;
+      referencedRelation: "lead_tracking";
+      referencedColumns: ["id"];
+    },
+    {
+      foreignKeyName: "fee_transactions_professional_id_fkey";
+      columns: ["professional_id"];
+      isOneToOne: false;
+      referencedRelation: "professionals";
       referencedColumns: ["id"];
     },
   ];
@@ -169,9 +204,14 @@ export type Database = {
         Update: Partial<LeadTracking>;
       } & LeadTrackingRelationships;
       lead_status_audit: { Row: LeadStatusAudit; Insert: Partial<LeadStatusAudit>; Update: Partial<LeadStatusAudit> } & NoRelationships;
-      fee_transactions: { Row: FeeTransaction; Insert: Partial<FeeTransaction>; Update: Partial<FeeTransaction> } & NoRelationships;
+      fee_transactions: {
+        Row: FeeTransaction;
+        Insert: Partial<FeeTransaction>;
+        Update: Partial<FeeTransaction>;
+      } & FeeTransactionRelationships;
       consent_log: { Row: ConsentLogEntry; Insert: Partial<ConsentLogEntry>; Update: Partial<ConsentLogEntry> } & NoRelationships;
       unsubscribes: { Row: Unsubscribe; Insert: Partial<Unsubscribe>; Update: Partial<Unsubscribe> } & NoRelationships;
+      admins: { Row: Admin; Insert: Partial<Admin>; Update: Partial<Admin> } & NoRelationships;
     };
     Views: {
       public_professional_directory: {
