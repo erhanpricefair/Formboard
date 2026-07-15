@@ -1,0 +1,12 @@
+{
+    "actorSpecification": 1,
+    "name": "datagov-au-scraper",
+    "title": "data.gov.au (CKAN) Dataset Scraper",
+    "description": "Searches data.gov.au (or any CKAN portal) for datasets and extracts their metadata and — optionally — the underlying data rows. Free, open, no credentials.",
+    "version": "0.1",
+    "buildTag": "latest",
+    "input": "./input_schema.json",
+    "dockerfile": "../Dockerfile",
+    "readme": "../README.md",
+    "meta": { "templateId": "js-start" }
+}

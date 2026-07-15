@@ -1,0 +1,56 @@
+{
+    "title": "ABS Data API Scraper input",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "dataflowId": {
+            "title": "Dataflow ID",
+            "type": "string",
+            "description": "ABS dataflow identifier, e.g. \"ABS_REGIONAL_ASGS2016\" or a census table like \"C21_G01_LGA\". Find IDs in the ABS Data Explorer (explore.data.abs.gov.au) or at https://api.data.abs.gov.au/dataflow.",
+            "editor": "textfield",
+            "prefill": "ABS_REGIONAL_ASGS2016"
+        },
+        "dataKey": {
+            "title": "Data key",
+            "type": "string",
+            "description": "SDMX data key selecting dimension values, dot-separated and positional (e.g. \"1.AUS.A\"). Use \"all\" for the whole dataflow (can be large). Build keys in the ABS Data Explorer.",
+            "editor": "textfield",
+            "default": "all"
+        },
+        "startPeriod": {
+            "title": "Start period",
+            "type": "string",
+            "description": "Earliest period, e.g. \"2016\" or \"2020-Q1\". Leave blank for all.",
+            "editor": "textfield"
+        },
+        "endPeriod": {
+            "title": "End period",
+            "type": "string",
+            "description": "Latest period. Leave blank for all.",
+            "editor": "textfield"
+        },
+        "detail": {
+            "title": "Detail",
+            "type": "string",
+            "description": "SDMX detail level.",
+            "editor": "select",
+            "default": "full",
+            "enum": ["full", "dataonly", "serieskeysonly", "nodata"],
+            "enumTitles": ["Full (values + attributes)", "Data only", "Series keys only", "No data"]
+        },
+        "agencyId": {
+            "title": "Agency ID",
+            "type": "string",
+            "description": "SDMX agency. Almost always ABS.",
+            "editor": "textfield",
+            "default": "ABS"
+        },
+        "version": {
+            "title": "Dataflow version",
+            "type": "string",
+            "description": "Optional explicit version (e.g. \"1.0.0\"). Leave blank for the latest.",
+            "editor": "textfield"
+        }
+    },
+    "required": ["dataflowId"]
+}

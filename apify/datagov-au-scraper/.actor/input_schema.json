@@ -1,0 +1,57 @@
+{
+    "title": "data.gov.au Scraper input",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "searchQueries": {
+            "title": "Search queries",
+            "type": "array",
+            "description": "Free-text CKAN searches, e.g. \"property sales\", \"land use planning\". One per item.",
+            "editor": "stringList",
+            "prefill": ["property sales"]
+        },
+        "datasetIds": {
+            "title": "Dataset IDs or slugs",
+            "type": "array",
+            "description": "Specific dataset ids/slugs to fetch directly (package_show), bypassing search.",
+            "editor": "stringList"
+        },
+        "baseUrl": {
+            "title": "CKAN portal base URL",
+            "type": "string",
+            "description": "CKAN API root. Default is data.gov.au. Point it at another CKAN portal (e.g. https://discover.data.vic.gov.au) to reuse this actor elsewhere.",
+            "editor": "textfield",
+            "default": "https://data.gov.au/data"
+        },
+        "maxDatasets": {
+            "title": "Max datasets per query",
+            "type": "integer",
+            "description": "Cap on datasets returned per search query.",
+            "default": 25,
+            "minimum": 1,
+            "maximum": 1000
+        },
+        "fetchRecords": {
+            "title": "Fetch data rows",
+            "type": "boolean",
+            "description": "Also pull the actual rows from each dataset's resources (DataStore API for structured resources; direct CSV/JSON download otherwise). XLSX/PDF resources are left as URLs.",
+            "default": false
+        },
+        "maxRecordsPerResource": {
+            "title": "Max rows per resource",
+            "type": "integer",
+            "description": "Row cap per resource when Fetch data rows is on.",
+            "default": 1000,
+            "minimum": 1,
+            "maximum": 100000
+        },
+        "resourceFormats": {
+            "title": "Resource format filter",
+            "type": "array",
+            "description": "Only keep resources of these formats (e.g. CSV, JSON, GEOJSON). Empty = all formats.",
+            "editor": "stringList",
+            "prefill": ["CSV"]
+        }
+    },
+    "required": []
+}
