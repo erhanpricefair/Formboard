@@ -14,10 +14,10 @@ at. **Free, open, no credentials, no paywall.**
 
 ## What it does
 
-1. **Direct CSV URLs** (`csvUrls`) — downloads and parses any CSV you paste
-   (e.g. a VG statistics spreadsheet saved as CSV). Most reliable path.
+1. **Direct file URLs** (`fileUrls`) — downloads and parses any CSV or
+   XLSX/XLS you paste (e.g. a VG statistics spreadsheet). Most reliable path.
 2. **CKAN search** — searches `discover.data.vic.gov.au` for the VG sales-stats
-   datasets and pulls their CSV/JSON/DataStore resources.
+   datasets and pulls their CSV/JSON/Excel/DataStore resources.
 3. **Suburb filter** — optionally keep only rows mentioning given suburbs.
 4. Emits one dataset item per row, tagged with its source dataset/resource and
    licence.
@@ -27,7 +27,7 @@ at. **Free, open, no credentials, no paywall.**
 | Field | Notes |
 |---|---|
 | `searchQueries` | CKAN searches; defaults target VG sales statistics. |
-| `csvUrls` | Direct CSV links — best when a dataset only ships XLSX. |
+| `fileUrls` | Direct CSV/Excel links to a specific published spreadsheet. |
 | `suburbFilter` | Keep only rows mentioning these suburbs. Empty = all. |
 | `portalBaseUrl` | Victoria's CKAN portal (default set). |
 | `maxDatasets` / `maxRecordsPerResource` | Caps. |
@@ -46,18 +46,20 @@ cd apify/vic-property-sales && npm install
 apify run --input '{"searchQueries":["property sales statistics"],"suburbFilter":["Richmond"]}'
 ```
 
-## A note on XLSX
+## XLSX
 
-Much of the VG statistics is published as **XLSX**, which this actor leaves as a
-URL rather than parsing (no spreadsheet dependency). Two easy options: open the
-file and *Save As CSV*, then pass the URL via `csvUrls`; or ask and I'll add
-`xlsx` parsing to the actor.
+Much of the VG statistics is published as **XLSX**. This actor parses XLSX/XLS
+resources automatically (via SheetJS/`xlsx`), including sheets that carry
+title/preamble rows above the real table — it detects the header row
+heuristically. Pass a direct spreadsheet link via `fileUrls`, or let CKAN search
+find it.
 
 ## Other states
 
-The same pattern works for other states' open-data portals — most run CKAN
-(NSW: `data.nsw.gov.au`, QLD: `data.qld.gov.au`, SA: `data.sa.gov.au`). Point
-`portalBaseUrl` at theirs, or use the generic `datagov-au-scraper` actor.
+Sibling actors cover the other states, same code repointed at their portals:
+`nsw-property-sales`, `qld-property-sales`, `sa-property-sales`. For anywhere
+else, point this actor's `portalBaseUrl` at that portal's CKAN root, or use the
+generic `datagov-au-scraper` actor.
 
 ## Licence
 

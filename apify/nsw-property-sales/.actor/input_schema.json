@@ -1,14 +1,18 @@
 {
-    "title": "Victorian Property Sales Scraper input",
+    "title": "New South Wales Property Data Scraper input",
     "type": "object",
     "schemaVersion": 1,
     "properties": {
         "searchQueries": {
             "title": "CKAN search queries",
             "type": "array",
-            "description": "What to search for on data.vic.gov.au. Defaults target the Valuer-General property-sales statistics.",
+            "description": "What to search for on data.nsw.gov.au. Generic property queries by default — review results to see what New South Wales publishes as open data.",
             "editor": "stringList",
-            "prefill": ["property sales statistics", "median house price"]
+            "prefill": [
+                "property sales",
+                "median house price",
+                "land value"
+            ]
         },
         "fileUrls": {
             "title": "Direct file URLs (CSV or Excel)",
@@ -21,14 +25,16 @@
             "type": "array",
             "description": "Keep only rows mentioning these suburbs/localities (case-insensitive substring match across all columns). Empty = keep everything.",
             "editor": "stringList",
-            "prefill": ["Richmond"]
+            "prefill": [
+                "Parramatta"
+            ]
         },
         "portalBaseUrl": {
             "title": "CKAN portal base URL",
             "type": "string",
-            "description": "Victoria's open-data CKAN portal.",
+            "description": "New South Wales's open-data CKAN portal.",
             "editor": "textfield",
-            "default": "https://discover.data.vic.gov.au"
+            "default": "https://data.nsw.gov.au/data"
         },
         "maxDatasets": {
             "title": "Max datasets per query",

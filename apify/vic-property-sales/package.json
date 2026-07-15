@@ -4,7 +4,7 @@
     "type": "module",
     "description": "Apify actor that extracts free Victorian Valuer-General property sales statistics from data.vic.gov.au (CKAN) and direct CSV exports.",
     "engines": { "node": ">=20" },
-    "dependencies": { "apify": "^3.2.6" },
+    "dependencies": { "apify": "^3.2.6", "xlsx": "^0.18.5" },
     "scripts": { "start": "node src/main.js" },
     "license": "UNLICENSED",
     "private": true

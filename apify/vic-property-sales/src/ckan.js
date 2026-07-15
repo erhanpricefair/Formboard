@@ -77,6 +77,12 @@ export async function downloadResourceRecords(resource, { maxRecords = 5000, tim
             const arr = Array.isArray(data) ? data : (Array.isArray(data?.records) ? data.records : []);
             return arr.slice(0, maxRecords);
         }
+        if (format === 'xlsx' || format === 'xls' || /\.xlsx?(\?|$)/i.test(resource.url)) {
+            const res = await fetchWithRetry(resource.url, { timeoutMs });
+            if (!res.ok) return [];
+            const { parseXlsxBuffer } = await import('./xlsx.js');
+            return parseXlsxBuffer(Buffer.from(await res.arrayBuffer())).slice(0, maxRecords);
+        }
     } catch (err) {
         log.warning(`Could not download resource ${resource.id ?? resource.url}: ${err.message}`);
     }

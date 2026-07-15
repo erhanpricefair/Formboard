@@ -6,10 +6,10 @@ import { parseXlsxBuffer } from './xlsx.js';
 await Actor.init();
 
 const input = {
-    // discover.data.vic.gov.au is Victoria's CKAN open-data portal, where the
-    // Valuer-General's FREE aggregate sales statistics are published.
-    portalBaseUrl: 'https://discover.data.vic.gov.au',
-    searchQueries: ['property sales statistics'],
+    // https://data.nsw.gov.au/data is New South Wales's CKAN open-data portal. What property data is
+    // published as open data varies by state; queries below are generic.
+    portalBaseUrl: 'https://data.nsw.gov.au/data',
+    searchQueries: ['property sales'],
     fileUrls: [],
     maxDatasets: 15,
     maxRecordsPerResource: 50000,
@@ -60,7 +60,7 @@ for (const url of input.fileUrls) {
     }
 }
 
-// 2) Discover published datasets on Victoria's CKAN portal and pull their
+// 2) Discover published datasets on New South Wales's CKAN portal and pull their
 //    CSV/JSON/DataStore resources.
 for (const query of input.searchQueries) {
     log.info(`Searching ${input.portalBaseUrl} for "${query}"...`);
