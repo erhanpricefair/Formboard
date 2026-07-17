@@ -41,14 +41,16 @@
             "type": "integer",
             "default": 15,
             "minimum": 1,
-            "maximum": 200
+            "maximum": 200,
+            "description": "Maximum number of datasets to process per search query."
         },
         "maxRecordsPerResource": {
             "title": "Max rows per resource",
             "type": "integer",
             "default": 50000,
             "minimum": 1,
-            "maximum": 1000000
+            "maximum": 1000000,
+            "description": "Maximum number of rows to extract from each resource (CSV/Excel/DataStore)."
         }
     },
     "required": []
