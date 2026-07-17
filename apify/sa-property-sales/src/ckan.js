@@ -59,26 +59,30 @@ export class CkanClient {
 
 /**
  * Best-effort extraction of rows from a resource that is NOT in the DataStore:
- * download a CSV/JSON resource directly and parse it. Returns [] for formats we
- * don't parse here (XLSX/PDF/etc.) — those are left as a downloadable URL.
+ * download a CSV/JSON/XLSX resource directly and parse it. Returns [] for
+ * formats we don't parse (PDF/DOC/etc.) — those are left as a downloadable URL.
+ *
+ * Third-party government file servers are sometimes slow or unresponsive.
+ * A short timeout with few retries means one bad host fails fast instead of
+ * eating an entire Apify run's wall-clock budget (default 300s per run).
  */
-export async function downloadResourceRecords(resource, { maxRecords = 5000, timeoutMs = 60000 } = {}) {
+export async function downloadResourceRecords(resource, { maxRecords = 5000, timeoutMs = 20000, retries = 2 } = {}) {
     const format = (resource.format ?? '').toLowerCase();
     if (!resource.url) return [];
     try {
         if (format === 'csv' || resource.url.toLowerCase().endsWith('.csv')) {
-            const res = await fetchWithRetry(resource.url, { timeoutMs });
+            const res = await fetchWithRetry(resource.url, { timeoutMs, retries });
             if (!res.ok) return [];
             const rows = parseCsv(await res.text());
             return rows.slice(0, maxRecords);
         }
         if (format === 'json' || resource.url.toLowerCase().endsWith('.json')) {
-            const data = await fetchJson(resource.url, { timeoutMs });
+            const data = await fetchJson(resource.url, { timeoutMs, retries });
             const arr = Array.isArray(data) ? data : (Array.isArray(data?.records) ? data.records : []);
             return arr.slice(0, maxRecords);
         }
         if (format === 'xlsx' || format === 'xls' || /\.xlsx?(\?|$)/i.test(resource.url)) {
-            const res = await fetchWithRetry(resource.url, { timeoutMs });
+            const res = await fetchWithRetry(resource.url, { timeoutMs, retries });
             if (!res.ok) return [];
             const { parseXlsxBuffer } = await import('./xlsx.js');
             return parseXlsxBuffer(Buffer.from(await res.arrayBuffer())).slice(0, maxRecords);

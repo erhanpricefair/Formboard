@@ -62,12 +62,18 @@ for (const url of input.fileUrls) {
 
 // 2) Discover published datasets on South Australia's CKAN portal and pull their
 //    CSV/JSON/DataStore resources.
+//    Different search queries often surface the same dataset — a
+//    resource-id set keeps us from downloading it twice.
+const processedResourceIds = new Set();
 for (const query of input.searchQueries) {
     log.info(`Searching ${input.portalBaseUrl} for "${query}"...`);
     let datasets = 0;
     for await (const pkg of ckan.searchPackages(query, { limit: input.maxDatasets })) {
         datasets++;
         for (const resource of pkg.resources ?? []) {
+            const resourceKey = resource.id ?? resource.url;
+            if (resourceKey && processedResourceIds.has(resourceKey)) continue;
+            if (resourceKey) processedResourceIds.add(resourceKey);
             let rows = [];
             if (resource.datastore_active) {
                 for await (const rec of ckan.datastoreRecords(resource.id, { limit: input.maxRecordsPerResource })) {

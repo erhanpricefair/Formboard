@@ -1,17 +1,29 @@
 import { log } from 'apify';
 
+// Some government hosts reject requests that don't look like a browser
+// (bare Node fetch has no User-Agent by default). A realistic one avoids
+// spurious connection failures against those hosts.
+const DEFAULT_HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (compatible; PropertyConnectBot/1.0; +https://propertyconnect.example)',
+};
+
 /**
  * fetch() with a timeout and bounded exponential-backoff retries. Retries on
  * network errors and 429/5xx; returns the Response otherwise (including 4xx,
  * which the caller inspects). Node 20+ provides global fetch.
+ *
+ * Defaults are tuned for fast-failing on a stuck/slow host: worst case is
+ * ~timeoutMs * (retries + 1) plus backoff, so keep timeoutMs and retries low
+ * for third-party file downloads where one bad host shouldn't stall a whole
+ * run (Apify actor runs have a fixed wall-clock budget).
  */
-export async function fetchWithRetry(url, { timeoutMs = 30000, retries = 4, headers = {} } = {}) {
+export async function fetchWithRetry(url, { timeoutMs = 30000, retries = 2, headers = {} } = {}) {
     let attempt = 0;
     for (;;) {
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), timeoutMs);
         try {
-            const res = await fetch(url, { headers, signal: controller.signal });
+            const res = await fetch(url, { headers: { ...DEFAULT_HEADERS, ...headers }, signal: controller.signal });
             if (res.status === 429 || res.status >= 500) {
                 throw new Error(`HTTP ${res.status}`);
             }
