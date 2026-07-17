@@ -51,6 +51,12 @@
             "description": "Only keep resources of these formats (e.g. CSV, JSON, GEOJSON). Empty = all formats.",
             "editor": "stringList",
             "prefill": ["CSV"]
+        },
+        "suburbFilter": {
+            "title": "Suburb filter",
+            "type": "array",
+            "description": "Only applies when Fetch data rows is on. Keeps a data row only if some field mentions one of these suburbs/localities (case-insensitive substring match across all columns). Does not affect which datasets are found — only which extracted rows are kept. Empty = keep all rows.",
+            "editor": "stringList"
         }
     },
     "required": []

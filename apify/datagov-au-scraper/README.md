@@ -15,10 +15,11 @@ them via the `baseUrl` input.
    licence, tags, and its resources (files/APIs) with their formats and URLs.
 3. If `fetchRecords` is on, it also pulls the actual rows:
    - **DataStore-backed resources** → queried via the `datastore_search` API.
-   - **Plain CSV/JSON resources** → downloaded and parsed directly.
-   - XLSX/PDF/other → left as a URL (not parsed here).
+   - **Plain CSV/JSON/XLSX resources** → downloaded and parsed directly.
+   - PDF/other → left as a URL (not parsed here).
    Each row is emitted as a `type: "record"` item tagged with its dataset and
-   resource.
+   resource. If `suburbFilter` is set, only rows mentioning one of those
+   suburbs (in any column) are kept — dataset metadata items are unaffected.
 
 ## Input
 
@@ -31,6 +32,7 @@ them via the `baseUrl` input.
 | `fetchRecords` | Also pull data rows (default off). |
 | `maxRecordsPerResource` | Row cap per resource (default 1000). |
 | `resourceFormats` | Keep only these formats, e.g. `["CSV","JSON"]`. Empty = all. |
+| `suburbFilter` | Only used when `fetchRecords` is on. Keep only rows mentioning these suburbs/localities (case-insensitive, any column). Empty = keep everything. |
 
 ## Deploy
 

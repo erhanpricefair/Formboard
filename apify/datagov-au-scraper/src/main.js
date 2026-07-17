@@ -11,6 +11,7 @@ const input = {
     fetchRecords: false,
     maxRecordsPerResource: 1000,
     resourceFormats: [],
+    suburbFilter: [],
     ...(await Actor.getInput()),
 };
 
@@ -20,6 +21,16 @@ if (!input.searchQueries.length && !input.datasetIds.length) {
 
 const ckan = new CkanClient(input.baseUrl);
 const wantedFormats = new Set(input.resourceFormats.map((f) => f.toLowerCase()));
+const suburbNeedles = input.suburbFilter.map((s) => s.toLowerCase().trim()).filter(Boolean);
+
+// This actor pulls arbitrary tabular datasets (not just property data), so
+// suburb filtering happens on the extracted rows themselves — checking
+// every field for a match — rather than assuming a fixed "suburb" column.
+function matchesSuburb(row) {
+    if (!suburbNeedles.length) return true;
+    const hay = Object.values(row).join(' ').toLowerCase();
+    return suburbNeedles.some((needle) => hay.includes(needle));
+}
 
 function pickResources(pkg) {
     const resources = pkg.resources ?? [];
@@ -61,8 +72,11 @@ async function handlePackage(pkg, sourceQuery) {
             records = await downloadResourceRecords(resource, { maxRecords: input.maxRecordsPerResource });
         }
         if (!records.length) continue;
-        log.info(`  ${records.length} rows from resource "${resource.name ?? resource.id}"`);
-        await Actor.pushData(records.map((row) => ({
+        const filtered = records.filter(matchesSuburb);
+        if (!filtered.length) continue;
+        log.info(`  ${filtered.length}/${records.length} rows kept from resource "${resource.name ?? resource.id}"`
+            + (suburbNeedles.length ? ` (filtered to: ${input.suburbFilter.join(', ')})` : ''));
+        await Actor.pushData(filtered.map((row) => ({
             type: 'record',
             datasetId: pkg.id,
             datasetTitle: pkg.title,
