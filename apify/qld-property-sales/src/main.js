@@ -20,6 +20,17 @@ const input = {
 const ckan = new CkanClient(input.portalBaseUrl);
 const suburbNeedles = input.suburbFilter.map((s) => s.toLowerCase().trim()).filter(Boolean);
 
+// Apify kills the run hard at its configured timeout — a slow-but-not-dead
+// host can otherwise burn the whole budget on one resource and lose whatever
+// was already extracted. Stop opening new resources once we're within a
+// safety margin of that deadline (bigger than one resource's worst case:
+// ~1 fetch timeout + retries + backoff) so the run exits cleanly instead.
+const timeoutAt = Actor.getEnv().timeoutAt;
+const SAFETY_MARGIN_MS = 60_000;
+function timeRunningOut() {
+    return timeoutAt != null && Date.now() > timeoutAt.getTime() - SAFETY_MARGIN_MS;
+}
+
 /** Keep a row only if some field mentions one of the requested suburbs. */
 function matchesSuburb(row) {
     if (!suburbNeedles.length) return true;
@@ -43,6 +54,10 @@ let total = 0;
 // 1) Direct file URLs the user pasted (a specific VG statistics spreadsheet as
 //    CSV or Excel). Most direct, no portal lookup needed.
 for (const url of input.fileUrls) {
+    if (timeRunningOut()) {
+        log.warning(`Approaching run timeout — skipping remaining fileUrls (from "${url}" onward).`);
+        break;
+    }
     try {
         const isExcel = /\.xlsx?(\?|$)/i.test(url);
         log.info(`Downloading ${isExcel ? 'Excel' : 'CSV'} ${url}`);
@@ -65,12 +80,20 @@ for (const url of input.fileUrls) {
 //    Different search queries often surface the same dataset — a
 //    resource-id set keeps us from downloading it twice.
 const processedResourceIds = new Set();
-for (const query of input.searchQueries) {
+queries: for (const query of input.searchQueries) {
+    if (timeRunningOut()) {
+        log.warning(`Approaching run timeout — skipping remaining search queries (from "${query}" onward).`);
+        break;
+    }
     log.info(`Searching ${input.portalBaseUrl} for "${query}"...`);
     let datasets = 0;
     for await (const pkg of ckan.searchPackages(query, { limit: input.maxDatasets })) {
         datasets++;
         for (const resource of pkg.resources ?? []) {
+            if (timeRunningOut()) {
+                log.warning('Approaching run timeout — stopping early and keeping what was already extracted.');
+                break queries;
+            }
             const resourceKey = resource.id ?? resource.url;
             if (resourceKey && processedResourceIds.has(resourceKey)) continue;
             if (resourceKey) processedResourceIds.add(resourceKey);

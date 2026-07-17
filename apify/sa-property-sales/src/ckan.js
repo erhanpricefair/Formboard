@@ -64,9 +64,12 @@ export class CkanClient {
  *
  * Third-party government file servers are sometimes slow or unresponsive.
  * A short timeout with few retries means one bad host fails fast instead of
- * eating an entire Apify run's wall-clock budget (default 300s per run).
+ * eating an entire Apify run's wall-clock budget: worst case here is roughly
+ * timeoutMs * (retries + 1) plus backoff (~25s), so a handful of bad
+ * resources still leave room in even a 300s run alongside the caller's own
+ * deadline check (see main.js's timeRunningOut()).
  */
-export async function downloadResourceRecords(resource, { maxRecords = 5000, timeoutMs = 20000, retries = 2 } = {}) {
+export async function downloadResourceRecords(resource, { maxRecords = 5000, timeoutMs = 12000, retries = 1 } = {}) {
     const format = (resource.format ?? '').toLowerCase();
     if (!resource.url) return [];
     try {

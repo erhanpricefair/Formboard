@@ -8,5 +8,11 @@
     "input": "./input_schema.json",
     "dockerfile": "../Dockerfile",
     "readme": "../README.md",
-    "meta": { "templateId": "js-start" }
+    "meta": {
+        "templateId": "js-start"
+    },
+    "defaultRunOptions": {
+        "timeoutSecs": 900,
+        "memoryMbytes": 1024
+    }
 }
