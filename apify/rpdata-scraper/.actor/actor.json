@@ -11,6 +11,10 @@
     "meta": {
         "templateId": "js-crawlee-playwright-chrome"
     },
+    "defaultRunOptions": {
+        "timeoutSecs": 900,
+        "memoryMbytes": 4096
+    },
     "storages": {
         "dataset": {
             "actorSpecification": 1,
