@@ -1,0 +1,58 @@
+{
+    "actorSpecification": 1,
+    "name": "rpdata-scraper",
+    "title": "RP Data (CoreLogic) Property Scraper",
+    "description": "Logs into RP Data Professional (rpp.corelogic.com.au) with your own subscription credentials, searches the addresses or suburbs you provide, and extracts property details, attributes, sales history and valuation estimates into a dataset.",
+    "version": "0.1",
+    "buildTag": "latest",
+    "input": "./input_schema.json",
+    "dockerfile": "../Dockerfile",
+    "readme": "../README.md",
+    "meta": {
+        "templateId": "js-crawlee-playwright-chrome"
+    },
+    "defaultRunOptions": {
+        "timeoutSecs": 900,
+        "memoryMbytes": 4096
+    },
+    "storages": {
+        "dataset": {
+            "actorSpecification": 1,
+            "title": "RP Data properties",
+            "views": {
+                "properties": {
+                    "title": "Properties",
+                    "transformation": {
+                        "fields": [
+                            "searchQuery",
+                            "address",
+                            "propertyType",
+                            "bedrooms",
+                            "bathrooms",
+                            "carSpaces",
+                            "landSize",
+                            "lastSalePrice",
+                            "lastSaleDate",
+                            "url",
+                            "scrapedAt"
+                        ]
+                    },
+                    "display": {
+                        "component": "table",
+                        "properties": {
+                            "address": { "label": "Address", "format": "text" },
+                            "propertyType": { "label": "Type", "format": "text" },
+                            "bedrooms": { "label": "Beds", "format": "number" },
+                            "bathrooms": { "label": "Baths", "format": "number" },
+                            "carSpaces": { "label": "Cars", "format": "number" },
+                            "landSize": { "label": "Land", "format": "text" },
+                            "lastSalePrice": { "label": "Last sale", "format": "text" },
+                            "lastSaleDate": { "label": "Sale date", "format": "text" },
+                            "url": { "label": "URL", "format": "link" }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

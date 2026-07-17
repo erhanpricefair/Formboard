@@ -1,0 +1,18 @@
+{
+    "actorSpecification": 1,
+    "name": "vic-property-sales",
+    "title": "Victorian Property Sales (Valuer-General, free) Scraper",
+    "description": "Extracts the free aggregate property-sales statistics (median prices by suburb/period) that Victoria's Valuer-General publishes on data.vic.gov.au, plus any CSV export you point it at. Free, open, no credentials. Not the paid per-transaction VG product.",
+    "version": "0.1",
+    "buildTag": "latest",
+    "input": "./input_schema.json",
+    "dockerfile": "../Dockerfile",
+    "readme": "../README.md",
+    "meta": {
+        "templateId": "js-start"
+    },
+    "defaultRunOptions": {
+        "timeoutSecs": 900,
+        "memoryMbytes": 1024
+    }
+}

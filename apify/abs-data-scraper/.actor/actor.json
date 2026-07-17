@@ -1,0 +1,12 @@
+{
+    "actorSpecification": 1,
+    "name": "abs-data-scraper",
+    "title": "ABS Data API Scraper",
+    "description": "Pulls statistics from the Australian Bureau of Statistics Data API (SDMX) — census, dwellings, regional data — and flattens each observation into a tabular dataset row. Free, open, no credentials.",
+    "version": "0.1",
+    "buildTag": "latest",
+    "input": "./input_schema.json",
+    "dockerfile": "../Dockerfile",
+    "readme": "../README.md",
+    "meta": { "templateId": "js-start" }
+}

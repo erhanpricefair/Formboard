@@ -1,0 +1,85 @@
+{
+    "title": "RP Data (CoreLogic) Property Scraper input",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "username": {
+            "title": "RP Data username",
+            "type": "string",
+            "description": "Your RP Data Professional (rpp.corelogic.com.au) account username/email. The actor logs in as you — only scrape data your subscription entitles you to access.",
+            "editor": "textfield"
+        },
+        "password": {
+            "title": "RP Data password",
+            "type": "string",
+            "description": "Your RP Data Professional account password. Stored encrypted by Apify.",
+            "editor": "textfield",
+            "isSecret": true
+        },
+        "searchQueries": {
+            "title": "Search queries",
+            "type": "array",
+            "description": "Addresses or suburbs to search, one per item. Full addresses (e.g. \"10 Smith St, Richmond VIC 3121\") resolve to a single property. Suburb queries (e.g. \"Richmond VIC 3121\") list properties from the suburb search results up to Max results per query.",
+            "editor": "stringList",
+            "prefill": ["10 Smith Street, Richmond VIC 3121"]
+        },
+        "maxResultsPerQuery": {
+            "title": "Max results per query",
+            "type": "integer",
+            "description": "For suburb-level queries, the maximum number of properties to scrape from the result list. Full-address queries always return a single property.",
+            "default": 25,
+            "minimum": 1,
+            "maximum": 1000
+        },
+        "includeSalesHistory": {
+            "title": "Include sales history",
+            "type": "boolean",
+            "description": "Extract the property's 'For Sale' / sold history timeline where available.",
+            "default": true
+        },
+        "includeRentalHistory": {
+            "title": "Include rental history",
+            "type": "boolean",
+            "description": "Extract the property's rental listing history where available.",
+            "default": false
+        },
+        "captureApiResponses": {
+            "title": "Capture raw API responses",
+            "type": "boolean",
+            "description": "Also store the raw JSON responses RP Data's frontend fetches for each property (attributes, valuations, history). More complete than DOM scraping and resilient to UI redesigns; increases dataset item size.",
+            "default": true
+        },
+        "reuseSession": {
+            "title": "Reuse login session between runs",
+            "type": "boolean",
+            "description": "Persist cookies to the key-value store and reuse them on the next run so the actor doesn't log in every time. Reduces the chance of triggering CoreLogic's concurrent-session/anomaly detection.",
+            "default": true
+        },
+        "proxyConfiguration": {
+            "title": "Proxy configuration",
+            "type": "object",
+            "description": "Australian residential proxies are strongly recommended — CoreLogic geo-blocks and rate-limits foreign datacenter IPs.",
+            "editor": "proxy",
+            "prefill": {
+                "useApifyProxy": true,
+                "apifyProxyGroups": ["RESIDENTIAL"],
+                "apifyProxyCountry": "AU"
+            }
+        },
+        "navigationTimeoutSecs": {
+            "title": "Navigation timeout (seconds)",
+            "type": "integer",
+            "description": "How long to wait for pages/searches before failing a request.",
+            "default": 60,
+            "minimum": 10,
+            "maximum": 300
+        },
+        "debugScreenshots": {
+            "title": "Save debug screenshots",
+            "type": "boolean",
+            "description": "On any failure, save a screenshot and HTML snapshot to the key-value store to help diagnose selector/login issues.",
+            "default": true
+        }
+    },
+    "required": ["username", "password", "searchQueries"]
+}

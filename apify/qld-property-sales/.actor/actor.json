@@ -1,0 +1,18 @@
+{
+    "actorSpecification": 1,
+    "name": "qld-property-sales",
+    "title": "Queensland Property Data (open data) Scraper",
+    "description": "Extracts free property/land datasets that Queensland publishes on its CKAN open-data portal (https://www.data.qld.gov.au), plus any CSV/Excel file you point it at. Free, open, no credentials.",
+    "version": "0.1",
+    "buildTag": "latest",
+    "input": "./input_schema.json",
+    "dockerfile": "../Dockerfile",
+    "readme": "../README.md",
+    "meta": {
+        "templateId": "js-start"
+    },
+    "defaultRunOptions": {
+        "timeoutSecs": 900,
+        "memoryMbytes": 1024
+    }
+}

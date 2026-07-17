@@ -1,0 +1,57 @@
+{
+    "title": "Queensland Property Data Scraper input",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "searchQueries": {
+            "title": "CKAN search queries",
+            "type": "array",
+            "description": "What to search for on www.data.qld.gov.au. Generic property queries by default — review results to see what Queensland publishes as open data.",
+            "editor": "stringList",
+            "prefill": [
+                "property sales",
+                "median house price",
+                "land value"
+            ]
+        },
+        "fileUrls": {
+            "title": "Direct file URLs (CSV or Excel)",
+            "type": "array",
+            "description": "Direct links to CSV or XLSX/XLS files (e.g. a specific VG statistics spreadsheet). Downloaded and parsed as-is — the most reliable path for a specific published spreadsheet.",
+            "editor": "stringList"
+        },
+        "suburbFilter": {
+            "title": "Suburb filter",
+            "type": "array",
+            "description": "Keep only rows mentioning these suburbs/localities (case-insensitive substring match across all columns). Empty = keep everything.",
+            "editor": "stringList",
+            "prefill": [
+                "South Brisbane"
+            ]
+        },
+        "portalBaseUrl": {
+            "title": "CKAN portal base URL",
+            "type": "string",
+            "description": "Queensland's open-data CKAN portal.",
+            "editor": "textfield",
+            "default": "https://www.data.qld.gov.au"
+        },
+        "maxDatasets": {
+            "title": "Max datasets per query",
+            "type": "integer",
+            "default": 15,
+            "minimum": 1,
+            "maximum": 200,
+            "description": "Maximum number of datasets to process per search query."
+        },
+        "maxRecordsPerResource": {
+            "title": "Max rows per resource",
+            "type": "integer",
+            "default": 50000,
+            "minimum": 1,
+            "maximum": 1000000,
+            "description": "Maximum number of rows to extract from each resource (CSV/Excel/DataStore)."
+        }
+    },
+    "required": []
+}

@@ -1,0 +1,18 @@
+{
+    "actorSpecification": 1,
+    "name": "sa-property-sales",
+    "title": "South Australia Property Data (open data) Scraper",
+    "description": "Extracts free property/land datasets that South Australia publishes on its CKAN open-data portal (https://data.sa.gov.au/data), plus any CSV/Excel file you point it at. Free, open, no credentials.",
+    "version": "0.1",
+    "buildTag": "latest",
+    "input": "./input_schema.json",
+    "dockerfile": "../Dockerfile",
+    "readme": "../README.md",
+    "meta": {
+        "templateId": "js-start"
+    },
+    "defaultRunOptions": {
+        "timeoutSecs": 900,
+        "memoryMbytes": 1024
+    }
+}
