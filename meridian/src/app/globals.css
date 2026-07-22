@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+:root {
+  /* Premium, financial-services-grade palette: deep ink navy + warm paper
+     background + a single restrained brass/gold accent. Deliberately not a
+     real-estate-template blue/orange palette. */
+  --color-ink: #0b1220;
+  --color-ink-hover: #17233a;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f6f5f1;
+  --color-paper: #faf9f6;
+  --color-border: #e4e1d8;
+  --color-muted: #6b7280;
+  --color-accent: #b8925a;
+  --color-accent-hover: #a37e49;
+  --color-accent-soft: #f3e9dc;
+  --color-accent-ink: #6b4d24;
+
+  --background: var(--color-paper);
+  --foreground: var(--color-ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-display);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
