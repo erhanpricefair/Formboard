@@ -111,7 +111,12 @@ create policy "projects_update_own_or_admin" on projects for update
 
 alter table suburbs enable row level security;
 create policy "suburbs_select_all" on suburbs for select using (true);
-create policy "suburbs_write_admin" on suburbs for insert with check (is_admin());
+-- Any authenticated developer can add a new suburb when submitting a
+-- project in an area not yet catalogued (low-risk reference data); editing
+-- an existing suburb's details (e.g. consolidating growth-driver notes)
+-- stays admin-only to prevent one developer altering another's data.
+create policy "suburbs_insert_authenticated" on suburbs for insert
+  with check (auth.role() = 'authenticated');
 create policy "suburbs_update_admin" on suburbs for update using (is_admin());
 
 alter table listings enable row level security;

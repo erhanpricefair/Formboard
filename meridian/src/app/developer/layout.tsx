@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { SignOutButton } from "@/components/shared/sign-out-button";
@@ -18,6 +19,14 @@ export default async function DeveloperLayout({ children }: { children: React.Re
           <span className="font-serif text-lg font-semibold text-[var(--color-ink)]">
             Meridian Developer Portal
           </span>
+          <nav className="hidden items-center gap-6 md:flex">
+            <Link href="/developer/dashboard" className="text-sm font-medium text-[var(--color-ink)]/80 hover:text-[var(--color-ink)]">
+              Dashboard
+            </Link>
+            <Link href="/developer/projects" className="text-sm font-medium text-[var(--color-ink)]/80 hover:text-[var(--color-ink)]">
+              Projects
+            </Link>
+          </nav>
           <SignOutButton />
         </div>
       </header>

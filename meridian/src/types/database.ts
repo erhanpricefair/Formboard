@@ -239,6 +239,25 @@ export interface Database {
         },
         "broker_id" | "investor_id" | "source"
       >;
+      shared_listings: Table<
+        {
+          id: string;
+          broker_id: string;
+          investor_id: string;
+          listing_id: string;
+          shared_at: string;
+          note: string | null;
+        },
+        "broker_id" | "investor_id" | "listing_id"
+      >;
+      developer_team_members: Table<
+        { id: string; developer_id: string; team_role: "owner" | "member"; created_at: string },
+        "id" | "developer_id"
+      >;
+      document_download_events: Table<
+        { id: string; document_id: string; investor_id: string; downloaded_at: string },
+        "document_id" | "investor_id"
+      >;
       consultation_bookings: Table<
         {
           id: string;
@@ -298,6 +317,20 @@ export interface Database {
           created_at: string;
         },
         never
+      >;
+      audit_log: Table<
+        {
+          id: string;
+          actor_id: string | null;
+          action: string;
+          entity_type: string;
+          entity_id: string | null;
+          previous_value: Record<string, unknown> | null;
+          new_value: Record<string, unknown> | null;
+          reason: string | null;
+          occurred_at: string;
+        },
+        "action" | "entity_type"
       >;
     };
     Views: {
