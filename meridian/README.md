@@ -58,11 +58,20 @@ full rationale.
 
 ## Status
 
-Implemented so far: database schema + RLS, role-based auth (investor
-passwordless OTP; broker/developer/admin password), homepage, investor
-onboarding, deterministic matching engine, and the investor dashboard
-(matches, saved, compare, Settlement Accelerator tracker, consultation
-booking). Broker/developer/admin portals currently ship as auth-gated
-shells — full client-roster, listing-submission, and approval-queue
-functionality is the next implementation pass, per the build order in
-`docs/investment-platform/PRD.md`.
+Implemented: database schema + RLS (including Storage bucket policies),
+role-based auth (investor passwordless OTP; broker/developer/admin
+password), homepage, investor onboarding, deterministic matching engine,
+investor dashboard (matches, saved, compare, browse/filter, Settlement
+Accelerator tracker, consultation booking), broker portal (client roster,
+referral-link + manual linking, journey stage-advance, listing sharing,
+referral pipeline), developer portal (project/listing creation, image/
+document upload, submit-for-review), and admin portal (approval queue,
+investor/broker/developer management, analytics dashboard).
+
+Not yet built, per the PRD's "Future Features" (§8): automated commission
+calculation, LLM-generated match explanations (v1 uses the template layer
+described in `ARCHITECTURE.md` §5.3), the AI chatbot/suburb-summary
+Edge Functions, and automated follow-up emails. Also untested against a
+live Supabase project — no project has been provisioned in this session,
+so the migrations are unapplied and RLS has not been exercised against
+real Postgres.
