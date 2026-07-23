@@ -13,20 +13,29 @@ export default async function InvestorDashboardPage() {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const [{ data: profile }, { data: matches }, { data: saved }, { data: journey }] =
-    await Promise.all([
-      supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
-      supabase
-        .from("property_matches")
-        .select(
-          "total_score, explanation, listing:listing_id(id, title, price, deposit_required, expected_yield, property_type, suburbs:suburb_id(name, state))"
-        )
-        .eq("investor_id", user.id)
-        .order("total_score", { ascending: false })
-        .limit(9),
-      supabase.from("saved_listings").select("listing_id").eq("investor_id", user.id),
-      supabase.from("settlement_journeys").select("id").eq("investor_id", user.id).maybeSingle(),
-    ]);
+  // Matches, saved list, journey, and profile are fetched as flat queries
+  // (no nested resource embeds) — embeds proved fragile under the
+  // authenticated role's RLS, silently returning null listings. Fetching
+  // the listing/suburb rows separately and joining in JS is bulletproof
+  // and makes any real failure visible via the logged errors below.
+  const [
+    { data: profile },
+    { data: matchRows, error: matchErr },
+    { data: saved },
+    { data: journey },
+  ] = await Promise.all([
+    supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
+    supabase
+      .from("property_matches")
+      .select("total_score, explanation, listing_id")
+      .eq("investor_id", user.id)
+      .order("total_score", { ascending: false })
+      .limit(9),
+    supabase.from("saved_listings").select("listing_id").eq("investor_id", user.id),
+    supabase.from("settlement_journeys").select("id").eq("investor_id", user.id).maybeSingle(),
+  ]);
+
+  if (matchErr) console.error("[dashboard] property_matches query failed:", matchErr);
 
   const savedIds = new Set((saved ?? []).map((s) => s.listing_id));
 
@@ -40,38 +49,58 @@ export default async function InvestorDashboardPage() {
     currentStage = journeyView?.current_stage ?? null;
   }
 
-  type MatchRow = {
-    total_score: number;
-    explanation: string;
-    listing: {
-      id: string;
-      title: string;
-      price: number;
-      deposit_required: number;
-      expected_yield: number;
-      property_type: string;
-      suburbs: { name: string; state: string } | { name: string; state: string }[] | null;
-    } | null;
+  const orderedListingIds = (matchRows ?? []).map((m) => m.listing_id);
+  const explanationByListingId = new Map(
+    (matchRows ?? []).map((m) => [m.listing_id, m.explanation])
+  );
+
+  type ListingRow = {
+    id: string;
+    title: string;
+    price: number;
+    deposit_required: number;
+    expected_yield: number;
+    property_type: string;
+    suburb_id: string;
   };
 
-  const listingCards: ListingCardData[] = ((matches as MatchRow[] | null) ?? [])
-    .filter((m) => m.listing !== null)
-    .map((m) => {
-      const listing = m.listing!;
-      const suburb = Array.isArray(listing.suburbs) ? listing.suburbs[0] : listing.suburbs;
-      return {
-        id: listing.id,
-        title: listing.title,
-        suburbName: suburb?.name ?? "",
-        state: suburb?.state ?? "",
-        price: Number(listing.price),
-        depositRequired: Number(listing.deposit_required),
-        expectedYield: Number(listing.expected_yield),
-        propertyType: listing.property_type,
-        explanation: m.explanation,
-        isSaved: savedIds.has(listing.id),
-      };
-    });
+  let listingCards: ListingCardData[] = [];
+
+  if (orderedListingIds.length > 0) {
+    const { data: listingRows, error: listErr } = await supabase
+      .from("listings")
+      .select("id, title, price, deposit_required, expected_yield, property_type, suburb_id")
+      .in("id", orderedListingIds);
+    if (listErr) console.error("[dashboard] listings query failed:", listErr);
+
+    const suburbIds = [...new Set((listingRows ?? []).map((l) => l.suburb_id))];
+    const { data: suburbRows } =
+      suburbIds.length > 0
+        ? await supabase.from("suburbs").select("id, name, state").in("id", suburbIds)
+        : { data: [] as { id: string; name: string; state: string }[] };
+    const suburbById = new Map((suburbRows ?? []).map((s) => [s.id, s]));
+    const listingById = new Map(((listingRows as ListingRow[] | null) ?? []).map((l) => [l.id, l]));
+
+    // Preserve match ranking order (orderedListingIds is sorted by score).
+    listingCards = orderedListingIds
+      .map((id) => listingById.get(id))
+      .filter((l): l is ListingRow => Boolean(l))
+      .map((listing) => {
+        const suburb = suburbById.get(listing.suburb_id);
+        return {
+          id: listing.id,
+          title: listing.title,
+          suburbName: suburb?.name ?? "",
+          state: suburb?.state ?? "",
+          price: Number(listing.price),
+          depositRequired: Number(listing.deposit_required),
+          expectedYield: Number(listing.expected_yield),
+          propertyType: listing.property_type,
+          explanation: explanationByListingId.get(listing.id),
+          isSaved: savedIds.has(listing.id),
+        };
+      });
+  }
 
   return (
     <div className="space-y-12">
