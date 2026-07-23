@@ -1,4 +1,4 @@
--- Meridian Property Partners
+-- InvestorSource
 -- Migration 4: broker relationships & Settlement Accelerator
 -- Mirrors docs/investment-platform/DATABASE_SCHEMA.md §5
 

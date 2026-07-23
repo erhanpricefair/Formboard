@@ -1,4 +1,4 @@
--- Meridian Property Partners
+-- InvestorSource
 -- Migration 10: fix infinite recursion between the listings and projects
 -- RLS SELECT policies.
 --

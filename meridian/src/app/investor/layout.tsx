@@ -28,7 +28,7 @@ export default async function InvestorLayout({ children }: { children: React.Rea
       <header className="border-b border-[var(--color-border)] bg-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
           <Link href="/" className="font-serif text-lg font-semibold text-[var(--color-ink)]">
-            Meridian
+            InvestorSource
           </Link>
           <nav className="hidden items-center gap-6 md:flex">
             {NAV.map((item) => (

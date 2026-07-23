@@ -1,4 +1,4 @@
--- Meridian Property Partners
+-- InvestorSource
 -- Migration 1: identity & profiles
 -- Mirrors docs/investment-platform/DATABASE_SCHEMA.md §2
 

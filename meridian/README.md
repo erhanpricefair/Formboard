@@ -1,11 +1,11 @@
-# Meridian Property Partners
+# InvestorSource
 
 Property investment marketplace connecting investors and mortgage brokers
 with vetted house-and-land opportunities from developers, tracked end to
 end via the Settlement Accelerator. See `../docs/investment-platform/` for
 the full PRD, architecture, database design, and user-flow diagrams.
 
-**Meridian Property Partners is a working placeholder brand name** —
+**InvestorSource is a working placeholder brand name** —
 trivially find-replaceable once a final name/domain is chosen.
 
 ## Stack

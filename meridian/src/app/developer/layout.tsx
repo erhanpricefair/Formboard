@@ -17,7 +17,7 @@ export default async function DeveloperLayout({ children }: { children: React.Re
       <header className="border-b border-[var(--color-border)] bg-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
           <span className="font-serif text-lg font-semibold text-[var(--color-ink)]">
-            Meridian Developer Portal
+            InvestorSource Developer Portal
           </span>
           <nav className="hidden items-center gap-6 md:flex">
             <Link href="/developer/dashboard" className="text-sm font-medium text-[var(--color-ink)]/80 hover:text-[var(--color-ink)]">

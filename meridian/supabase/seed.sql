@@ -1,4 +1,4 @@
--- Meridian Property Partners — local dev seed data
+-- InvestorSource — local dev seed data
 -- Run via `supabase db reset` (applies migrations then this file).
 
 insert into suburbs (id, name, state, postcode, growth_driver_notes) values

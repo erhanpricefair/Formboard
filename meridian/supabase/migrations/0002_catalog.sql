@@ -1,4 +1,4 @@
--- Meridian Property Partners
+-- InvestorSource
 -- Migration 2: developers' catalog (projects, listings, suburbs, media)
 -- Mirrors docs/investment-platform/DATABASE_SCHEMA.md §3
 

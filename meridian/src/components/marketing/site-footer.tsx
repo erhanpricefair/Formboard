@@ -7,7 +7,7 @@ export function SiteFooter() {
         <div className="grid gap-10 md:grid-cols-4">
           <div>
             <span className="font-serif text-lg font-semibold text-white">
-              Meridian Property Partners
+              InvestorSource
             </span>
             <p className="mt-3 max-w-xs text-sm leading-relaxed">
               An independent property investment marketplace. We source and
@@ -36,7 +36,7 @@ export function SiteFooter() {
           <div>
             <h4 className="text-sm font-semibold text-white">Legal</h4>
             <p className="mt-3 text-sm leading-relaxed">
-              Meridian provides general information only, not personal
+              InvestorSource provides general information only, not personal
               financial or credit advice. Speak with a licensed broker
               before making a finance decision.
             </p>
@@ -44,7 +44,7 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-12 border-t border-white/10 pt-6 text-xs text-white/50">
-          © {new Date().getFullYear()} Meridian Property Partners. ABN placeholder. All rights reserved.
+          © {new Date().getFullYear()} InvestorSource. ABN placeholder. All rights reserved.
         </div>
       </div>
     </footer>

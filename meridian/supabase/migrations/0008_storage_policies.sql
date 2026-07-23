@@ -1,4 +1,4 @@
--- Meridian Property Partners
+-- InvestorSource
 -- Migration 8: Storage bucket setup + Row-Level Security on storage.objects
 -- Mirrors docs/investment-platform/ARCHITECTURE.md §7.
 --

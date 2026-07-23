@@ -1,4 +1,4 @@
-# Meridian Property Partners — Technical Architecture
+# InvestorSource — Technical Architecture
 
 **Status:** Draft v1.0
 **Owner:** Engineering
@@ -11,7 +11,7 @@
 
 ## 1. Architecture overview
 
-Meridian is a single Next.js application (App Router) deployed on Vercel, backed by Supabase (managed Postgres + Auth + Storage), with four distinct authenticated/public surfaces sharing one codebase:
+InvestorSource is a single Next.js application (App Router) deployed on Vercel, backed by Supabase (managed Postgres + Auth + Storage), with four distinct authenticated/public surfaces sharing one codebase:
 
 1. **Public marketing surface** — homepage, unauthenticated, must convert well and load fast.
 2. **Investor surface** — onboarding (semi-public: creates the account) + authenticated dashboard.
@@ -19,7 +19,7 @@ Meridian is a single Next.js application (App Router) deployed on Vercel, backed
 4. **Developer surface** — authenticated, own-projects-scoped.
 5. **Admin surface** — authenticated, platform-wide, highest-privilege.
 
-As with PropertyConnect's architecture, we separate **request/response work** (rendering pages, validating and persisting a submitted form, running the deterministic matching scorer) from **asynchronous work** (email notifications, AI suburb-summary generation/refresh, Settlement Accelerator notification fan-out, scheduled re-matching batches). Given the Supabase-centred stack requested for this product, asynchronous work is handled by **Supabase Edge Functions** triggered via **Postgres triggers → `pg_net`/`pg_cron`**, rather than introducing a separate job-runner service — this keeps the platform to two managed dependencies (Vercel, Supabase) instead of three, which is the right tradeoff at Meridian's MVP scale. If job complexity grows materially (retry/backoff orchestration, long-running AI pipelines), revisit introducing a dedicated runner (e.g. Inngest, as PropertyConnect uses) as a v2 decision — the service-layer boundary below is designed so that swap doesn't touch route/page code.
+As with PropertyConnect's architecture, we separate **request/response work** (rendering pages, validating and persisting a submitted form, running the deterministic matching scorer) from **asynchronous work** (email notifications, AI suburb-summary generation/refresh, Settlement Accelerator notification fan-out, scheduled re-matching batches). Given the Supabase-centred stack requested for this product, asynchronous work is handled by **Supabase Edge Functions** triggered via **Postgres triggers → `pg_net`/`pg_cron`**, rather than introducing a separate job-runner service — this keeps the platform to two managed dependencies (Vercel, Supabase) instead of three, which is the right tradeoff at InvestorSource's MVP scale. If job complexity grows materially (retry/backoff orchestration, long-running AI pipelines), revisit introducing a dedicated runner (e.g. Inngest, as PropertyConnect uses) as a v2 decision — the service-layer boundary below is designed so that swap doesn't touch route/page code.
 
 ```
                          ┌───────────────────────┐
@@ -182,7 +182,7 @@ meridian/
 | Background/async | Supabase Edge Functions + `pg_cron`/`pg_net` triggers | Keeps infra surface minimal at MVP scale (§1); revisit if job complexity grows. |
 | Email | Resend | Transactional email for onboarding confirmation, consultation booking, Settlement Accelerator stage-change notifications, follow-up emails (FR-14). |
 | AI | OpenAI API (behind a narrow service interface in `lib/ai/`) | Used for FR-12 (chatbot), FR-13 (suburb summaries), and the v2 upgrade path for FR-3 explanations — always called server-side, never with unconstrained user-supplied prompts reaching the model without grounding context injected by the service layer (see §8). |
-| Hosting | Vercel (frontend), Supabase managed cloud (backend) | Matches brief's "modern scalable architecture"; both scale horizontally without infra ops overhead at Meridian's stage. |
+| Hosting | Vercel (frontend), Supabase managed cloud (backend) | Matches brief's "modern scalable architecture"; both scale horizontally without infra ops overhead at InvestorSource's stage. |
 | Analytics | PostHog | Funnel analytics (homepage → onboarding → match → consultation → settlement) feeding the admin analytics dashboard (FR-16) and marketing attribution. |
 | Validation | Zod, shared between client forms and Server Actions | Single source of truth for onboarding/listing/etc. field validation, avoids client/server drift. |
 
@@ -259,7 +259,7 @@ v1 (`lib/matching/explain.ts`) builds a short explanation string from the *speci
 This directly implements the worked example in PRD §4.2. The template consumes the same structured `MatchScoreBreakdown` object a v2 LLM-based generator would consume (score components + the specific listing facts that contributed) — so the v2 swap is: replace the template call with a call to `generate-match-explanation` (an Edge Function that prompts an LLM with that same structured breakdown, grounded, non-hallucinatory, and caches the result). No caller of `explain()` needs to change.
 
 ### 5.4 Execution model
-- **Inline (request path):** runs synchronously on onboarding completion and on-demand profile edits (target <3s per NFR table) — acceptable because it's a bounded scan over published listings (hundreds, not millions, at Meridian's scale) with simple arithmetic, no LLM call in the v1 path.
+- **Inline (request path):** runs synchronously on onboarding completion and on-demand profile edits (target <3s per NFR table) — acceptable because it's a bounded scan over published listings (hundreds, not millions, at InvestorSource's scale) with simple arithmetic, no LLM call in the v1 path.
 - **Batch (async):** a scheduled Edge Function (`run-batch-rematch`, triggered via `pg_cron`, e.g. every 6 hours or on listing publish/price-change webhook) re-scores all active investor profiles against the current published-listing set, so a newly published listing surfaces to already-onboarded investors without them needing to re-submit anything.
 
 ---

@@ -11,7 +11,7 @@ const REASONS = [
   },
   {
     title: "No developer sales pressure",
-    body: "You deal with your broker and Meridian, not an in-house sales team incentivised to close you on their own stock.",
+    body: "You deal with your broker and InvestorSource, not an in-house sales team incentivised to close you on their own stock.",
   },
   {
     title: "Built for real numbers",
@@ -25,7 +25,7 @@ export function WhyInvestors() {
       <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
         <div className="max-w-2xl">
           <h2 className="font-serif text-3xl font-medium text-[var(--color-ink)] sm:text-4xl">
-            Why investors use Meridian
+            Why investors use InvestorSource
           </h2>
         </div>
 

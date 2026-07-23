@@ -16,7 +16,7 @@ export interface RosterClient {
  * Assembles the broker's client roster (PRD FR-6) from several narrow
  * queries rather than one large join — keeps each query's row shape
  * simple against the hand-written Database types (see types/database.ts)
- * at Meridian's current scale (a broker's roster is not expected to be
+ * at InvestorSource's current scale (a broker's roster is not expected to be
  * large enough for this to matter perf-wise).
  */
 export async function getBrokerRoster(

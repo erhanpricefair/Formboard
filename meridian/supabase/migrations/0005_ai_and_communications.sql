@@ -1,4 +1,4 @@
--- Meridian Property Partners
+-- InvestorSource
 -- Migration 5: AI features & communications
 -- Mirrors docs/investment-platform/DATABASE_SCHEMA.md §6
 

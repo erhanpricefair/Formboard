@@ -24,7 +24,7 @@ export default async function BrokerLayout({ children }: { children: React.React
       <header className="border-b border-[var(--color-border)] bg-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
           <span className="font-serif text-lg font-semibold text-[var(--color-ink)]">
-            Meridian for Brokers
+            InvestorSource for Brokers
           </span>
           <nav className="hidden items-center gap-6 md:flex">
             {NAV.map((item) => (

@@ -14,10 +14,7 @@ export function SiteHeader() {
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
         <Link href="/" className="flex items-center gap-2">
           <span className="font-serif text-xl font-semibold tracking-tight text-[var(--color-ink)]">
-            Meridian
-          </span>
-          <span className="hidden text-xs tracking-widest text-[var(--color-muted)] uppercase sm:inline">
-            Property Partners
+            InvestorSource
           </span>
         </Link>
 

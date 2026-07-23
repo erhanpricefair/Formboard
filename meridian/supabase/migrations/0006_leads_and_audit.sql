@@ -1,4 +1,4 @@
--- Meridian Property Partners
+-- InvestorSource
 -- Migration 6: leads & audit log
 -- Mirrors docs/investment-platform/DATABASE_SCHEMA.md §7
 

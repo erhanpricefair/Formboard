@@ -86,7 +86,7 @@ export function Hero() {
               </p>
             </div>
             <p className="mt-4 text-center text-xs text-[var(--color-muted)]">
-              An example of how Meridian explains every match
+              An example of how InvestorSource explains every match
             </p>
           </div>
         </div>

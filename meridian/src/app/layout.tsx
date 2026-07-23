@@ -19,9 +19,9 @@ const displayFont = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "Meridian Property Partners | Australian Property Investment Marketplace",
+  title: "InvestorSource | Australian Property Investment Marketplace",
   description:
-    "Access Australia's property investment opportunities. Meridian matches investors and mortgage brokers with vetted house-and-land packages from trusted developers, guided end-to-end by our Settlement Accelerator.",
+    "Access Australia's property investment opportunities. InvestorSource matches investors and mortgage brokers with vetted house-and-land packages from trusted developers, guided end-to-end by our Settlement Accelerator.",
 };
 
 export default function RootLayout({

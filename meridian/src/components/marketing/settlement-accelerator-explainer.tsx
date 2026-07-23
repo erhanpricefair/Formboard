@@ -22,7 +22,7 @@ export function SettlementAcceleratorExplainer() {
             Settlement Accelerator&trade;
           </h2>
           <p className="mt-4 text-white/70">
-            Every Meridian investor gets a single, shared journey tracker —
+            Every InvestorSource investor gets a single, shared journey tracker —
             visible to you and your broker — from the moment you enquire to
             the day your property is tenanted and managed. Nine stages,
             fully timestamped, nothing lost in a phone call or forgotten

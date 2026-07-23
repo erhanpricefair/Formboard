@@ -1,7 +1,7 @@
-# Local Supabase CLI configuration for Meridian Property Partners.
+# Local Supabase CLI configuration for InvestorSource.
 # See https://supabase.com/docs/guides/local-development/cli/config
 
-project_id = "meridian-property-partners"
+project_id = "investorsource"
 
 [api]
 enabled = true

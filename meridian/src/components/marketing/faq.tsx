@@ -1,11 +1,11 @@
 const FAQS = [
   {
-    q: "Is Meridian the developer or seller of these properties?",
-    a: "No. Meridian is an independent marketplace. Every opportunity is sourced from, and sold by, its actual developer — we match and guide, we never hold stock or act as vendor.",
+    q: "Is InvestorSource the developer or seller of these properties?",
+    a: "No. InvestorSource is an independent marketplace. Every opportunity is sourced from, and sold by, its actual developer — we match and guide, we never hold stock or act as vendor.",
   },
   {
-    q: "Does it cost anything to use Meridian as an investor?",
-    a: "No. There is no charge to complete the questionnaire, view matches, or speak with a broker. Meridian is compensated by developer partnerships and broker referral arrangements, not by investors.",
+    q: "Does it cost anything to use InvestorSource as an investor?",
+    a: "No. There is no charge to complete the questionnaire, view matches, or speak with a broker. InvestorSource is compensated by developer partnerships and broker referral arrangements, not by investors.",
   },
   {
     q: "Will I be pressured to buy?",
@@ -21,7 +21,7 @@ const FAQS = [
   },
   {
     q: "Is this financial advice?",
-    a: "No. Match explanations and platform content are general information only. Personal financial or credit advice is provided by your licensed broker, not by Meridian.",
+    a: "No. Match explanations and platform content are general information only. Personal financial or credit advice is provided by your licensed broker, not by InvestorSource.",
   },
 ];
 

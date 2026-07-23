@@ -1,4 +1,4 @@
--- Meridian Property Partners
+-- InvestorSource
 -- Migration 9: restore Supabase role grants on the public schema.
 --
 -- A fresh Supabase project pre-grants table/sequence/function privileges on

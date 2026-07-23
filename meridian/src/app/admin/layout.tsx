@@ -24,7 +24,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="flex min-h-screen flex-col bg-[var(--color-paper)]">
       <header className="border-b border-white/10 bg-[var(--color-ink)] text-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
-          <span className="font-serif text-lg font-semibold">Meridian Admin</span>
+          <span className="font-serif text-lg font-semibold">InvestorSource Admin</span>
           <nav className="hidden items-center gap-6 md:flex">
             {NAV.map((item) => (
               <Link key={item.href} href={item.href} className="text-sm font-medium text-white/70 hover:text-white">

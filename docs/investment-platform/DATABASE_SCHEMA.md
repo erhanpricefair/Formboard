@@ -1,4 +1,4 @@
-# Meridian Property Partners — Database Design
+# InvestorSource — Database Design
 
 **Status:** Draft v1.0
 **Target:** PostgreSQL via Supabase, with Row-Level Security (RLS) as the primary authorization boundary (see `ARCHITECTURE.md` §4).

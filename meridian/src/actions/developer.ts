@@ -20,7 +20,7 @@ async function requireDeveloper() {
   const developerId = await getDeveloperId(supabase, user.id);
   if (!developerId) {
     throw new Error(
-      "Your account isn't linked to a developer company yet — contact Meridian to complete setup."
+      "Your account isn't linked to a developer company yet — contact InvestorSource to complete setup."
     );
   }
   return { supabase, user, developerId };

@@ -17,7 +17,7 @@ export default async function DeveloperProjectsPage() {
     return (
       <Card>
         <CardContent className="pt-6 text-sm text-[var(--color-muted)]">
-          Your account isn&rsquo;t linked to a developer company yet — contact Meridian to
+          Your account isn&rsquo;t linked to a developer company yet — contact InvestorSource to
           complete setup.
         </CardContent>
       </Card>

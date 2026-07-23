@@ -1,4 +1,4 @@
-# Meridian Property Partners — User Flow Diagrams
+# InvestorSource — User Flow Diagrams
 
 **Status:** Draft v1.0
 Companion to `PRD.md` (journeys in §4, requirements FR-1…FR-16) and `ARCHITECTURE.md`. Diagrams use Mermaid.

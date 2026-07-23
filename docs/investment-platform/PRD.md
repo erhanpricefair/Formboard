@@ -1,24 +1,24 @@
-# Meridian Property Partners — Product Requirements Document (PRD)
+# InvestorSource — Product Requirements Document (PRD)
 
 **Status:** Draft v1.0
 **Owner:** Product
-**Working brand name:** *Meridian Property Partners* ("Meridian") — a placeholder brand, trivially find-replaceable once a final name/domain is chosen. Signature service name **Settlement Accelerator™** is fixed per brief and should be treated as final.
+**Working brand name:** *InvestorSource* ("InvestorSource") — a placeholder brand, trivially find-replaceable once a final name/domain is chosen. Signature service name **Settlement Accelerator™** is fixed per brief and should be treated as final.
 **Market:** Australia-wide from day one (house-and-land packages are inherently multi-state; no single-metro constraint)
 **Last updated:** 2026-07-22
 
-> **Relationship to PropertyConnect:** this is a distinct product from `docs/PRD.md` (PropertyConnect, a general buy/sell/finance/services referral marketplace). Meridian is a premium *investment* marketplace matching investors and mortgage brokers to vetted house-and-land developer opportunities. The two share no code, schema, or brand and should be built as independent applications within this repo unless a later decision merges them.
+> **Relationship to PropertyConnect:** this is a distinct product from `docs/PRD.md` (PropertyConnect, a general buy/sell/finance/services referral marketplace). InvestorSource is a premium *investment* marketplace matching investors and mortgage brokers to vetted house-and-land developer opportunities. The two share no code, schema, or brand and should be built as independent applications within this repo unless a later decision merges them.
 
 ---
 
 ## 1. Product Overview
 
 ### 1.1 What we're building
-Meridian is a property **investment** marketplace and client-management platform. It connects two demand-side audiences — **investors** and **mortgage brokers / referral partners** — with vetted **house-and-land investment packages** sourced from property **developers**. Every opportunity is vetted and published only after admin approval. The platform's signature differentiator is the **Settlement Accelerator**, a nine-stage journey tracker that gives investors and brokers shared visibility from first enquiry through to property handover and management.
+InvestorSource is a property **investment** marketplace and client-management platform. It connects two demand-side audiences — **investors** and **mortgage brokers / referral partners** — with vetted **house-and-land investment packages** sourced from property **developers**. Every opportunity is vetted and published only after admin approval. The platform's signature differentiator is the **Settlement Accelerator**, a nine-stage journey tracker that gives investors and brokers shared visibility from first enquiry through to property handover and management.
 
 ### 1.2 What it is not
-- **Not the developer.** Meridian never holds stock, never sells its own product, and is never named as the seller of record on a contract. It is positioned as an **independent marketplace** that sources and matches opportunities — developers remain the vendor in every transaction.
+- **Not the developer.** InvestorSource never holds stock, never sells its own product, and is never named as the seller of record on a contract. It is positioned as an **independent marketplace** that sources and matches opportunities — developers remain the vendor in every transaction.
 - **Not a traditional listings site.** Investors do not get anonymous, unlimited browse access to every project on the internet. Access to full opportunity detail (price, contract terms, full brochure) is gated behind the onboarding questionnaire so that what an investor sees is pre-filtered to their stated goals — a curated shortlist, not a classifieds wall.
-- **Not a lender, financial adviser, or credit provider.** Meridian does not provide personal financial advice, credit assistance, or product recommendations that constitute regulated advice under the *Corporations Act 2001* (Cth) or the *National Consumer Credit Protection Act 2009* (Cth). Brokers who are AFSL/ACL holders (or authorised credit representatives) provide the actual advice; Meridian's "recommendations" are general-information property matches, always labelled as such, with a clear handoff to a licensed broker before anything resembling financial advice occurs.
+- **Not a lender, financial adviser, or credit provider.** InvestorSource does not provide personal financial advice, credit assistance, or product recommendations that constitute regulated advice under the *Corporations Act 2001* (Cth) or the *National Consumer Credit Protection Act 2009* (Cth). Brokers who are AFSL/ACL holders (or authorised credit representatives) provide the actual advice; InvestorSource's "recommendations" are general-information property matches, always labelled as such, with a clear handoff to a licensed broker before anything resembling financial advice occurs.
 - **Not a project-management or construction platform.** Settlement Accelerator surfaces status updates sourced from developers/brokers/admin; it does not manage the build itself.
 
 ### 1.3 Product principles
@@ -143,7 +143,7 @@ Acceptance criteria in Given/When/Then form, IDs stable for engineering/QA trace
 - Given a visitor clicks the primary CTA, then they are taken directly into the onboarding questionnaire (§5.2), not a generic sign-up form.
 - Given a visitor clicks "Broker Login," then they are routed to broker authentication, not the investor flow.
 - Given the homepage is viewed on mobile, then all sections remain single-column, tap targets ≥44px, no horizontal scroll (mirrors PropertyConnect's mobile-responsiveness NFR).
-- Given the homepage renders, then no content or copy implies Meridian is the developer/vendor of any listed property — all copy uses "we match you with vetted opportunities from developers" framing.
+- Given the homepage renders, then no content or copy implies InvestorSource is the developer/vendor of any listed property — all copy uses "we match you with vetted opportunities from developers" framing.
 
 ### 5.2 FR-2: Investor onboarding questionnaire
 
@@ -282,7 +282,7 @@ Acceptance criteria in Given/When/Then form, IDs stable for engineering/QA trace
 | **Security** | Protect investor PII and financial-profile data | Given any data in transit or at rest, then it is encrypted (TLS in transit, encryption at rest); budget/deposit/finance-status data receives the same protection standard as general PII. |
 | **Privacy compliance** | Comply with the Australian Privacy Act 1988 (APPs) | Given any investor data collection, then the purpose of collection and which third parties (brokers, developers) it may be disclosed to are clearly stated before/at the point of consent. |
 | **Financial-services compliance** | No unlicensed financial/credit advice | Given any platform-generated content (match explanations, AI chatbot, suburb summaries), then it is presented as general information only, never as personal financial or credit advice, with a clear handoff to a licensed broker before any advice-adjacent conversation proceeds. |
-| **Vendor-independence integrity** | Never imply Meridian is the developer/vendor | Given any investor- or broker-facing surface, then copy and UI must attribute each listing to its actual developer and must not present Meridian as seller of record. |
+| **Vendor-independence integrity** | Never imply InvestorSource is the developer/vendor | Given any investor- or broker-facing surface, then copy and UI must attribute each listing to its actual developer and must not present InvestorSource as seller of record. |
 | **Auditability** | Every meaningful state change must be traceable | Given any change to a listing's status, a Settlement Accelerator stage, or a broker↔investor link, then it is recorded in an append-only log with actor, timestamp, and prior/new value. |
 | **Accessibility** | Investor-facing surfaces usable by people with disabilities | Given the homepage, onboarding, and dashboard, then they meet WCAG 2.1 AA. |
 | **Mobile responsiveness** | Investment decisions increasingly start on mobile | Given a user on a mobile device, then onboarding, dashboard, and listing browsing are fully usable without horizontal scrolling, tap targets ≥44px. |
@@ -336,7 +336,7 @@ Acceptance criteria in Given/When/Then form, IDs stable for engineering/QA trace
 
 **Platform expansion**
 - Featured-listing paid placement and subscription tiers for developers, per the business model in the brief.
-- Property-management-phase tooling beyond a static "terminal stage" (rent tracking, statements) if Meridian extends into ongoing management rather than referral-only.
+- Property-management-phase tooling beyond a static "terminal stage" (rent tracking, statements) if InvestorSource extends into ongoing management rather than referral-only.
 
 **Trust & compliance**
 - Formal AFSL/ACL-aware content review workflow for any AI-generated investor-facing copy.

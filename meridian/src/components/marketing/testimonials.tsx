@@ -1,7 +1,7 @@
 const TESTIMONIALS = [
   {
     quote:
-      "I'd looked at a dozen off-the-plan listings sites and felt sold to every time. Meridian was the first that explained why a property suited us instead of just listing it.",
+      "I'd looked at a dozen off-the-plan listings sites and felt sold to every time. InvestorSource was the first that explained why a property suited us instead of just listing it.",
     name: "David R.",
     role: "First-time investor, NSW",
   },
