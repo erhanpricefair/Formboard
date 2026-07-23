@@ -8,12 +8,15 @@
 -- re-triggering RLS on the tables they query)
 -- ---------------------------------------------------------------------
 
-create function current_role() returns user_role as $$
+-- Named current_app_role(), not current_role() -- the latter collides
+-- with a reserved PostgreSQL keyword/built-in and fails to parse as a
+-- CREATE FUNCTION target.
+create function current_app_role() returns user_role as $$
   select role from profiles where id = auth.uid()
 $$ language sql stable security definer set search_path = public;
 
 create function is_admin() returns boolean as $$
-  select current_role() = 'admin'
+  select current_app_role() = 'admin'
 $$ language sql stable security definer set search_path = public;
 
 create function is_broker_of(p_investor_id uuid) returns boolean as $$
