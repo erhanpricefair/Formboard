@@ -48,8 +48,13 @@ function timeframeAlignment(listing: CandidateListing, investor: InvestorPrefere
 }
 
 function locationFit(listing: CandidateListing, investor: InvestorPreferences): number {
-  if (investor.preferredSuburbs.some((s) => s.toLowerCase() === listing.suburbName.toLowerCase())) {
-    return 1.0;
+  const suburbMatch = investor.preferredSuburbs.some(
+    (s) => s.toLowerCase() === listing.suburbName.toLowerCase()
+  );
+  if (investor.preferredSuburbs.length > 0) {
+    // A stated suburb is a real preference, not a hint — only listings in
+    // one of those suburbs earn any location credit.
+    return suburbMatch ? 1.0 : 0.0;
   }
   if (investor.preferredStates.includes(listing.state)) {
     return 0.6;
