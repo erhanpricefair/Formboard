@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ListingCard, type ListingCardData } from "@/components/listings/listing-card";
 import { SettlementTracker } from "@/components/journey/settlement-tracker";
 import { RequestConsultationButton } from "@/components/journey/request-consultation-button";
+import { RefreshMatchesButton } from "@/components/investor/refresh-matches-button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { SettlementStage } from "@/types/database";
 
@@ -133,13 +134,14 @@ export default async function InvestorDashboardPage() {
       <section>
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-[var(--color-ink)]">Recommended for you</h2>
-          <div className="flex gap-4 text-sm">
+          <div className="flex items-center gap-4 text-sm">
             <Link href="/investor/saved" className="text-[var(--color-accent-ink)] hover:underline">
               Saved
             </Link>
             <Link href="/investor/compare" className="text-[var(--color-accent-ink)] hover:underline">
               Compare
             </Link>
+            <RefreshMatchesButton />
           </div>
         </div>
 
