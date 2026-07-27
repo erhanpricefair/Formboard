@@ -67,6 +67,15 @@ function locationFit(listing: CandidateListing, investor: InvestorPreferences): 
  * per ARCHITECTURE.md §5.2 ("Eligibility filter (hard cut)").
  */
 export function isEligible(listing: CandidateListing, investor: InvestorPreferences): boolean {
+  if (
+    investor.preferredSuburbs.length > 0 &&
+    !investor.preferredSuburbs.some((s) => s.toLowerCase() === listing.suburbName.toLowerCase())
+  ) {
+    // A named suburb is a hard requirement, not a scoring nudge — a listing
+    // in an unrelated suburb (or a stock-less real suburb the investor
+    // typed) must never appear just because it scores well on growth/yield.
+    return false;
+  }
   return (
     listing.price <= investor.budgetMax && listing.depositRequired <= investor.depositAvailable
   );

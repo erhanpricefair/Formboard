@@ -149,8 +149,9 @@ export default async function InvestorDashboardPage() {
           <Card>
             <CardContent className="pt-6">
               <p className="text-sm text-[var(--color-muted)]">
-                We don&rsquo;t have a strong match for your criteria yet. Try widening your
-                preferred states or price range from your{" "}
+                We don&rsquo;t have a strong match for your criteria yet — this often means we
+                don&rsquo;t currently have stock in your preferred suburb. Try widening your
+                preferred suburbs, states, or price range from your{" "}
                 <Link href="/investor/profile" className="text-[var(--color-accent-ink)] underline">
                   profile
                 </Link>
