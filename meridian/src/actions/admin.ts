@@ -9,6 +9,7 @@ import {
   slugifyAgency,
   type BrokerInviteInput,
 } from "@/lib/validation/broker-invite";
+import type { LeadStatus } from "@/types/database";
 
 async function requireAdmin() {
   const supabase = await createClient();
@@ -81,6 +82,22 @@ export async function rejectListing(listingId: string, reason: string) {
   });
 
   revalidatePath("/admin/approvals");
+}
+
+export async function updateLeadStatus(leadId: string, status: LeadStatus) {
+  const { supabase, user } = await requireAdmin();
+
+  const { error } = await supabase.from("leads").update({ status }).eq("id", leadId);
+  if (error) throw error;
+
+  await supabase.from("audit_log").insert({
+    actor_id: user.id,
+    action: `lead.marked_${status}`,
+    entity_type: "lead",
+    entity_id: leadId,
+  });
+
+  revalidatePath("/admin/leads");
 }
 
 export interface BrokerInviteState {

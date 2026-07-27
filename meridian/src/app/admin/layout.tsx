@@ -6,6 +6,7 @@ import { SignOutButton } from "@/components/shared/sign-out-button";
 const NAV = [
   { href: "/admin/dashboard", label: "Dashboard" },
   { href: "/admin/approvals", label: "Approvals" },
+  { href: "/admin/leads", label: "Leads" },
   { href: "/admin/investors", label: "Investors" },
   { href: "/admin/brokers", label: "Brokers" },
   { href: "/admin/developers", label: "Developers" },

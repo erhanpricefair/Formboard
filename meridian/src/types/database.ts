@@ -32,6 +32,7 @@ export type ListingStatus =
   | "paused"
   | "archived";
 export type ListingDocumentType = "brochure" | "floor_plan" | "contract_template" | "other";
+export type LeadStatus = "new" | "contacted" | "converted" | "archived";
 export type ClientLinkSource = "referral_link" | "manual_invite" | "admin_assigned";
 export type BookingStatus = "requested" | "confirmed" | "completed" | "cancelled";
 export type SettlementStage =
@@ -311,6 +312,10 @@ export interface Database {
           id: string;
           email: string | null;
           phone: string | null;
+          full_name: string | null;
+          message: string | null;
+          source: string;
+          status: LeadStatus;
           partial_answers: Record<string, unknown> | null;
           utm_source: string | null;
           utm_campaign: string | null;
