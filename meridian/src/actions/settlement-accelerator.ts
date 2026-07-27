@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { notifyAdmin } from "@/lib/email/notify";
 
 /**
  * Investor-initiated consultation request (PRD FR-11/FR-4). Creates the
@@ -60,4 +62,29 @@ export async function requestConsultation() {
 
   revalidatePath("/investor/dashboard");
   revalidatePath("/investor/journey");
+
+  try {
+    await notifyConsultationRequested(user.id, existingClient?.broker_id ?? null);
+  } catch (err) {
+    // Notification failure must never surface as a booking failure.
+    console.error("[requestConsultation] notifyAdmin lookup failed:", err);
+  }
+}
+
+async function notifyConsultationRequested(investorId: string, brokerId: string | null) {
+  const admin = createAdminClient();
+
+  const [{ data: investor }, { data: broker }] = await Promise.all([
+    admin.from("profiles").select("full_name, email, phone").eq("id", investorId).maybeSingle(),
+    brokerId
+      ? admin.from("broker_profiles").select("agency_name").eq("id", brokerId).maybeSingle()
+      : Promise.resolve({ data: null }),
+  ]);
+
+  await notifyAdmin(
+    `New consultation request: ${investor?.full_name ?? investorId}`,
+    `<p><strong>${investor?.full_name ?? "An investor"}</strong> (${investor?.email ?? "no email on file"}` +
+      `${investor?.phone ? `, ${investor.phone}` : ""}) requested a consultation.</p>` +
+      `<p><strong>Assigned broker:</strong> ${broker?.agency_name ?? "None yet — unassigned lead"}</p>`
+  );
 }

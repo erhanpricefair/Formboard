@@ -2,7 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { canAdvanceStage } from "@/lib/settlement-accelerator/stages";
+import { notifyAdmin } from "@/lib/email/notify";
 import type { SettlementStage } from "@/types/database";
 
 export interface BrokerActionState {
@@ -72,6 +74,58 @@ export async function shareListingWithClient(investorId: string, listingId: stri
   if (error) throw error;
 
   revalidatePath(`/broker/clients/${investorId}`);
+
+  try {
+    await notifyListingShared(user.id, investorId, listingId, note);
+  } catch (err) {
+    // Notification failure must never surface as a share failure.
+    console.error("[shareListingWithClient] notifyAdmin lookup failed:", err);
+  }
+}
+
+/**
+ * Uses the admin client purely for the notification lookup — the broker's
+ * own session can't read another user's `profiles` row (self_or_admin
+ * only, see migration 0007), and this is a best-effort email, not the
+ * write path the RLS boundary actually protects.
+ */
+async function notifyListingShared(
+  brokerId: string,
+  investorId: string,
+  listingId: string,
+  note?: string
+) {
+  const admin = createAdminClient();
+
+  const [{ data: broker }, { data: investor }, { data: listing }] = await Promise.all([
+    admin
+      .from("profiles")
+      .select("full_name")
+      .eq("id", brokerId)
+      .maybeSingle(),
+    admin
+      .from("profiles")
+      .select("full_name, email")
+      .eq("id", investorId)
+      .maybeSingle(),
+    admin
+      .from("listings")
+      .select("title, suburbs:suburb_id(name, state)")
+      .eq("id", listingId)
+      .maybeSingle(),
+  ]);
+
+  type ListingRow = { title: string; suburbs: { name: string; state: string } | { name: string; state: string }[] | null };
+  const listingRow = listing as ListingRow | null;
+  const suburb = listingRow ? (Array.isArray(listingRow.suburbs) ? listingRow.suburbs[0] : listingRow.suburbs) : null;
+
+  await notifyAdmin(
+    `Listing shared: ${listingRow?.title ?? listingId}`,
+    `<p><strong>${broker?.full_name ?? "A broker"}</strong> shared a listing with their client ` +
+      `<strong>${investor?.full_name ?? "an investor"}</strong> (${investor?.email ?? "no email on file"}).</p>` +
+      `<p><strong>Listing:</strong> ${listingRow?.title ?? "—"}${suburb ? ` — ${suburb.name}, ${suburb.state}` : ""}</p>` +
+      (note ? `<p><strong>Note:</strong> ${note}</p>` : "")
+  );
 }
 
 /**
