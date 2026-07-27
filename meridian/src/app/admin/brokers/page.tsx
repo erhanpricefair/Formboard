@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
+import { InviteBrokerForm } from "@/components/admin/invite-broker-form";
 
 export default async function AdminBrokersPage() {
   const supabase = await createClient();
@@ -35,6 +36,10 @@ export default async function AdminBrokersPage() {
   return (
     <div>
       <h1 className="font-serif text-3xl font-medium text-[var(--color-ink)]">Brokers</h1>
+
+      <div className="mt-6">
+        <InviteBrokerForm />
+      </div>
 
       <div className="mt-6 overflow-x-auto rounded-xl border border-[var(--color-border)] bg-white">
         <table className="w-full min-w-[640px] text-sm">
