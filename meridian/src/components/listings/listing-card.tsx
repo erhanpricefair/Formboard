@@ -1,12 +1,14 @@
 "use client";
 
 import { useTransition } from "react";
+import Link from "next/link";
 import { Heart } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn, formatCurrency, formatPercent } from "@/lib/utils";
 import { toggleSavedListing } from "@/actions/listings";
+import { DownloadBrochureButton } from "@/components/listings/download-brochure-button";
 
 export interface ListingCardData {
   id: string;
@@ -88,12 +90,12 @@ export function ListingCard({ listing }: { listing: ListingCardData }) {
         )}
 
         <div className="mt-4 flex gap-2">
-          <Button variant="outline" size="sm" className="flex-1">
-            View details
-          </Button>
-          <Button variant="ghost" size="sm" className="flex-1">
-            Download brochure
-          </Button>
+          <Link href={`/investor/listings/${listing.id}`} className="flex-1">
+            <Button variant="outline" size="sm" className="w-full">
+              View details
+            </Button>
+          </Link>
+          <DownloadBrochureButton listingId={listing.id} />
         </div>
       </CardContent>
     </Card>
