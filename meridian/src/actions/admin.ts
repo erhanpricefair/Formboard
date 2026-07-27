@@ -84,6 +84,31 @@ export async function rejectListing(listingId: string, reason: string) {
   revalidatePath("/admin/approvals");
 }
 
+/**
+ * Grants or revokes a broker's portal access. Self-registered brokers
+ * (/broker-signup) land here inactive; until this flips them active the
+ * broker layout shows a holding screen instead of any client data.
+ */
+export async function setBrokerActive(brokerId: string, isActive: boolean) {
+  const { user } = await requireAdmin();
+
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("broker_profiles")
+    .update({ is_active: isActive })
+    .eq("id", brokerId);
+  if (error) throw error;
+
+  await admin.from("audit_log").insert({
+    actor_id: user.id,
+    action: isActive ? "broker.activated" : "broker.deactivated",
+    entity_type: "broker",
+    entity_id: brokerId,
+  });
+
+  revalidatePath("/admin/brokers");
+}
+
 export async function updateLeadStatus(leadId: string, status: LeadStatus) {
   const { supabase, user } = await requireAdmin();
 

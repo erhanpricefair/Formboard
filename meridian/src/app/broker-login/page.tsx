@@ -6,7 +6,7 @@ export default function BrokerLoginPage() {
     <>
       <SiteHeader />
       <main className="flex-1 bg-white">
-        <PasswordLoginForm role="broker" title="Broker sign in" />
+        <PasswordLoginForm role="broker" title="Broker sign in" signupHref="/broker-signup" />
       </main>
     </>
   );

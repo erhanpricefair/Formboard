@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
 import { InviteBrokerForm } from "@/components/admin/invite-broker-form";
+import { BrokerActiveToggle } from "@/components/admin/broker-active-toggle";
 
 export default async function AdminBrokersPage() {
   const supabase = await createClient();
@@ -65,9 +66,12 @@ export default async function AdminBrokersPage() {
                   <td className="p-4 text-[var(--color-ink)]">{clientCountByBroker.get(broker.id) ?? 0}</td>
                   <td className="p-4 text-[var(--color-ink)]">{confirmedByBroker.get(broker.id) ?? 0}</td>
                   <td className="p-4">
-                    <Badge variant={broker.is_active ? "success" : "outline"}>
-                      {broker.is_active ? "Active" : "Suspended"}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={broker.is_active ? "success" : "warning"}>
+                        {broker.is_active ? "Active" : "Pending approval"}
+                      </Badge>
+                      <BrokerActiveToggle brokerId={broker.id} isActive={broker.is_active} />
+                    </div>
                   </td>
                 </tr>
               );

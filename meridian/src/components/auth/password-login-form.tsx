@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,17 @@ import type { UserRole } from "@/types/database";
 // PRD FR-15 ("broker, developer, or admin account... login requires
 // email+password"). Account creation for these roles is an admin/ops
 // action, out of scope for this pass — see ARCHITECTURE.md build order.
-export function PasswordLoginForm({ role, title }: { role: Exclude<UserRole, "investor">; title: string }) {
+export function PasswordLoginForm({
+  role,
+  title,
+  signupHref,
+}: {
+  role: Exclude<UserRole, "investor">;
+  title: string;
+  // Only roles with self-service registration pass this — developer and
+  // admin accounts remain invite/ops-created, so they get no signup link.
+  signupHref?: string;
+}) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -93,6 +104,15 @@ export function PasswordLoginForm({ role, title }: { role: Exclude<UserRole, "in
         >
           Forgot password?
         </button>
+
+        {signupHref && (
+          <p className="text-center text-sm text-[var(--color-muted)]">
+            Don&rsquo;t have an account?{" "}
+            <Link href={signupHref} className="text-[var(--color-accent-ink)] hover:underline">
+              Register your agency
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   );
