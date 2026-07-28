@@ -8,9 +8,13 @@ export default async function DeveloperLayout({ children }: { children: React.Re
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user || user.user_metadata?.role !== "developer") {
-    redirect("/developer-login");
-  }
+  if (!user) redirect("/developer-login");
+
+  // Checked against profiles.role, not user_metadata.role -- the latter
+  // is attacker-controlled at signup (see migration 0012) and must never
+  // gate anything on its own.
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  if (profile?.role !== "developer") redirect("/developer-login");
 
   return (
     <div className="flex min-h-screen flex-col bg-[var(--color-paper)]">

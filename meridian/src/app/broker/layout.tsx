@@ -15,9 +15,13 @@ export default async function BrokerLayout({ children }: { children: React.React
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user || user.user_metadata?.role !== "broker") {
-    redirect("/broker-login");
-  }
+  if (!user) redirect("/broker-login");
+
+  // Checked against profiles.role, not user_metadata.role -- the latter
+  // is attacker-controlled at signup (see migration 0012) and must never
+  // gate anything on its own.
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  if (profile?.role !== "broker") redirect("/broker-login");
 
   // Self-registered brokers (/broker-signup) start inactive. Until an
   // admin activates them they get the holding screen below instead of the

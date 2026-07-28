@@ -17,9 +17,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user || user.user_metadata?.role !== "admin") {
-    redirect("/admin-login");
-  }
+  if (!user) redirect("/admin-login");
+
+  // Checked against profiles.role, not user_metadata.role -- the latter
+  // is attacker-controlled at signup (see migration 0012) and must never
+  // gate anything on its own.
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  if (profile?.role !== "admin") redirect("/admin-login");
 
   return (
     <div className="flex min-h-screen flex-col bg-[var(--color-paper)]">

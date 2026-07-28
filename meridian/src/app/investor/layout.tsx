@@ -15,13 +15,16 @@ const NAV = [
 export default async function InvestorLayout({ children }: { children: React.ReactNode }) {
   // Belt-and-suspenders check alongside proxy.ts (ARCHITECTURE.md §4.2's
   // two-layer model) — RLS on every query below is the actual boundary.
+  // Checked against profiles.role, not user_metadata.role -- the latter
+  // is attacker-controlled at signup (see migration 0012).
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user || user.user_metadata?.role !== "investor") {
-    redirect("/login");
-  }
+  if (!user) redirect("/login");
+
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  if (profile?.role !== "investor") redirect("/login");
 
   return (
     <div className="flex min-h-screen flex-col bg-[var(--color-paper)]">
