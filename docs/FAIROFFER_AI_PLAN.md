@@ -658,7 +658,55 @@ trustworthy, and more defensible, than one that always projects certainty.
 
 ## 5. Feature roadmap
 
-### Phase 1 — MVP (weeks 1–10)
+### Phase 0 — Validation (weeks 1–2, then 4–6 weeks of measurement) ★ **Do this first**
+
+**Confirmed 2026-07-28: the current app has produced zero consultation leads — and has never been
+advertised.** Those two facts together mean demand is not disproven; it is *unmeasured*. The app has
+had no analytics, and its only conversion path is a `mailto:` that silently fails for any user
+without a configured mail client.
+
+Building a 10-week MVP against an unmeasured funnel is the expensive way to discover whether buyers
+want this. The cheaper path: the existing app is already a serviceable validation instrument. It
+needs instrumentation and traffic, not a rewrite.
+
+**Two weeks of work on the existing app:**
+
+1. **Real lead capture.** Replace `mailto:` with a small API endpoint (a single Vercel serverless
+   function + Postgres/Supabase table + email or SMS notification). Add a consent checkbox with
+   stored wording, and a privacy policy. Show success only on a confirmed write.
+2. **Analytics.** PostHog free tier. Instrument the whole funnel: landing view → form start →
+   per-field drop-off → analyse → result view → lead form start → lead submit. Capture suburb,
+   property type, and asking price on every analysis — this is free market research about who is
+   actually looking and at what price points.
+3. **Two or three exit questions** on the result screen ("Was this useful?", "What would you pay
+   for a full report?"). Cheap qualitative signal.
+4. **A soft premium probe.** A "Get the full report — $X" button that captures intent and shows a
+   waitlist message. Measures willingness to pay before building payments. (Be straightforward that
+   it is a waitlist, not a purchase.)
+
+**Then buy traffic.** A modest Google/Meta spend targeting Melbourne buyers on
+"is this house overpriced" style intent, plus organic posting where Australian buyers already
+gather. The point is not scale — it is a few hundred real sessions from strangers.
+
+**Decision gate — set these thresholds before you look at the data:**
+
+| Question | What you measure |
+|---|---|
+| Do people finish an analysis? | Form start → result completion rate |
+| Does the result create demand for help? | Result view → lead submit rate |
+| Is a lead worth more than it costs? | Cost per lead vs value of one NewPF engagement |
+| Would anyone pay for software? | Premium-probe click rate |
+
+Note the asymmetry: **the lead-generation business is validated by very few conversions**, because a
+single buyer's-agent or negotiation engagement is worth thousands. The subscription business needs
+volume and is a much harder sell. If Phase 0 shows strong lead conversion and weak premium interest,
+the right product is a free tool that feeds a service business — a materially smaller build than
+what §2 describes, and worth knowing before committing to it.
+
+**Phase 0 costs roughly 2 weeks of engineering plus a small ad budget. Phase 1 costs 10 weeks plus
+data licensing.** Spending the former to de-risk the latter is the trade this plan recommends.
+
+### Phase 1 — MVP (weeks 1–10, gated on Phase 0)
 Auth (email/Google/Apple) · onboarding · address & suburb search · **FairOffer Score v1** · AI report ·
 watchlist · price-change alerts · **real lead capture** (DB + CRM + email/SMS) · free-tier limits ·
 Stripe/RevenueCat premium · web + iOS + Android.
@@ -806,8 +854,9 @@ App Store / Play submission (if mobile in scope for Phase 1) · beta with real M
 4. **Do InvestorSource and ReferWise exist as running systems with APIs today**, or are they to be
    built? `erhanpricefair/property-connect` looks adjacent — is that the substrate for one of them?
 5. **Geographic scope at launch:** Melbourne (recommended), Victoria, or national?
-6. **Existing lead volume:** how many consultation requests does the current app generate per month?
-   That number sizes the entire business case and should drive prioritisation.
+6. ~~**Existing lead volume?**~~ **Answered: zero — but the app has never been advertised and has
+   never had analytics or working lead capture.** Demand is unmeasured, not disproven. This is the
+   reason Phase 0 (§5) now precedes Phase 1, and the single biggest change to this plan.
 7. **Legal counsel:** is there existing advice on the valuation-estimate framing, or should that
    review be scoped as part of Week 0?
 
@@ -815,12 +864,19 @@ App Store / Play submission (if mobile in scope for Phase 1) · beta with real M
 
 ## 10. Immediate next steps
 
-1. Answer the Week 0 blocking items — particularly the data source decision.
-2. **Fix lead capture in the current app this week** — mailto → API + database + notification +
-   consent. Small, isolated, immediately revenue-positive.
-3. Approve the architecture in §2, especially the Supabase decision (§7.1) and the AI boundary (§2.2).
-4. Scaffold the monorepo and port the existing heuristics into `packages/scoring` as v0 with tests —
-   this locks in the current behaviour as a regression baseline before improving on it.
+Revised after confirming the current app has zero leads and zero advertising:
+
+1. **Run Phase 0 (§5).** Fix lead capture, instrument the funnel, add the premium probe, buy a small
+   amount of traffic, and measure for 4–6 weeks. Two weeks of work.
+2. **In parallel, begin the data conversation** — Domain API access and NSW VG data are free or cheap
+   to start and have lead times. Do not sign a paid data contract until Phase 0 reports.
+3. **Hold the architecture decisions** in §2 and §7.1 as approved-in-principle but uncommitted. They
+   are sound, and none of them need to be paid for yet.
+4. **After the gate:** if lead conversion is strong, build Phase 1 — but potentially in the reduced
+   "free tool feeding a service business" shape rather than the full subscription platform.
+
+The instinct behind the original brief is good. The sequencing just needs to put the cheap question
+before the expensive answer.
 
 ---
 
