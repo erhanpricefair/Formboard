@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { SettlementTracker } from "@/components/journey/settlement-tracker";
 import { StageAdvanceControl } from "@/components/broker/stage-advance-control";
 import { ShareListingForm } from "@/components/broker/share-listing-form";
@@ -52,13 +53,18 @@ export default async function BrokerClientDetailPage({
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="font-serif text-3xl font-medium text-[var(--color-ink)]">
-          {profile?.full_name}
-        </h1>
-        <p className="mt-1 text-sm text-[var(--color-muted)]">
-          {profile?.email} {profile?.phone ? `· ${profile.phone}` : ""}
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="font-serif text-3xl font-medium text-[var(--color-ink)]">
+            {profile?.full_name}
+          </h1>
+          <p className="mt-1 text-sm text-[var(--color-muted)]">
+            {profile?.email} {profile?.phone ? `· ${profile.phone}` : ""}
+          </p>
+        </div>
+        <a href={`/api/broker/clients/${investorId}/report`} target="_blank" rel="noopener noreferrer">
+          <Button variant="outline">Generate PDF report</Button>
+        </a>
       </div>
 
       {investorProfile && (
