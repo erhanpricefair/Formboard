@@ -37,13 +37,19 @@ export function PasswordLoginForm({
     setNotice(null);
     startTransition(async () => {
       const supabase = createClient();
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         setError(error.message);
         return;
       }
-      const actualRole = data.user?.user_metadata?.role as UserRole | undefined;
-      router.push(actualRole ? ROLE_HOME[actualRole] : ROLE_HOME[role]);
+      // Trust the page the user actually authenticated on, not
+      // user_metadata.role — that field is only set once at account
+      // creation and never kept in sync with the database role that
+      // matters (see proxy.ts). If this account's real role turns out to
+      // be something else, proxy.ts and the destination layout both
+      // check profiles.role directly and will redirect correctly from
+      // there — this is just the initial guess.
+      router.push(ROLE_HOME[role]);
       router.refresh();
     });
   }
