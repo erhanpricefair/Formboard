@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { SettlementTracker } from "@/components/journey/settlement-tracker";
 import { StageAdvanceControl } from "@/components/broker/stage-advance-control";
 import { ShareListingForm } from "@/components/broker/share-listing-form";
+import { ReferToPartnerForm } from "@/components/broker/refer-to-partner-form";
+import { PartnerReferralStatusSelect } from "@/components/broker/partner-referral-status-select";
 import { formatCurrency } from "@/lib/utils";
 import { SETTLEMENT_STAGES, canAdvanceStage } from "@/lib/settlement-accelerator/stages";
 
@@ -29,13 +31,36 @@ export default async function BrokerClientDetailPage({
     .maybeSingle();
   if (!link) notFound();
 
-  const [{ data: profile }, { data: investorProfile }, { data: journey }, { data: listings }] =
-    await Promise.all([
-      supabase.from("profiles").select("full_name, email, phone").eq("id", investorId).maybeSingle(),
-      supabase.from("investor_profiles").select("*").eq("id", investorId).maybeSingle(),
-      supabase.from("settlement_journeys").select("id").eq("investor_id", investorId).maybeSingle(),
-      supabase.from("listings").select("id, title").eq("status", "published").limit(50),
-    ]);
+  const [
+    { data: profile },
+    { data: investorProfile },
+    { data: journey },
+    { data: listings },
+    { data: activePartners },
+    { data: partnerReferrals },
+  ] = await Promise.all([
+    supabase.from("profiles").select("full_name, email, phone").eq("id", investorId).maybeSingle(),
+    supabase.from("investor_profiles").select("*").eq("id", investorId).maybeSingle(),
+    supabase.from("settlement_journeys").select("id").eq("investor_id", investorId).maybeSingle(),
+    supabase.from("listings").select("id, title").eq("status", "published").limit(50),
+    supabase
+      .from("service_partners")
+      .select("id, business_name, partner_type")
+      .eq("is_active", true)
+      .order("business_name", { ascending: true }),
+    supabase
+      .from("partner_referrals")
+      .select("id, status, notes, created_at, partner_id")
+      .eq("investor_id", investorId)
+      .order("created_at", { ascending: false }),
+  ]);
+
+  const partnerIds = [...new Set((partnerReferrals ?? []).map((r) => r.partner_id))];
+  const { data: referralPartners } =
+    partnerIds.length > 0
+      ? await supabase.from("service_partners").select("id, business_name, partner_type").in("id", partnerIds)
+      : { data: [] as { id: string; business_name: string; partner_type: string }[] };
+  const partnerById = new Map((referralPartners ?? []).map((p) => [p.id, p]));
 
   let currentStage = null as string | null;
   if (journey) {
@@ -115,6 +140,48 @@ export default async function BrokerClientDetailPage({
         <Card>
           <CardContent className="pt-6">
             <ShareListingForm investorId={investorId} listings={listings ?? []} />
+          </CardContent>
+        </Card>
+      </div>
+
+      <div>
+        <h2 className="mb-4 text-lg font-semibold text-[var(--color-ink)]">Service partner referrals</h2>
+        <Card>
+          <CardContent className="space-y-4 pt-6">
+            <ReferToPartnerForm
+              investorId={investorId}
+              partners={(activePartners ?? []).map((p) => ({
+                id: p.id,
+                businessName: p.business_name,
+                partnerType: p.partner_type,
+              }))}
+            />
+
+            {(partnerReferrals ?? []).length > 0 && (
+              <div className="mt-4 space-y-2">
+                {(partnerReferrals ?? []).map((r) => (
+                  <div
+                    key={r.id}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[var(--color-border)] p-3"
+                  >
+                    <div>
+                      <p className="text-sm font-medium text-[var(--color-ink)]">
+                        {partnerById.get(r.partner_id)?.business_name ?? "—"}
+                        <span className="ml-2 text-xs font-normal text-[var(--color-muted)]">
+                          {partnerById.get(r.partner_id)?.partner_type.replace(/_/g, " ")}
+                        </span>
+                      </p>
+                      {r.notes && <p className="text-xs text-[var(--color-muted)]">{r.notes}</p>}
+                    </div>
+                    <PartnerReferralStatusSelect
+                      referralId={r.id}
+                      investorId={investorId}
+                      status={r.status}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

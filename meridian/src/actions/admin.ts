@@ -9,6 +9,7 @@ import {
   slugifyAgency,
   type BrokerInviteInput,
 } from "@/lib/validation/broker-invite";
+import { servicePartnerSchema, type ServicePartnerInput } from "@/lib/validation/service-partner";
 import type { LeadStatus } from "@/types/database";
 
 async function requireAdmin() {
@@ -107,6 +108,87 @@ export async function setBrokerActive(brokerId: string, isActive: boolean) {
   });
 
   revalidatePath("/admin/brokers");
+}
+
+export interface ServicePartnerState {
+  error?: string;
+  fieldErrors?: Partial<Record<keyof ServicePartnerInput, string>>;
+}
+
+/**
+ * The service-partner directory (conveyancer/inspector/insurer/property
+ * manager) is admin-managed and vetted -- brokers choose from this list
+ * when referring a client, they don't add their own entries (mirrors how
+ * the `developers` table works).
+ */
+export async function addServicePartner(input: ServicePartnerInput): Promise<ServicePartnerState> {
+  const { user } = await requireAdmin();
+
+  const parsed = servicePartnerSchema.safeParse(input);
+  if (!parsed.success) {
+    const fieldErrors: ServicePartnerState["fieldErrors"] = {};
+    for (const issue of parsed.error.issues) {
+      fieldErrors[issue.path[0] as keyof ServicePartnerInput] = issue.message;
+    }
+    return { error: "Please fix the highlighted fields.", fieldErrors };
+  }
+  const data = parsed.data;
+
+  const admin = createAdminClient();
+  const { error } = await admin.from("service_partners").insert({
+    partner_type: data.partnerType,
+    business_name: data.businessName,
+    contact_name: data.contactName || null,
+    email: data.email || null,
+    phone: data.phone || null,
+    default_commission_rate: data.defaultCommissionRate ?? null,
+    notes: data.notes || null,
+  });
+
+  if (error) return { error: "Could not add this partner. Please try again." };
+
+  await admin.from("audit_log").insert({
+    actor_id: user.id,
+    action: "service_partner.added",
+    entity_type: "service_partner",
+  });
+
+  revalidatePath("/admin/service-partners");
+  return {};
+}
+
+export async function setServicePartnerActive(partnerId: string, isActive: boolean) {
+  await requireAdmin();
+  const admin = createAdminClient();
+
+  const { error } = await admin
+    .from("service_partners")
+    .update({ is_active: isActive })
+    .eq("id", partnerId);
+  if (error) throw error;
+
+  revalidatePath("/admin/service-partners");
+}
+
+/**
+ * Admin-only: reconciling the actual commission amount against whatever
+ * the partner reports, once a referral completes. Brokers can move a
+ * referral's status (see actions/broker.ts updatePartnerReferralStatus)
+ * but never set the commission figure themselves -- same separation of
+ * duties as the existing developer-commission `referrals` pipeline
+ * ("confirmed by admin ... amounts entered manually by admin").
+ */
+export async function setPartnerReferralCommission(referralId: string, commissionAmount: number) {
+  await requireAdmin();
+  const admin = createAdminClient();
+
+  const { error } = await admin
+    .from("partner_referrals")
+    .update({ commission_amount: commissionAmount })
+    .eq("id", referralId);
+  if (error) throw error;
+
+  revalidatePath("/admin/service-partners");
 }
 
 export async function updateLeadStatus(leadId: string, status: LeadStatus) {

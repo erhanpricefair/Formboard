@@ -34,6 +34,18 @@ export type ListingStatus =
 export type ListingDocumentType = "brochure" | "floor_plan" | "contract_template" | "other";
 export type LeadStatus = "new" | "contacted" | "converted" | "archived";
 export type ClientLinkSource = "referral_link" | "manual_invite" | "admin_assigned" | "broker_added";
+export type ServicePartnerType =
+  | "conveyancer"
+  | "building_inspector"
+  | "insurer"
+  | "property_manager"
+  | "other";
+export type PartnerReferralStatus =
+  | "recommended"
+  | "contacted"
+  | "engaged"
+  | "completed"
+  | "declined";
 export type BookingStatus = "requested" | "confirmed" | "completed" | "cancelled";
 export type SettlementStage =
   | "investor_enquiry"
@@ -322,6 +334,37 @@ export interface Database {
           created_at: string;
         },
         never
+      >;
+      service_partners: Table<
+        {
+          id: string;
+          partner_type: ServicePartnerType;
+          business_name: string;
+          contact_name: string | null;
+          email: string | null;
+          phone: string | null;
+          default_commission_rate: number | null;
+          notes: string | null;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        },
+        "partner_type" | "business_name"
+      >;
+      partner_referrals: Table<
+        {
+          id: string;
+          investor_id: string;
+          broker_id: string | null;
+          partner_id: string;
+          journey_id: string | null;
+          status: PartnerReferralStatus;
+          commission_amount: number | null;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        },
+        "investor_id" | "partner_id"
       >;
       audit_log: Table<
         {

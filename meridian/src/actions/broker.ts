@@ -11,7 +11,7 @@ import {
   type BrokerClientIntakeInput,
 } from "@/lib/validation/broker-client-intake";
 import { growthYieldScoreToPreference } from "@/lib/validation/onboarding";
-import type { SettlementStage } from "@/types/database";
+import type { PartnerReferralStatus, SettlementStage } from "@/types/database";
 
 export interface BrokerActionState {
   error?: string;
@@ -302,4 +302,62 @@ export async function advanceJourneyStage(
   if (error) throw error;
 
   revalidatePath("/broker/clients");
+}
+
+/**
+ * Recommends a service partner (conveyancer/inspector/insurer/property
+ * manager) to a client. Uses the admin client because partner_referrals
+ * has no client-insert RLS policy (migration 0015, same reasoning as
+ * broker_clients) -- is_broker_of(investorId) is checked explicitly here
+ * instead, server-side, rather than relying on a policy a browser could
+ * satisfy directly.
+ */
+export async function referClientToPartner(
+  investorId: string,
+  partnerId: string,
+  note?: string
+): Promise<BrokerActionState> {
+  const { supabase, user } = await requireActiveBroker();
+
+  const { data: link } = await supabase
+    .from("broker_clients")
+    .select("investor_id")
+    .eq("broker_id", user.id)
+    .eq("investor_id", investorId)
+    .maybeSingle();
+  if (!link) return { error: "This client isn't on your roster." };
+
+  const admin = createAdminClient();
+  const { error } = await admin.from("partner_referrals").insert({
+    investor_id: investorId,
+    broker_id: user.id,
+    partner_id: partnerId,
+    notes: note || null,
+  });
+
+  if (error) return { error: "Could not record this referral. Please try again." };
+
+  revalidatePath(`/broker/clients/${investorId}`);
+  return {};
+}
+
+/**
+ * Brokers can move a referral through its lifecycle but never set the
+ * commission figure themselves -- see actions/admin.ts
+ * setPartnerReferralCommission for why that's a separate, admin-only
+ * action. Session client: partner_referrals_update (migration 0015)
+ * already restricts this to broker_id = auth.uid() or is_admin(), so RLS
+ * itself stops a broker touching another broker's referral.
+ */
+export async function updatePartnerReferralStatus(
+  referralId: string,
+  status: PartnerReferralStatus,
+  investorId: string
+) {
+  const { supabase } = await requireActiveBroker();
+
+  const { error } = await supabase.from("partner_referrals").update({ status }).eq("id", referralId);
+  if (error) throw error;
+
+  revalidatePath(`/broker/clients/${investorId}`);
 }
