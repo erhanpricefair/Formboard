@@ -36,8 +36,8 @@ export default async function BrokerClientsPage() {
       <div>
         <h1 className="font-serif text-3xl font-medium text-[var(--color-ink)]">Your clients</h1>
         <p className="mt-2 text-sm text-[var(--color-muted)]">
-          Clients who complete onboarding via your referral link link automatically. You can also
-          link an investor who already has an account by email.
+          Add a client directly with their details, or share your referral link so they onboard
+          themselves — either way they land on your roster with matches ready.
         </p>
       </div>
 

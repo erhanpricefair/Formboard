@@ -33,7 +33,7 @@ export type ListingStatus =
   | "archived";
 export type ListingDocumentType = "brochure" | "floor_plan" | "contract_template" | "other";
 export type LeadStatus = "new" | "contacted" | "converted" | "archived";
-export type ClientLinkSource = "referral_link" | "manual_invite" | "admin_assigned";
+export type ClientLinkSource = "referral_link" | "manual_invite" | "admin_assigned" | "broker_added";
 export type BookingStatus = "requested" | "confirmed" | "completed" | "cancelled";
 export type SettlementStage =
   | "investor_enquiry"
