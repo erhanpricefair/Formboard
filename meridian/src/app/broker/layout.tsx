@@ -8,6 +8,7 @@ const NAV = [
   { href: "/broker/clients", label: "Clients" },
   { href: "/broker/referrals", label: "Referrals" },
   { href: "/broker/marketing-material", label: "Marketing Material" },
+  { href: "/broker/assistant", label: "AI Assistant" },
 ];
 
 export default async function BrokerLayout({ children }: { children: React.ReactNode }) {
