@@ -1,9 +1,13 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
+// Root-relative anchors ("/#how-it-works", not "#how-it-works") so the nav
+// still works from /properties and /suburbs, where those sections don't
+// exist on the current page.
 const NAV_LINKS = [
-  { href: "#how-it-works", label: "How It Works" },
-  { href: "#settlement-accelerator", label: "Settlement Accelerator" },
+  { href: "/properties", label: "Browse Properties" },
+  { href: "/#how-it-works", label: "How It Works" },
+  { href: "/#settlement-accelerator", label: "Settlement Accelerator" },
   { href: "/broker-login", label: "For Brokers" },
   { href: "/developer-login", label: "For Developers" },
 ];

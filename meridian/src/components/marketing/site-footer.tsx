@@ -19,9 +19,10 @@ export function SiteFooter() {
           <div>
             <h4 className="text-sm font-semibold text-white">Investors</h4>
             <ul className="mt-3 space-y-2 text-sm">
+              <li><Link href="/properties" className="hover:text-white">Browse properties</Link></li>
               <li><Link href="/get-started" className="hover:text-white">Find an opportunity</Link></li>
-              <li><a href="#settlement-accelerator" className="hover:text-white">Settlement Accelerator</a></li>
-              <li><a href="#faq" className="hover:text-white">FAQ</a></li>
+              <li><Link href="/#settlement-accelerator" className="hover:text-white">Settlement Accelerator</Link></li>
+              <li><Link href="/#faq" className="hover:text-white">FAQ</Link></li>
             </ul>
           </div>
 

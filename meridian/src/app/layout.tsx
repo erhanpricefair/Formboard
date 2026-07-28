@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Fraunces } from "next/font/google";
+import { SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -19,9 +20,24 @@ const displayFont = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "InvestorSource | Australian Property Investment Marketplace",
+  // metadataBase resolves every relative canonical/OG URL in child pages
+  // against the live domain — without it Next emits localhost URLs in
+  // production metadata.
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "InvestorSource | Australian Property Investment Marketplace",
+    template: "%s | InvestorSource",
+  },
   description:
     "Access Australia's property investment opportunities. InvestorSource matches investors and mortgage brokers with vetted house-and-land packages from trusted developers, guided end-to-end by our Settlement Accelerator.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    siteName: "InvestorSource",
+    locale: "en_AU",
+    type: "website",
+    url: SITE_URL,
+  },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({
