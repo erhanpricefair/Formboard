@@ -135,31 +135,42 @@ export default function PrivacyPolicyPage() {
         </li>
       </ul>
 
-      <h2>5. Service providers and overseas disclosure</h2>
-      <p>We rely on the following providers to run the platform:</p>
+      <h2>5. Where your information is stored, and overseas disclosure</h2>
+
+      <h3>Stored in Australia</h3>
+      <p>
+        Our database, authentication system and file storage are provided by{" "}
+        <strong>Supabase</strong> and are hosted in the <strong>Sydney region</strong>. This means
+        your account, your questionnaire answers, your matches, your Settlement Accelerator history
+        and any documents held for you are <strong>stored at rest in Australia</strong>.
+      </p>
+
+      <h3>Processed partly overseas</h3>
+      <p>
+        Some supporting services necessarily process information outside Australia, including in the
+        United States:
+      </p>
       <ul>
         <li>
-          <strong>Supabase</strong> — database, authentication and file storage.
+          <strong>Vercel</strong> — website and application hosting, operated over a global network,
+          so page requests may be served from outside Australia.
         </li>
         <li>
-          <strong>Vercel</strong> — website and application hosting.
-        </li>
-        <li>
-          <strong>Resend</strong> — transactional and notification email.
+          <strong>Resend</strong> — transactional and notification email, so the content of emails we
+          send you is processed overseas.
         </li>
         <li>
           <strong>Anthropic</strong> — the AI assistant available to brokers inside the broker
           portal. When a broker asks the assistant a question about a client, relevant client
-          information may be sent to Anthropic to generate the response. It is not used to train
+          information is sent to Anthropic to generate the response. It is not used to train
           Anthropic&rsquo;s models.
         </li>
       </ul>
       <p>
-        Some of these providers store or process information outside Australia, including in the
-        United States. By using the platform you acknowledge this. We take reasonable steps under
-        APP 8 to ensure these providers handle personal information consistently with the Australian
-        Privacy Principles, but we may not be able to control or remedy every act of an overseas
-        recipient.
+        By using the platform you acknowledge this overseas processing. We take reasonable steps
+        under APP 8 to ensure these providers handle personal information consistently with the
+        Australian Privacy Principles, but we may not be able to control or remedy every act of an
+        overseas recipient.
       </p>
 
       <h2>6. How we protect it</h2>
