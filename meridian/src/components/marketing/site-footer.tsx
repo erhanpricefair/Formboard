@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { COMPANY } from "@/lib/company";
 
 export function SiteFooter() {
   return (
@@ -36,6 +37,10 @@ export function SiteFooter() {
 
           <div>
             <h4 className="text-sm font-semibold text-white">Legal</h4>
+            <ul className="mt-3 space-y-2 text-sm">
+              <li><Link href="/privacy" className="hover:text-white">Privacy policy</Link></li>
+              <li><Link href="/terms" className="hover:text-white">Terms of service</Link></li>
+            </ul>
             <p className="mt-3 text-sm leading-relaxed">
               InvestorSource provides general information only, not personal
               financial or credit advice. Speak with a licensed broker
@@ -45,7 +50,8 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-12 border-t border-white/10 pt-6 text-xs text-white/50">
-          © {new Date().getFullYear()} InvestorSource. ABN placeholder. All rights reserved.
+          © {new Date().getFullYear()} {COMPANY.legalName} (ABN {COMPANY.abn}) trading as{" "}
+          {COMPANY.tradingName}. All rights reserved.
         </div>
       </div>
     </footer>
