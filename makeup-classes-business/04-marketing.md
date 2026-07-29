@@ -336,3 +336,109 @@ If a generation still comes out with marks, **regenerate rather than re-word.** 
 > Soft minimal beauty still life, vertical composition, oat and cream linen backdrop, single makeup brush and a folded silk ribbon lying flat, warm soft directional light casting a gentle shadow, large empty negative space in the upper two thirds for text overlay, muted neutral palette, 50mm lens, elegant editorial styling, high resolution
 
 **If you want text rendered directly into an image** (e.g. a flyer with "The Everyday Masterclass" baked in), switch to `mcp-tools/Qwen-Image`, which handles text placement far better than FLUX. FLUX images are best used as clean backgrounds with text layered on top in Canva.
+
+---
+
+## 4.8 Extended image library — 18 more prompts
+
+The approved portrait established the house look: **warm greige wall, soft directional window light, muted desaturated palette, shallow depth of field, gentle film-like softness.** Every prompt below carries that same signature so the grid reads as one brand rather than a collection of stock images.
+
+**The style suffix — paste this at the end of every prompt in this section:**
+
+> `soft diffused window light from the left, warm greige and oat colour palette, muted desaturated tones, shallow depth of field, gentle film-like softness, calm minimal composition, photorealistic`
+
+**Standard settings:** `num_inference_steps: 34`, `guidance_scale: 4.0`
+**Skin rule, still applies:** any prompt with skin in it gets *"clear even-toned complexion, healthy smooth skin"* and never *pores, texture, freckles*.
+
+---
+
+### A. Portraits in other framings (not headshots)
+
+**A1 — Three-quarter, seated, with copy space (896×1344)**
+> A woman seated on a simple wooden chair turned three-quarters away, looking back over her shoulder toward the camera, fresh natural makeup, clear even-toned complexion, healthy smooth skin, bare shoulders with a soft neutral wrap, plain warm greige wall behind with a large empty area to her left for text, full upper body in frame
+
+**A2 — Mirror reflection (896×1344)**
+> A woman looking into a round vanity mirror, seen from behind and slightly to the side, her reflection sharp in the mirror and her shoulder soft in the foreground, fresh natural makeup, clear even-toned complexion, a brush resting on the table beside her, warm neutral room
+
+**A3 — Hands to face, eyes closed (1024×1024)**
+> A woman with her eyes closed and one hand resting gently against her cheek, serene expression, fresh minimal makeup, clear even-toned complexion, healthy smooth skin, shoulders and hands both in frame, plain warm wall behind
+
+**A4 — Profile, cropped at the eyes (1024×768)**
+> Side profile of a woman from the cheekbone down to the collarbone, soft natural makeup, clear smooth skin, satin nude lip, the top of the frame cropping just below her eyes, plain warm greige background, wide horizontal composition
+
+**A5 — Applying blush, mid-action (768×1344)**
+> A woman applying blush to her own cheek with a soft brush, looking slightly off camera, relaxed natural expression, clear even-toned complexion, one arm raised in frame, plain warm wall behind, natural candid moment
+
+**A6 — Two women, teaching moment (1024×1024)**
+> A makeup artist standing beside a seated student, both looking into a hand mirror together, the artist gesturing toward the student's cheek, warm friendly atmosphere, both with clear even-toned complexions, neutral workshop room behind, candid documentary feel
+
+---
+
+### B. Hands and detail shots (no faces — the easiest wins)
+
+**B1 — Brushes in hand (1024×1024)**
+> A hand holding a fan of five clean makeup brushes upright, wooden handles, soft focus warm background, close crop on the hand and brushes only
+
+**B2 — Palette in hand (1024×1024)**
+> A hand holding an open neutral eyeshadow palette at a slight angle, matte taupe and brown shades visible, a small brush resting across it, close crop, warm soft background
+
+**B3 — Sponge and foundation (768×768)**
+> A hand pressing a beauty sponge against the back of the other hand where a small swatch of foundation sits, close crop on hands only, clean and hygienic feel
+
+**B4 — Lipstick close-up (768×768)**
+> A single satin nude lipstick bullet turned up, held between two fingers, extreme close crop, soft warm background, minimal and elegant
+
+**B5 — Pouring micellar water (768×1024)**
+> A hand tipping a bottle of micellar water onto a round cotton pad held in the other hand, close crop on hands, clean clinical-but-warm feel
+
+---
+
+### C. Flat-lays and product styling
+
+**C1 — Skincare prep flat-lay (1024×1024)**
+> Overhead flat lay on warm oat linen, a cleanser bottle, a small moisturiser jar with the lid beside it, a tube of sunscreen, a folded white cloth, arranged with generous space between each item, soft shadows
+
+**C2 — Brush roll unrolled (1024×768)**
+> Overhead shot of a canvas brush roll unrolled flat, twelve brushes tucked into individual slots in graduated sizes, on a warm linen surface, wide horizontal composition
+
+**C3 — The student station (1024×1024)**
+> Overhead flat lay of a single student's place setting, a small round mirror, a folded headband, a set of brushes, a palette tile, cotton pads and a small bottle of sanitiser, neatly arranged on warm oat linen
+
+**C4 — Notes and coffee (1024×1024)**
+> Overhead flat lay of an open printed handout page with a pen resting on it, a cup of tea, and a single makeup brush lying alongside, warm linen tablecloth, cosy studious feel
+
+---
+
+### D. Room and environment
+
+**D1 — Empty room before class (1024×768)**
+> A long table set with eight identical stations, each with a small round mirror and a set of brushes, empty chairs tucked in, large window at the far end, bright airy neutral room, wide horizontal composition, nobody in frame
+
+**D2 — Chair and cape (768×1344)**
+> A single wooden chair with a soft neutral cape draped over the back, a small side table beside it holding brushes in a jar, plain warm wall, quiet and inviting, vertical composition
+
+**D3 — Trolley and kit (768×1344)**
+> A professional makeup trolley with open drawers showing neatly organised products, standing beside a window, warm neutral room, vertical composition
+
+---
+
+### E. Backgrounds and text-overlay assets
+
+**E1 — Plain textured wall (1080×1350)**
+> A plain warm greige plaster wall with a very soft gradient of light falling across it from the left, subtle texture, no objects, no people, entirely empty, suitable as a background for text
+
+**E2 — Linen with corner styling (768×1344)**
+> Warm oat linen fabric filling the frame, a single makeup brush and a sprig of dried flowers arranged in the lower right corner only, the entire upper two thirds completely empty, soft shadow, vertical composition for text overlay
+
+**E3 — Draped silk (1080×1350)**
+> Soft cream silk fabric draped loosely and falling in gentle folds, filling the frame, warm light raking across from the left, no objects, abstract and minimal, suitable as a quote card background
+
+---
+
+### How to use this library
+
+- **Feed grid:** alternate portrait → detail → flat-lay → portrait. Never post two headshots in a row; it's what makes an account feel like a stock library.
+- **Story templates:** E1, E2 and E3 are your backgrounds. Build three Canva templates on them — quote, class announcement, testimonial — and reuse them permanently.
+- **Reel covers:** A5 and B1 work best; there's movement in the frame and space for a text overlay.
+- **The B and C sets are your highest-value images** — no faces means no uncanny-valley risk, they generate cleanly on the first attempt, and they're the shots that make an account look professionally photographed.
+- **Aim for 25–30 usable images.** That's roughly six weeks of posting, which is enough runway to start replacing them with real photographs from your actual classes. Generated images are scaffolding — swap them out as real ones arrive.
