@@ -23,6 +23,7 @@
 ### Flyer text (ready to typeset)
 
 > **MAKEUP BY APHRODITE**
+> *Runway · Editorial · Bridal*
 >
 > ## The Everyday Masterclass
 > ### Learn your face in one focused morning.
@@ -94,13 +95,19 @@
 
 ## 4.3 Instagram bio
 
+> **The credentials line.** Aphrodite's portfolio is runway, editorial and bridal — glamour work. The class sells natural everyday makeup to beginners. That gap has to be bridged explicitly, or a beginner lands on the grid, thinks *"she's too advanced for me"*, and doesn't book. The bridging sentence, used across the bio, flyer and website:
+>
+> **"Runway, editorial and bridal. Now I teach the everyday version — because that's the face you actually wear."**
+>
+> It converts the glamour portfolio from an intimidation risk into an authority signal, then pivots straight to what's being sold.
+
 **Option A — recommended**
 
 ```
 Makeup by Aphrodite
+Runway, editorial + bridal · now teaching the everyday version
 Beginner makeup masterclasses · [Your city]
-Learn your face, not a trend ✦ teens + adults welcome
-3 hrs · everything provided · max 8 seats
+3 hrs · everything provided · max 8 seats · teens + adults
 Next class: [date] ↓
 [booking link]
 ```
@@ -442,3 +449,60 @@ The approved portrait established the house look: **warm greige wall, soft direc
 - **Reel covers:** A5 and B1 work best; there's movement in the frame and space for a text overlay.
 - **The B and C sets are your highest-value images** — no faces means no uncanny-valley risk, they generate cleanly on the first attempt, and they're the shots that make an account look professionally photographed.
 - **Aim for 25–30 usable images.** That's roughly six weeks of posting, which is enough runway to start replacing them with real photographs from your actual classes. Generated images are scaffolding — swap them out as real ones arrive.
+
+---
+
+## 4.9 Using Aphrodite's real portfolio
+
+Six original photographs were reviewed. Three are usable, three are not — and the reasons matter more than the verdict.
+
+### The verdict
+
+| Image | Use it? | Why |
+|---|---|---|
+| **Cream/powder palette close-up** | ✅ **Yes — strong** | Real working kit, shallow depth of field, warm pinks and neutrals that land exactly in the brand palette. Better than a styled flat-lay because the pans are visibly *used*. |
+| **Bridal veil, colour** | ✅ **Yes — strongest image** | Clean skin, precise lashes, glossy lip, beautiful soft light. The clearest proof of competence in the set. |
+| **Bridal veil, black & white** | ✅ Yes | Same shoot. Use one or the other in a given fortnight — they're near-duplicates and posting both thins the grid. |
+| **Event snapshot with a client** | ❌ No | Direct flash, cluttered retail background, dated styling. The makeup work isn't visible enough to be evidence of anything. |
+| **Runway group shot (lingerie)** | ❌ Not on this account | A genuine professional credit, but a photograph of models in lingerie cannot sit on the grid of a business whose consent form is written for 14-year-olds and whose flyer invites parents to stay. Parents check the account before booking a daughter. **Keep the credential as text, drop the image.** |
+
+### The resolution problem
+
+All the usable images are around 1100px on the long edge. That is **fine for Instagram and fine for the website**, but **too small for print**. An A5 flyer at 300dpi needs roughly 1750×2480px. Enlarging these will look soft on paper.
+
+**Options:** shoot fresh for the flyer, run the bridal shot through an AI upscaler (`fffiloni/InstantIR` or `prithivMLmods/Photo-Mate-i2i` on Hugging Face) before printing, or design the flyer so the photograph sits in a smaller framed panel rather than full-bleed — at a quarter of the page these resolve perfectly well.
+
+### Where each one goes
+
+| Asset | Image | Notes |
+|---|---|---|
+| Website hero | Bridal veil (colour) — **or better, a new everyday-look shot** | The bridal shot is beautiful but signals "glamour". See the caveat below. |
+| Website "My Work" strip | Both bridal shots + palette + one new everyday look | Four images, 4:5 ratio |
+| Instagram Week 1, Sunday | Bridal veil (colour) | Caption: the credentials line, then the pivot to everyday |
+| Instagram Week 2, Thursday | Palette close-up | Pairs perfectly with the hygiene-standards post |
+| Instagram Week 3, Friday | Palette close-up (cropped square) | "Three things I'd bin from your makeup bag" |
+| Highlight cover: `My Work` | Bridal veil (B&W) | The B&W reads well as a small circular crop |
+| Flyer inset panel | Palette close-up | Small panel, so the resolution holds |
+
+### The caveat worth taking seriously
+
+**Lead with everyday work, not bridal.** The portfolio proves capability, but a grid of veils and runway looks tells a beginner she's in the wrong place. Use the bridal images as *credentials* — one post, the About section, a highlight — and make the everyday work the front door.
+
+### The six photographs to shoot (one Saturday morning, phone is fine)
+
+1. Your own face in soft everyday makeup, natural light, plain wall
+2. Your kit trolley open, showing organised product
+3. Your hands working, close crop
+4. A palette or brush set on the oat tablecloth
+5. Your station set up in the community space
+6. One friend in genuinely soft everyday makeup, photographed by a window
+
+These six will outperform every generated image in this document, and they'll match what's actually being sold.
+
+### Before publishing any client photograph
+
+Past clients almost certainly never signed a release — §1.2 covers students going forward, not work done before it existed. For any identifiable face, message them:
+
+> *"Hi [name], I'm launching makeup classes and I'd love to use the photo from your [wedding/shoot] on my new Instagram — completely fine to say no."*
+
+Most say yes. For anyone who doesn't reply, crop to a non-identifiable detail — eyes, lips, a cheek. Those crops are excellent content anyway.

@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Makeup by Aphrodite — Beginner Makeup Masterclasses</title>
+<meta name="description" content="A 3-hour beginner makeup masterclass for teens and adults. Small groups of 8, everything provided, no experience needed. Learn your face, not a trend.">
+
+<!-- Open Graph — controls how the link looks when shared on Instagram, Facebook, WhatsApp -->
+<meta property="og:title" content="Makeup by Aphrodite — The Everyday Masterclass">
+<meta property="og:description" content="Three hours. One face. Yours. A beginner makeup masterclass for teens and adults — everything provided.">
+<meta property="og:image" content="images/hero.jpg">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ivory:#FAF6F1;
+    --oat:#EDE4DA;
+    --oat-deep:#E0D3C5;
+    --rose:#D9A6A0;
+    --rose-deep:#C08E88;
+    --charcoal:#3A3A33;
+    --charcoal-soft:#5C5C52;
+    --gold:#C4A265;
+    --serif:'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+    --sans:'Jost', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --max:1120px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--sans);
+    font-weight:300;
+    color:var(--charcoal);
+    background:var(--ivory);
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  img{max-width:100%;display:block}
+  a{color:inherit}
+
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+  section{padding:88px 0}
+
+  h1,h2,h3{font-family:var(--serif);font-weight:300;line-height:1.15;letter-spacing:.01em}
+  h2{font-size:clamp(2rem,4.5vw,2.9rem);margin-bottom:14px}
+  h3{font-size:1.4rem;margin-bottom:8px}
+  .eyebrow{
+    font-family:var(--sans);font-size:.72rem;font-weight:400;
+    letter-spacing:.22em;text-transform:uppercase;color:var(--gold);
+    margin-bottom:18px;
+  }
+  .lede{font-size:1.12rem;max-width:60ch;color:var(--charcoal-soft)}
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(250,246,241,.92);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--oat);
+  }
+  .nav-inner{
+    max-width:var(--max);margin:0 auto;padding:16px 24px;
+    display:flex;align-items:center;justify-content:space-between;gap:20px;
+  }
+  .brand{font-family:var(--serif);font-size:1.3rem;letter-spacing:.04em;white-space:nowrap}
+  .nav-links{display:flex;gap:30px;font-size:.85rem;letter-spacing:.06em}
+  .nav-links a{text-decoration:none;color:var(--charcoal-soft);transition:color .2s}
+  .nav-links a:hover{color:var(--gold)}
+  @media(max-width:760px){.nav-links{display:none}}
+
+  /* ---------- BUTTONS ---------- */
+  .btn{
+    display:inline-block;padding:15px 38px;
+    font-family:var(--sans);font-size:.82rem;font-weight:400;
+    letter-spacing:.16em;text-transform:uppercase;text-decoration:none;
+    border:1px solid var(--charcoal);background:var(--charcoal);color:var(--ivory);
+    transition:all .25s ease;cursor:pointer;
+  }
+  .btn:hover{background:transparent;color:var(--charcoal)}
+  .btn-light{background:transparent;color:var(--charcoal);border-color:var(--charcoal)}
+  .btn-light:hover{background:var(--charcoal);color:var(--ivory)}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    display:grid;grid-template-columns:1.05fr .95fr;
+    min-height:min(88vh,760px);align-items:center;
+    background:var(--oat);
+  }
+  .hero-text{padding:70px clamp(24px,5vw,80px)}
+  .hero h1{font-size:clamp(2.6rem,6vw,4.4rem);margin-bottom:20px}
+  .hero .tagline{
+    font-family:var(--sans);font-size:.78rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:24px;
+  }
+  .hero p{font-size:1.13rem;max-width:44ch;margin-bottom:16px;color:var(--charcoal-soft)}
+  .hero-meta{
+    font-size:.88rem;letter-spacing:.06em;color:var(--charcoal-soft);
+    margin:26px 0 32px;padding-top:22px;border-top:1px solid var(--oat-deep);
+  }
+  .hero-meta strong{font-weight:500;color:var(--charcoal)}
+  .hero-img{height:100%;min-height:420px;background:var(--oat-deep);position:relative;overflow:hidden}
+  .hero-img img{width:100%;height:100%;object-fit:cover}
+  @media(max-width:860px){
+    .hero{grid-template-columns:1fr}
+    .hero-img{min-height:340px;order:-1}
+    .hero-text{padding:52px 24px 62px}
+  }
+
+  /* placeholder styling — visible until real photos are dropped in */
+  .ph{
+    width:100%;height:100%;min-height:inherit;
+    background:repeating-linear-gradient(45deg,var(--oat-deep),var(--oat-deep) 12px,var(--oat) 12px,var(--oat) 24px);
+    display:flex;align-items:center;justify-content:center;
+    font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--charcoal-soft);text-align:center;padding:20px;
+  }
+
+  /* ---------- LEARN ---------- */
+  .learn{background:var(--ivory)}
+  .learn-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:34px 44px;margin-top:46px;
+  }
+  .learn-item{padding-top:22px;border-top:1px solid var(--oat-deep)}
+  .learn-item .num{
+    font-family:var(--serif);font-size:1.5rem;color:var(--gold);
+    display:block;margin-bottom:8px;
+  }
+  .learn-item p{font-size:.95rem;color:var(--charcoal-soft)}
+
+  /* ---------- INCLUDED ---------- */
+  .included{background:var(--oat)}
+  .inc-layout{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+  @media(max-width:860px){.inc-layout{grid-template-columns:1fr;gap:38px}}
+  .inc-list{list-style:none;margin-top:26px}
+  .inc-list li{
+    padding:13px 0 13px 30px;position:relative;
+    border-bottom:1px solid var(--oat-deep);font-size:.97rem;
+  }
+  .inc-list li:before{
+    content:"✦";position:absolute;left:0;top:13px;color:var(--gold);font-size:.85rem;
+  }
+  .inc-img{min-height:400px;background:var(--oat-deep)}
+  .inc-img img{width:100%;height:100%;object-fit:cover;min-height:400px}
+
+  /* ---------- FOR WHO ---------- */
+  .forwho{background:var(--charcoal);color:var(--ivory)}
+  .forwho .eyebrow{color:var(--gold)}
+  .forwho h2{color:var(--ivory)}
+  .forwho .lede{color:#CFCBC2}
+  .who-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:28px;margin-top:44px;
+  }
+  .who-card{
+    padding:28px 26px;border:1px solid #4E4E45;background:#43433B;
+  }
+  .who-card h3{color:var(--ivory);font-size:1.15rem;margin-bottom:10px}
+  .who-card p{font-size:.92rem;color:#CFCBC2}
+
+  /* ---------- PORTFOLIO ---------- */
+  .work{background:var(--ivory)}
+  .work-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:16px;margin-top:44px;
+  }
+  .work-grid figure{aspect-ratio:4/5;background:var(--oat-deep);overflow:hidden}
+  .work-grid img{width:100%;height:100%;object-fit:cover}
+
+  /* ---------- PRICING ---------- */
+  .pricing{background:var(--oat)}
+  .price-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:22px;margin-top:44px;
+  }
+  .price-card{
+    background:var(--ivory);padding:34px 28px;
+    border:1px solid var(--oat-deep);display:flex;flex-direction:column;
+  }
+  .price-card.feature{border:1px solid var(--gold);position:relative}
+  .price-card.feature:after{
+    content:"Most popular";position:absolute;top:-11px;left:28px;
+    background:var(--gold);color:var(--ivory);font-size:.62rem;
+    letter-spacing:.16em;text-transform:uppercase;padding:4px 12px;
+  }
+  .price-card h3{font-size:1.3rem;margin-bottom:4px}
+  .price-card .dur{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--charcoal-soft);margin-bottom:18px}
+  .price-card .amt{font-family:var(--serif);font-size:2.5rem;color:var(--charcoal);line-height:1;margin-bottom:6px}
+  .price-card .per{font-size:.78rem;color:var(--charcoal-soft);margin-bottom:18px}
+  .price-card p{font-size:.92rem;color:var(--charcoal-soft);flex-grow:1;margin-bottom:22px}
+  .price-note{margin-top:32px;font-size:.9rem;color:var(--charcoal-soft);text-align:center}
+
+  /* ---------- ABOUT ---------- */
+  .about{background:var(--ivory)}
+  .about-layout{display:grid;grid-template-columns:.85fr 1.15fr;gap:60px;align-items:center}
+  @media(max-width:860px){.about-layout{grid-template-columns:1fr;gap:38px}}
+  .about-img{aspect-ratio:4/5;background:var(--oat-deep);overflow:hidden}
+  .about-img img{width:100%;height:100%;object-fit:cover}
+  .about p{margin-bottom:16px;color:var(--charcoal-soft)}
+  .creds{
+    margin-top:26px;padding-top:22px;border-top:1px solid var(--oat-deep);
+    display:flex;flex-wrap:wrap;gap:10px;
+  }
+  .cred{
+    font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;
+    padding:7px 15px;border:1px solid var(--oat-deep);color:var(--charcoal-soft);
+  }
+
+  /* ---------- FAQ ---------- */
+  .faq{background:var(--oat)}
+  details{
+    border-bottom:1px solid var(--oat-deep);padding:20px 0;
+  }
+  details summary{
+    cursor:pointer;list-style:none;font-size:1.05rem;
+    display:flex;justify-content:space-between;align-items:center;gap:18px;
+  }
+  details summary::-webkit-details-marker{display:none}
+  details summary:after{content:"+";color:var(--gold);font-size:1.4rem;flex-shrink:0}
+  details[open] summary:after{content:"–"}
+  details p{margin-top:14px;font-size:.96rem;color:var(--charcoal-soft);max-width:70ch}
+  .faq-list{margin-top:40px}
+
+  /* ---------- BOOK ---------- */
+  .book{background:var(--charcoal);color:var(--ivory);text-align:center}
+  .book h2{color:var(--ivory)}
+  .book p{color:#CFCBC2;max-width:52ch;margin:0 auto 14px}
+  .book .btn{background:var(--ivory);color:var(--charcoal);border-color:var(--ivory);margin-top:30px}
+  .book .btn:hover{background:transparent;color:var(--ivory)}
+  .next-date{
+    font-family:var(--serif);font-size:1.7rem;color:var(--gold);
+    margin:26px 0 6px;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{background:var(--charcoal);color:#9A9A90;padding:0 0 50px;text-align:center;font-size:.85rem}
+  footer .fwrap{border-top:1px solid #4E4E45;padding-top:36px;max-width:var(--max);margin:0 auto;padding-left:24px;padding-right:24px}
+  footer a{color:#CFCBC2;text-decoration:none;margin:0 12px;transition:color .2s}
+  footer a:hover{color:var(--gold)}
+  .trust{margin-top:18px;font-size:.76rem;letter-spacing:.08em;color:#7C7C73}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="brand">Makeup by Aphrodite</div>
+    <div class="nav-links">
+      <a href="#class">The Class</a>
+      <a href="#included">What's Included</a>
+      <a href="#work">My Work</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="#book">Book</a>
+    </div>
+    <a href="#book" class="btn" style="padding:11px 24px;font-size:.72rem">Book a seat</a>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="hero-text">
+    <div class="tagline">Learn your face, not a trend</div>
+    <h1>The Everyday Masterclass</h1>
+    <p>Most of us were never actually taught how to do our own makeup. We copied a friend, paused a tutorial forty times, and quietly decided we weren't any good at it.</p>
+    <p>Three hours fixes that.</p>
+    <div class="hero-meta">
+      <strong>3 hours</strong> &nbsp;·&nbsp; <strong>Maximum 8 students</strong> &nbsp;·&nbsp; <strong>Everything provided</strong><br>
+      Teens and adults welcome &nbsp;·&nbsp; No experience needed
+    </div>
+    <a href="#book" class="btn">Book your seat — $145</a>
+  </div>
+  <div class="hero-img">
+    <!-- Replace with images/hero.jpg — a portrait in soft natural makeup, ideally your own work -->
+    <div class="ph">Hero image<br>images/hero.jpg</div>
+  </div>
+</header>
+
+<!-- ============ WHAT YOU'LL LEARN ============ -->
+<section class="learn" id="class">
+  <div class="wrap">
+    <div class="eyebrow">What you'll learn</div>
+    <h2>Six things, taught properly</h2>
+    <p class="lede">Not a demonstration you watch. You'll build a complete face yourself, from bare skin, with a professional artist beside you the whole time.</p>
+
+    <div class="learn-grid">
+      <div class="learn-item">
+        <span class="num">01</span>
+        <h3>Skin prep</h3>
+        <p>Why 80% of "my foundation looks bad" is a prep problem, not a foundation problem — and the two-minute rule that fixes it.</p>
+      </div>
+      <div class="learn-item">
+        <span class="num">02</span>
+        <h3>A natural everyday base</h3>
+        <p>Colour matching on the jawline, sheer coverage that looks like skin, and concealing only what genuinely needs it.</p>
+      </div>
+      <div class="learn-item">
+        <span class="num">03</span>
+        <h3>Soft eyes &amp; brows</h3>
+        <p>The three-step eye that works on every eye shape, and brows in ninety seconds without carving or outlining.</p>
+      </div>
+      <div class="learn-item">
+        <span class="num">04</span>
+        <h3>Cheeks &amp; lips</h3>
+        <p>Blush placement as a choice rather than a habit, bronzer that warms instead of muddies, and a lip that lasts.</p>
+      </div>
+      <div class="learn-item">
+        <span class="num">05</span>
+        <h3>Day to evening in 10 minutes</h3>
+        <p>You don't start over to go out. You add five things to the face you already have — and you can do it in a car park.</p>
+      </div>
+      <div class="learn-item">
+        <span class="num">06</span>
+        <h3>Proper removal</h3>
+        <p>The step nobody teaches, and the one your skin needs most. Including why washing your face isn't removing your SPF.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INCLUDED ============ -->
+<section class="included" id="included">
+  <div class="wrap">
+    <div class="inc-layout">
+      <div>
+        <div class="eyebrow">What's included</div>
+        <h2>Bring nothing but yourself</h2>
+        <p class="lede">Everything is provided, sanitised, and yours for the session. There's a full shade range across every undertone, so you'll be properly matched.</p>
+        <ul class="inc-list">
+          <li>Your own freshly sanitised brush set for the session</li>
+          <li>A complete professional product range, every shade and undertone</li>
+          <li>Your own mirror, station, headband and disposables</li>
+          <li>Cleanser, micellar water, moisturiser and SPF</li>
+          <li>Printed take-home notes covering everything we touch</li>
+          <li>A four-week practice plan so it actually sticks</li>
+          <li>Refreshments — and a genuinely nice morning</li>
+        </ul>
+      </div>
+      <div class="inc-img">
+        <!-- Replace with images/kit.jpg — the palette close-up works beautifully here -->
+        <div class="ph">Kit / palette image<br>images/kit.jpg</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHO IT'S FOR ============ -->
+<section class="forwho">
+  <div class="wrap">
+    <div class="eyebrow">Who it's for</div>
+    <h2>If you've been talking yourself out of it</h2>
+    <p class="lede">This class was built for beginners. Not for people who are already good at this.</p>
+
+    <div class="who-grid">
+      <div class="who-card">
+        <h3>Complete beginners</h3>
+        <p>You own things you've never worked out how to use. Bring them — we'll solve it.</p>
+      </div>
+      <div class="who-card">
+        <h3>Teens, 13 and up</h3>
+        <p>With a parent consent form. Parents are genuinely welcome to stay, and several do.</p>
+      </div>
+      <div class="who-card">
+        <h3>Anyone who feels "too old" for this</h3>
+        <p>You're not. Mature skin behaves differently and most tutorials ignore that entirely. We won't.</p>
+      </div>
+      <div class="who-card">
+        <h3>People who only want to look like themselves</h3>
+        <p>That's the whole point. Nothing here is about changing your face.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MY WORK ============ -->
+<section class="work" id="work">
+  <div class="wrap">
+    <div class="eyebrow">My work</div>
+    <h2>Fifteen years of faces</h2>
+    <p class="lede">Runway, editorial and bridal. Now I teach the everyday version — because that's the face you actually wear.</p>
+
+    <div class="work-grid">
+      <figure><div class="ph">images/work-1.jpg<br>bridal</div></figure>
+      <figure><div class="ph">images/work-2.jpg<br>bridal b&amp;w</div></figure>
+      <figure><div class="ph">images/work-3.jpg<br>palette / kit</div></figure>
+      <figure><div class="ph">images/work-4.jpg<br>everyday look</div></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRICING ============ -->
+<section class="pricing" id="pricing">
+  <div class="wrap">
+    <div class="eyebrow">Classes &amp; pricing</div>
+    <h2>Four ways to learn</h2>
+
+    <div class="price-grid">
+      <div class="price-card feature">
+        <h3>The Everyday Masterclass</h3>
+        <div class="dur">3 hours · max 8 students</div>
+        <div class="amt">$145</div>
+        <div class="per">per person</div>
+        <p>The full curriculum, in a small group. Skin prep through to proper removal, with everything provided.</p>
+        <a href="#book" class="btn btn-light">Book</a>
+      </div>
+
+      <div class="price-card">
+        <h3>Fresh Faces — Teens</h3>
+        <div class="dur">3 hours · ages 13–17</div>
+        <div class="amt">$125</div>
+        <div class="per">per person</div>
+        <p>Skin-care led, light coverage, soft everyday looks. Parent consent form required; parents welcome to stay.</p>
+        <a href="#book" class="btn btn-light">Book</a>
+      </div>
+
+      <div class="price-card">
+        <h3>Mother &amp; Daughter</h3>
+        <div class="dur">3 hours · sold as a pair</div>
+        <div class="amt">$230</div>
+        <div class="per">per pair</div>
+        <p>Your own station each, your own face each. Honestly, the class I love teaching most.</p>
+        <a href="#book" class="btn btn-light">Book</a>
+      </div>
+
+      <div class="price-card">
+        <h3>Private One-to-One</h3>
+        <div class="dur">2 hours · just you</div>
+        <div class="amt">$260</div>
+        <div class="per">per session</div>
+        <p>Your face, your features, your questions. Add a full kit audit for $320 — bring your makeup bag and we'll sort it.</p>
+        <a href="#book" class="btn btn-light">Book</a>
+      </div>
+    </div>
+
+    <p class="price-note">
+      A $50 deposit secures your seat · Bring a friend and you both save $20 · Gift vouchers available<br>
+      Birthday parties and corporate workshops by arrangement — just ask.
+    </p>
+  </div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section class="about">
+  <div class="wrap">
+    <div class="about-layout">
+      <div class="about-img">
+        <!-- Replace with images/about.jpg — a photo of you, ideally working -->
+        <div class="ph">Portrait of you<br>images/about.jpg</div>
+      </div>
+      <div>
+        <div class="eyebrow">About</div>
+        <h2>Hello — I'm Aphrodite</h2>
+        <p>I've spent fifteen years doing makeup professionally: runway shows, editorial shoots, and more brides than I can count.</p>
+        <p>And in all that time, the thing I've heard most often isn't a question about technique. It's a version of the same sentence: <em>"I don't really know what I'm doing."</em> From women in their forties. From teenagers. From people who own drawers full of products they've never understood.</p>
+        <p>That's why this class exists. Not to make you look like someone else — to teach you your own face, properly, once, so you stop guessing.</p>
+        <p>My classes are small on purpose. Eight people means I get to eight people. Everything is hygienic, everything is provided, and nobody is ever made to feel behind.</p>
+        <div class="creds">
+          <span class="cred">15 years professional</span>
+          <span class="cred">Runway &amp; editorial</span>
+          <span class="cred">Bridal specialist</span>
+          <span class="cred">Fully insured</span>
+          <span class="cred">WWCC verified</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="faq" id="faq">
+  <div class="wrap">
+    <div class="eyebrow">Questions</div>
+    <h2>Everything people ask</h2>
+
+    <div class="faq-list">
+      <details>
+        <summary>I'm a total beginner. Will I be out of my depth?</summary>
+        <p>No — you're precisely who this is for. Everything is taught from zero, in order, with a pause after each step so nobody gets left behind. The most common thing people say afterwards is that they wish they'd done it years ago.</p>
+      </details>
+      <details>
+        <summary>Do I need to bring anything?</summary>
+        <p>Nothing at all. Every product, brush, mirror and disposable is provided. Optionally, bring your own foundation if you already like it, and any product you've never worked out how to use — we'll solve it together. Come with a clean face and no moisturiser if you can, since skin prep is the first thing we do.</p>
+      </details>
+      <details>
+        <summary>My daughter is 14. Can she come?</summary>
+        <p>Yes. Teens from 13 are very welcome with a signed parent consent form, which includes a medical and allergy disclosure and a photo permission section. You're welcome to stay for the session — several parents do — or to drop off and collect. I hold a current Working With Children Check and full public liability insurance.</p>
+      </details>
+      <details>
+        <summary>Will you be putting makeup on my face?</summary>
+        <p>Only if you'd like light help, and only after asking first — every single time. Everyone applies everything to their own face, at their own mirror. I demonstrate on myself. Nobody applies makeup to anybody else.</p>
+      </details>
+      <details>
+        <summary>I have sensitive skin and allergies.</summary>
+        <p>Please tell me on the booking form and I'll prepare for it. You can patch test anything on your wrist before it goes near your face, and you're always welcome to use your own products for any step instead.</p>
+      </details>
+      <details>
+        <summary>Is there a shade that will match me?</summary>
+        <p>Yes. I carry a full foundation range across warm, cool and neutral undertones. Being properly matched is not negotiable in my room.</p>
+      </details>
+      <details>
+        <summary>Will I look overdone walking out?</summary>
+        <p>No — and this is deliberate. The last thing we do together is remove everything properly and moisturise. You leave with clean, calm skin and a set of notes, not a full evening face at four in the afternoon.</p>
+      </details>
+      <details>
+        <summary>What if I need to cancel?</summary>
+        <p>More than 7 days out, your deposit transfers to any future class. Inside 7 days it isn't refundable, as your seat is held and your products are prepared. If you wake up unwell, just message me — I'll move you to the next date at no cost. Please don't come in sick.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BOOK ============ -->
+<section class="book" id="book">
+  <div class="wrap">
+    <div class="eyebrow">Book a seat</div>
+    <h2>Eight seats. That's it.</h2>
+    <p>Small classes are the whole point — it's the only way everybody gets actual attention. Seats go quickly, and a $50 deposit holds yours.</p>
+    <div class="next-date">Next class: [DATE]</div>
+    <p style="font-size:.92rem">[VENUE NAME] · [SUBURB] · 10:00am – 1:00pm</p>
+    <a href="[YOUR BOOKING LINK]" class="btn">Book your seat</a>
+    <p style="margin-top:28px;font-size:.9rem">
+      Prefer to ask something first? Message me on
+      <a href="https://instagram.com/makeupbyaphrodite" style="color:var(--gold)">@makeupbyaphrodite</a>
+      or call <a href="tel:[PHONE]" style="color:var(--gold)">[PHONE]</a>.
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="fwrap">
+    <div class="brand" style="color:var(--ivory);margin-bottom:16px">Makeup by Aphrodite</div>
+    <div>
+      <a href="https://instagram.com/makeupbyaphrodite">Instagram</a>
+      <a href="mailto:[EMAIL]">Email</a>
+      <a href="tel:[PHONE]">[PHONE]</a>
+    </div>
+    <div class="trust">
+      Fully insured · Working With Children Check verified · Strict professional hygiene standards
+    </div>
+    <div style="margin-top:20px;font-size:.75rem">© <span id="yr"></span> Makeup by Aphrodite · [SUBURB], [STATE]</div>
+  </div>
+</footer>
+
+<script>document.getElementById('yr').textContent=new Date().getFullYear();</script>
+</body>
+</html>
