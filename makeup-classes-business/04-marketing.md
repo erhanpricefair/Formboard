@@ -289,8 +289,26 @@ These are the exact prompts to run through **FLUX.1-Krea-dev** (`mcp-tools/FLUX.
 | 7 | Day-to-night split | 768×1344 | Reel cover, day-to-night Reel |
 | 8 | Story template background | 768×1344 | Story templates, quote cards |
 
-**Prompt 1 — Flyer hero portrait (896×1344)**
-> Editorial beauty photograph, woman with fresh natural makeup, dewy luminous skin, soft brown eyeshadow, groomed brows, peachy blush, glossy nude lip, calm confident expression, warm soft window light, clean pale beige seamless backdrop with generous empty space above her head for text, shot on 85mm f/1.8, shallow depth of field, professional retouching, photorealistic
+### Getting clear, natural-looking skin — read this first
+
+FLUX renders blemishes, blotches and grey patches when a prompt asks for **texture** ("visible pores", "freckles", "real skin texture", "unretouched", "film grain") or when the step count is too low. It fills in detail it can't resolve cleanly, and on a face that reads as spots.
+
+**The three rules for every prompt with a face in it:**
+
+1. **Ask for clear skin explicitly** — the phrase that works is *"clear even-toned complexion, healthy smooth skin"*. Do not ask for pores, freckles or texture.
+2. **Don't say "flawless" or "airbrushed"** — that swings the other way into plastic, mannequin skin.
+3. **Raise the steps to 32–36.** This matters more than the wording. At 24 steps skin renders blotchy; at 34 it resolves smooth. `guidance_scale` stays at 4.0–4.5 — pushing it higher hardens the skin and makes it look artificial.
+
+**Settings for every portrait below:** `num_inference_steps: 34`, `guidance_scale: 4.0`
+
+If a generation still comes out with marks, **regenerate rather than re-word.** Skin artifacts are usually a seed problem, not a prompt problem — the same prompt on a different seed typically comes out clean. Run it three times and keep the best.
+
+---
+
+**Prompt 1 — Flyer hero portrait (896×1344)** · *revised for clear skin*
+> Soft natural beauty photograph, woman in her late twenties with fresh everyday makeup, clear even-toned complexion, healthy smooth skin with a soft satin finish, soft brown eyeshadow, natural fluffy brows, peachy cream blush, satin nude lip, calm warm expression, gentle diffused window light from the left, plain pale beige wall behind her, subject positioned low in the frame with the upper third left as empty wall for text, 85mm lens f/2, soft natural colour, photorealistic
+>
+> *Original version — kept for reference, produced blemished skin:* ~~Editorial beauty photograph, woman with fresh natural makeup, dewy luminous skin... professional retouching, photorealistic~~
 
 **Prompt 2 — Kit flat-lay (1024×1024)**
 > Professional makeup kit flat lay shot directly from above, clean white marble surface, open neutral eyeshadow palette, row of clean makeup brushes fanned out, beauty sponges, foundation bottle, lip balm, disposable mascara wands, cotton pads, small sanitiser bottle, soft diffused daylight, gentle shadows, muted beige cream colour palette, 50mm lens, crisp commercial product photography
@@ -298,17 +316,21 @@ These are the exact prompts to run through **FLUX.1-Krea-dev** (`mcp-tools/FLUX.
 **Prompt 3 — Class in progress (1024×1024)**
 > Bright airy community workshop room, small makeup class in progress, four women of mixed ages seated at a long table with individual mirrors and brush sets, instructor standing demonstrating, large windows with soft natural light, neutral cream walls, warm inviting atmosphere, candid documentary photography, 35mm f/2, natural colour grading
 
-**Prompt 4 — Brush-to-cheek macro (768×1344)**
-> Close-up macro beauty photograph, hand holding a soft blush brush applying powder to a cheekbone, flawless natural skin texture with visible pores and freckles, soft golden light, shallow depth of field, creamy bokeh background, 100mm macro lens f/2.8, editorial cosmetics advertising quality, photorealistic
+**Prompt 4 — Brush-to-cheek macro (768×1344)** · *revised for clear skin*
+> Close-up beauty photograph, a hand holding a soft blush brush sweeping powder across a cheekbone, clear even-toned complexion, smooth healthy skin with a soft natural finish, warm gentle side light, shallow depth of field, softly blurred neutral background, 100mm lens f/2.8, clean cosmetics advertising style, photorealistic
+>
+> *Note: this is the highest-risk prompt for blemishes because the crop is so tight — skin fills the frame. Generate it three times and pick the cleanest.*
 
-**Prompt 5 — Soft everyday look portrait (1024×1024)**
-> Natural beauty portrait, woman with minimal everyday makeup, luminous bare-looking skin, soft taupe eyeshadow, fluffy natural brows, subtle rose blush, satin nude lip, relaxed genuine half-smile, soft diffused north-facing window light, warm oat-coloured background, 85mm f/2, real skin texture retained, photorealistic
+**Prompt 5 — Soft everyday look portrait (1024×1024)** · *revised for clear skin*
+> Natural beauty portrait, woman with minimal everyday makeup, clear even-toned complexion, healthy smooth skin, soft taupe eyeshadow, natural brushed-up brows, subtle rose blush, satin nude lip, relaxed genuine half-smile, soft diffused window light, warm oat-coloured background, 85mm lens f/2, gentle natural colour, photorealistic
 
 **Prompt 6 — Studio station setup (1024×1024)**
 > Clean minimal makeup station, round vanity mirror, neatly arranged brushes in a holder, folded white towel, small vase of dried pampas, neutral oat linen tablecloth, soft natural window light from the left, warm neutral colour palette, calm uncluttered composition, 35mm lens, interior lifestyle photography, high resolution
 
-**Prompt 7 — Day-to-night split (768×1344)**
-> Split composition diptych beauty photograph, same woman on both sides, left side soft natural daytime makeup in bright window light, right side deeper evening makeup with defined smoky outer corner and glossy lip in warm moody light, matching pose and framing, seamless neutral backdrop, 85mm f/1.8, editorial magazine quality, photorealistic
+**Prompt 7 — Day-to-night split (768×1344)** · *revised for clear skin*
+> Split composition diptych beauty photograph, the same woman on both sides, clear even-toned complexion and healthy smooth skin on both, left side soft natural daytime makeup in bright window light, right side deeper evening makeup with a defined smoky outer corner and a deeper lip in warm low light, matching pose and framing, plain neutral backdrop, 85mm lens f/2, photorealistic
+>
+> *Note: FLUX often fails to make both halves the same person. If the two faces don't match, generate a single portrait you like, then use `mcp-tools/FLUX.1-Kontext-Dev` (image editing) with the instruction "change the makeup to a deeper evening look with a smoky outer corner and a deeper lip, keep the same face and pose" — that gives you a genuine before/after of one face.*
 
 **Prompt 8 — Story template background (768×1344)**
 > Soft minimal beauty still life, vertical composition, oat and cream linen backdrop, single makeup brush and a folded silk ribbon lying flat, warm soft directional light casting a gentle shadow, large empty negative space in the upper two thirds for text overlay, muted neutral palette, 50mm lens, elegant editorial styling, high resolution
