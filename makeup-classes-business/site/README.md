@@ -1,5 +1,9 @@
 # Makeup by Aphrodite — one-page website
 
+**Live at: https://makeupbyaphrodite.netlify.app**
+Hosted on Netlify (free tier), deployed by dragging the `site` folder onto Netlify Drop.
+To update: drag the folder onto the **Deploys** tab of the Netlify project — not `/drop`, which would create a second site.
+
 A single self-contained `index.html`. No build step, no dependencies, no framework. Open it in a browser to preview.
 
 ---
