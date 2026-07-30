@@ -113,6 +113,14 @@
     .hero-text{padding:52px 24px 62px}
   }
 
+  /* ---------- IMAGE SLOTS ----------
+     Drop a file into images/ named after the slot (hero, kit, work-1 … about).
+     Any of these extensions work, upper or lower case: jpg jpeg png webp
+     No HTML editing needed. Missing images fall back to a labelled placeholder. */
+  img.slot{display:none;width:100%;height:100%;object-fit:cover}
+  img.slot.loaded{display:block}
+  .hero-img img.slot.loaded,.inc-img img.slot.loaded{min-height:inherit}
+
   /* placeholder styling — visible until real photos are dropped in */
   .ph{
     width:100%;height:100%;min-height:inherit;
@@ -278,8 +286,8 @@
     <a href="#book" class="btn">Book your seat — $145</a>
   </div>
   <div class="hero-img">
-    <!-- Replace with images/hero.jpg — a portrait in soft natural makeup, ideally your own work -->
-    <div class="ph">Hero image<br>images/hero.jpg</div>
+    <img class="slot" data-name="hero" alt="Soft natural everyday makeup look">
+    <div class="ph">Hero image — add <b>images/hero.jpg</b></div>
   </div>
 </header>
 
@@ -344,8 +352,8 @@
         </ul>
       </div>
       <div class="inc-img">
-        <!-- Replace with images/kit.jpg — the palette close-up works beautifully here -->
-        <div class="ph">Kit / palette image<br>images/kit.jpg</div>
+        <img class="slot" data-name="kit" alt="Professional makeup kit and palette">
+        <div class="ph">Kit image — add <b>images/kit.jpg</b></div>
       </div>
     </div>
   </div>
@@ -387,10 +395,10 @@
     <p class="lede">Runway, editorial and bridal. Now I teach the everyday version — because that's the face you actually wear.</p>
 
     <div class="work-grid">
-      <figure><div class="ph">images/work-1.jpg<br>bridal</div></figure>
-      <figure><div class="ph">images/work-2.jpg<br>bridal b&amp;w</div></figure>
-      <figure><div class="ph">images/work-3.jpg<br>palette / kit</div></figure>
-      <figure><div class="ph">images/work-4.jpg<br>everyday look</div></figure>
+      <figure><img class="slot" data-name="work-1" alt="Bridal makeup"><div class="ph">add <b>images/work-1.jpg</b></div></figure>
+      <figure><img class="slot" data-name="work-2" alt="Bridal makeup"><div class="ph">add <b>images/work-2.jpg</b></div></figure>
+      <figure><img class="slot" data-name="work-3" alt="Makeup palette"><div class="ph">add <b>images/work-3.jpg</b></div></figure>
+      <figure><img class="slot" data-name="work-4" alt="Everyday makeup look"><div class="ph">add <b>images/work-4.jpg</b></div></figure>
     </div>
   </div>
 </section>
@@ -451,8 +459,8 @@
   <div class="wrap">
     <div class="about-layout">
       <div class="about-img">
-        <!-- Replace with images/about.jpg — a photo of you, ideally working -->
-        <div class="ph">Portrait of you<br>images/about.jpg</div>
+        <img class="slot" data-name="about" alt="Aphrodite, makeup artist and instructor">
+        <div class="ph">Portrait — add <b>images/about.jpg</b></div>
       </div>
       <div>
         <div class="eyebrow">About</div>
@@ -548,6 +556,30 @@
   </div>
 </footer>
 
-<script>document.getElementById('yr').textContent=new Date().getFullYear();</script>
+<script>
+document.getElementById('yr').textContent=new Date().getFullYear();
+
+/* Image loader.
+   For each slot it tries images/<name>.<ext> across common extensions and cases.
+   First one that loads wins; the placeholder hides. If none load, the
+   placeholder stays visible with the filename to add. Nothing to edit by hand. */
+(function(){
+  var exts=['jpg','jpeg','png','webp','JPG','JPEG','PNG','WEBP'];
+  document.querySelectorAll('img.slot').forEach(function(img){
+    var ph=img.nextElementSibling, i=0, name=img.dataset.name;
+    function attempt(){
+      if(i>=exts.length){ if(ph) ph.style.display='flex'; return; }
+      img.src='images/'+name+'.'+exts[i++];
+    }
+    img.addEventListener('load',function(){
+      img.classList.add('loaded');
+      if(ph) ph.style.display='none';
+    });
+    img.addEventListener('error',attempt);
+    if(ph) ph.style.display='flex';
+    attempt();
+  });
+})();
+</script>
 </body>
 </html>

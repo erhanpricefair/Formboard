@@ -26,7 +26,11 @@ Also check: the Instagram handle is set to `@makeupbyaphrodite` in three places 
 
 ## Images
 
-Create an `images/` folder next to `index.html` and add these files. Until they exist, striped placeholder blocks show where each one goes, labelled with its filename.
+Create an `images/` folder **next to `index.html`** (inside `site/`, not beside it) and drop your photos in. No HTML editing needed.
+
+**The filename only has to match the base name.** The loader tries `.jpg`, `.jpeg`, `.png` and `.webp`, in both upper and lower case — so `kit.jpg`, `kit.JPG` and `kit.jpeg` all work. You only need to get the part before the dot right, and it must be lowercase.
+
+Anything missing stays as a labelled placeholder, so you can add photos one at a time.
 
 | File | What it should be | Suggested source |
 |---|---|---|
