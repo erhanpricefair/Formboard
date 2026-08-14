@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en_AU</string>
+	<key>CFBundleDisplayName</key>
+	<string>Gentle Flow</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.healthcare-fitness</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>© Gentle Flow. All rights reserved.</string>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
+</dict>
+</plist>
