@@ -59,8 +59,11 @@ enum GentleTextStyle {
     case caption      // Supporting/meta text — never the *only* way info is conveyed
 }
 
-extension Text {
-    func gentleStyle(_ style: GentleTextStyle, highContrast: Bool) -> Text {
+/// Extension lives on `View` (not just `Text`) so it can style `Label`,
+/// `VStack`s of links, etc. as well as plain `Text` — font/foregroundColor
+/// modifiers cascade to child text the same way in every case.
+extension View {
+    func gentleStyle(_ style: GentleTextStyle, highContrast: Bool) -> some View {
         let color = Theme.color(.primaryText, highContrast: highContrast)
         let secondary = Theme.color(.secondaryText, highContrast: highContrast)
         switch style {
