@@ -55,6 +55,8 @@ struct OnboardingContainerView: View {
                     onFinished()
                 }
             )
+        case .healthScreening:
+            HealthScreeningStepView(answers: $viewModel.screeningAnswers)
         case .goals:
             GoalsStepView(selectedGoals: $viewModel.answers.goals)
         case .mobility:
@@ -82,6 +84,7 @@ struct OnboardingContainerView: View {
             GentleButton(title: "Continue", systemImage: "arrow.right") {
                 viewModel.advance()
             }
+            .disabled(!viewModel.canAdvanceFromCurrentStep)
         }
     }
 }

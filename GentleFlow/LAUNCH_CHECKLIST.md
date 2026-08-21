@@ -25,6 +25,32 @@ older adults practising balance work, some of them alone at home.
 - [ ] Consider launching with the **seated and breathing sessions first**; they
       carry far less risk than standing balance work
 
+### Since this was written: legal/safety scaffolding added
+
+The following are now built and should be reviewed, not re-built:
+
+- **Pre-exercise health screening** in onboarding (`HealthScreeningStepView`,
+  `HealthScreeningAnswers`) — a simplified APSS-style check. Anyone whose
+  answers suggest a GP or physio chat is defaulted into seated/breathing
+  sessions rather than standing balance work. Have someone with an allied
+  health background sanity-check the six questions and the wording.
+- **Recorded safety acceptance** (`SafetyAcceptance` on `UserProfile`) — the
+  disclaimer acceptance now stores a date and a terms version, so there's an
+  actual record rather than a boolean. Bump `SafetyTerms.currentVersion` in
+  `OnboardingModels.swift` any time the safety copy in `DisclaimerGateView`
+  changes meaningfully — this re-prompts everyone for fresh acceptance.
+- **In-session safety reminder** (`StandingSafetyReminderView`) — shown before
+  any standing work begins, including mid-session via the chair/standing
+  toggle. Chair/rail nearby, clear floor, stop if pain or dizziness.
+- **Health claims softened** across session descriptions and the Home "why
+  this helps" card — causal claims like "prevent falls" and "builds balance
+  reflexes" were rewritten to "many people find..." framing. Worth a final
+  read-through once real, instructor-verified content replaces the
+  placeholder sessions, so the copy matches what's actually being taught.
+
+None of this replaces qualified legal or clinical review — it reduces risk
+and creates a paper trail, which is what actually helps if it's ever needed.
+
 ### 2. Apple Developer Program
 
 - [ ] Enrol at [developer.apple.com/programs](https://developer.apple.com/programs) — USD $99/year

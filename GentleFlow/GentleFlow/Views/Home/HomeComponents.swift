@@ -117,7 +117,7 @@ struct WhyThisHelpsCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Why this helps")
                         .gentleStyle(.bodyEmphasis, highContrast: highContrastEnabled)
-                    Text("Practising slow, controlled movement regularly is one of the best-known ways to build the balance and confidence that help prevent falls.")
+                    Text("Many people find that practising slow, gentle movement regularly helps them feel steadier and more confident on their feet over time.")
                         .gentleStyle(.body, highContrast: highContrastEnabled)
                 }
             }

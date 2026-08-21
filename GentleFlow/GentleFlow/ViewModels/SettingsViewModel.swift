@@ -44,7 +44,10 @@ final class SettingsViewModel: ObservableObject {
     }
 
     func acceptDisclaimer() {
-        userProfile.hasAcceptedDisclaimer = true
+        userProfile.safetyAcceptance = SafetyAcceptance(
+            acceptedDate: Date(),
+            termsVersion: SafetyTerms.currentVersion
+        )
         persistence.saveUserProfile(userProfile)
     }
 

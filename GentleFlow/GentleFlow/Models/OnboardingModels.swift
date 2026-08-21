@@ -115,11 +115,65 @@ struct OnboardingAnswers: Codable, Equatable {
     static let empty = OnboardingAnswers()
 }
 
+/// A simplified adaptation of the Adult Pre-Exercise Screening System (APSS)
+/// used across the Australian fitness industry. This is not a medical
+/// assessment — its only job is to notice when someone should have a quick
+/// chat with a GP or physio before starting standing balance work, rather
+/// than the app silently assuming everyone who opens it is safe to begin.
+struct HealthScreeningAnswers: Codable, Equatable {
+    var hasChestPainOrDizzinessDuringActivity: Bool?
+    var hasLostBalanceOrConsciousness: Bool?
+    var hasBoneOrJointProblemAggravatedByActivity: Bool?
+    var takesBloodPressureOrHeartMedication: Bool?
+    var hasRecentFallOrHospitalStay: Bool?
+    var doctorAdvisedMedicalSupervisionOnly: Bool?
+
+    static let empty = HealthScreeningAnswers()
+
+    private var allAnswers: [Bool?] {
+        [
+            hasChestPainOrDizzinessDuringActivity,
+            hasLostBalanceOrConsciousness,
+            hasBoneOrJointProblemAggravatedByActivity,
+            takesBloodPressureOrHeartMedication,
+            hasRecentFallOrHospitalStay,
+            doctorAdvisedMedicalSupervisionOnly
+        ]
+    }
+
+    var isFullyAnswered: Bool {
+        allAnswers.allSatisfy { $0 != nil }
+    }
+
+    /// True if any answer suggests a GP or physio conversation before
+    /// starting is the safer path. Deliberately errs towards recommending a
+    /// check-in — an unanswered question counts the same as a "yes" here,
+    /// never the same as a confirmed "no".
+    var recommendsMedicalCheckIn: Bool {
+        allAnswers.contains { $0 != false }
+    }
+}
+
+/// Records that the safety disclaimer was actually accepted, and when, and
+/// against which wording — a plain boolean can't show that later if it
+/// ever mattered. `termsVersion` should be bumped whenever the safety copy
+/// in `DisclaimerGateView` changes meaningfully, so an old acceptance is
+/// never assumed to cover new wording.
+struct SafetyAcceptance: Codable, Equatable {
+    var acceptedDate: Date
+    var termsVersion: String
+}
+
+enum SafetyTerms {
+    static let currentVersion = "1.0"
+}
+
 struct UserProfile: Codable, Equatable {
     var hasCompletedOnboarding: Bool = false
     var preferredName: String? = nil
     var answers: OnboardingAnswers = .empty
-    var hasAcceptedDisclaimer: Bool = false
+    var healthScreening: HealthScreeningAnswers = .empty
+    var safetyAcceptance: SafetyAcceptance? = nil
 
     static let empty = UserProfile()
 }

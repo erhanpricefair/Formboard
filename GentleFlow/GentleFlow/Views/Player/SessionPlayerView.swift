@@ -7,6 +7,10 @@ struct SessionPlayerView: View {
     @Environment(\.highContrastEnabled) private var highContrastEnabled
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
+    /// Shown before standing work begins, whether that's at the very start
+    /// of a standing session or reached later via the Chair/Standing toggle.
+    @State private var showStandingSafetyReminder = false
+
     init(session: Session) {
         _viewModel = StateObject(wrappedValue: SessionPlayerViewModel(session: session))
     }
@@ -30,9 +34,24 @@ struct SessionPlayerView: View {
             }
         }
         .statusBar(hidden: true)
+        .onAppear {
+            if !viewModel.isChairMode {
+                showStandingSafetyReminder = true
+            }
+        }
+        .onChange(of: viewModel.isChairMode) { _, isChairMode in
+            guard !isChairMode else { return }
+            if viewModel.isPlaying { viewModel.togglePlayPause() }
+            showStandingSafetyReminder = true
+        }
         .onDisappear { viewModel.stopAndReset() }
         .fullScreenCover(isPresented: .constant(viewModel.didFinish)) {
             SessionCompleteView(session: viewModel.session, onDone: { dismiss() })
+        }
+        .fullScreenCover(isPresented: $showStandingSafetyReminder) {
+            StandingSafetyReminderView {
+                showStandingSafetyReminder = false
+            }
         }
     }
 

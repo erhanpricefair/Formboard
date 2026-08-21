@@ -40,7 +40,9 @@ struct MainTabView: View {
 
     private var disclaimerBinding: Binding<Bool> {
         Binding(
-            get: { !settings.userProfile.hasAcceptedDisclaimer },
+            // Re-prompts if the safety copy has changed since acceptance
+            // (termsVersion bumped), not only when never accepted at all.
+            get: { settings.userProfile.safetyAcceptance?.termsVersion != SafetyTerms.currentVersion },
             set: { _ in }
         )
     }
