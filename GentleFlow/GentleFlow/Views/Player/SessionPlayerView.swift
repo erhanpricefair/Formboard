@@ -40,18 +40,22 @@ struct SessionPlayerView: View {
 
     private var videoArea: some View {
         ZStack {
-            // Placeholder gradient stands in for real instructor video —
-            // drop an AVPlayerLayer / AVPlayer view in here once real
-            // footage is available (see README "Next steps: real video").
+            // Animated demonstration figure stands in for real instructor
+            // video. To use real footage instead, drop an AVPlayer view in
+            // place of AnimatedInstructorView (see README "Next steps").
             LinearGradient(
                 colors: [Color(hex: 0x2B2A28), Color(hex: 0x4C7A5E)],
                 startPoint: .topLeading, endPoint: .bottomTrailing
             )
 
-            VStack(spacing: Theme.Spacing.md) {
-                Image(systemName: viewModel.session.thumbnailSystemImage)
-                    .font(.system(size: 64))
-                    .foregroundColor(.white.opacity(0.9))
+            VStack(spacing: Theme.Spacing.sm) {
+                AnimatedInstructorView(
+                    category: viewModel.session.category,
+                    isChairMode: viewModel.isChairMode,
+                    isPlaying: viewModel.isPlaying
+                )
+                .frame(maxWidth: 260, maxHeight: 200)
+
                 Text(viewModel.currentCueText)
                     .font(.system(.title3, design: .rounded, weight: .semibold))
                     .foregroundColor(.white)
@@ -59,6 +63,8 @@ struct SessionPlayerView: View {
                     .padding(.horizontal, Theme.Spacing.lg)
                     .accessibilityLabel("On-screen cue: \(viewModel.currentCueText)")
             }
+            .padding(.top, Theme.Spacing.xl)
+            .padding(.bottom, Theme.Spacing.md)
 
             VStack {
                 topBar
@@ -66,7 +72,7 @@ struct SessionPlayerView: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .frame(minHeight: 260)
+        .frame(minHeight: 340)
         .clipped()
     }
 

@@ -59,6 +59,18 @@ GentleFlow/
 
 **Subscriptions.** `StoreKitManager` is a StoreKit 2 skeleton: product loading, purchase, restore, and transaction listening are wired up against placeholder product identifiers (`au.com.gentleflow.premium.monthly` / `.annual`). The free tier is fully functional — premium unlocks the extended session library and offline downloads only.
 
+## Animated instructor
+
+Until real footage exists, the session player shows an animated figure that actually performs the movement, drawn entirely in SwiftUI (no video files, no third-party animation library):
+
+- `DesignSystem/TaiChiFigure.swift` — `TaiChiPose` (absolute joint angles, in degrees clockwise from straight down) and a `Canvas`-drawn figure. Poses interpolate cleanly because angles are absolute rather than parent-relative.
+- `DesignSystem/TaiChiSequences.swift` — the choreography: keyframed `PoseSequence`s for Cloud Hands, breathing arm raises, and stepping practice, eased with a smoothstep curve so movement accelerates and settles the way real Tai Chi does. A pose's `.mirrored` property generates the opposite side, so each movement is authored once.
+- `Views/Player/AnimatedInstructorView.swift` — drives playback via `TimelineView`, tracking elapsed time manually so pause freezes mid-movement and resume continues from the same point. Falls back to a single static posture when Reduce Motion is on, and is hidden from VoiceOver (the text and voice cues carry the instruction).
+
+Seated variants are derived automatically from the standing choreography (`TaiChiSequences.seat`), so the chair/standing toggle works for every category without authoring two sets of movements. A simple chair is drawn behind the figure in seated mode.
+
+**Note:** the poses are a reasonable approximation for placeholder purposes, not verified instruction. Have a qualified instructor review or replace them before release — see next step 5.
+
 ## Accessibility notes
 
 - **Dynamic Type**: all text uses SwiftUI's relative text styles via `Text.gentleStyle(_:highContrast:)`. Settings additionally offers a text-size override (`SettingsViewModel.effectiveDynamicTypeSize`) that raises the *floor* on top of the system setting, up to `.accessibility2`.
@@ -69,7 +81,7 @@ GentleFlow/
 
 ## Next steps for a developer picking this up
 
-1. **Real video content.** `SessionPlayerView.videoArea` currently renders a placeholder gradient + SF Symbol + on-screen cue text where the instructor video belongs. Session models already carry a `videoAssetName` — wire in `AVPlayer`/`AVPlayerLayer` (bundled assets or a CDN/HLS stream) and remove the placeholder. Keep the large play/pause/skip controls and recovery-break overlay as-is; they're deliberately oversized for this audience.
+1. **Real video content.** `SessionPlayerView.videoArea` currently renders an animated demonstration figure (see "Animated instructor" below) plus on-screen cue text where instructor video belongs. Session models already carry a `videoAssetName` — wire in `AVPlayer`/`AVPlayerLayer` (bundled assets or a CDN/HLS stream) in place of `AnimatedInstructorView`. Keep the large play/pause/skip controls and recovery-break overlay as-is; they're deliberately oversized for this audience.
 2. **Voice guidance audio.** The cue text in the player currently updates on a timer as placeholder "voice guidance." Record real narration per session and drive an `AVAudioPlayer`/`AVSpeechSynthesizer` from the same cue timeline.
 3. **App Store Connect**: create the two subscription products matching `GentleFlowProducts.monthly` / `.annual`, configure pricing (the in-app copy assumes AUD, pensioner-friendly pricing), and add a `Configuration.storekit` file for local StoreKit testing.
 4. **App icon, launch screen and marketing assets**: `project.yml` currently generates a default launch screen; replace with real branding plus App Store screenshots sized for the iPhone and iPad breakpoints this app supports.
