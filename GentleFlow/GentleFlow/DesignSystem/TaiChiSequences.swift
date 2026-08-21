@@ -60,6 +60,18 @@ enum TaiChiSequences {
         kneeBend: 0.15
     )
 
+    /// Both arms floating forwards towards the viewer — the low `armReach`
+    /// values foreshorten them, which is what sells the forward direction.
+    static let armsForward = TaiChiPose(
+        leftUpperArm: -38, leftForearm: -26,
+        rightUpperArm: 38, rightForearm: 26,
+        leftThigh: -9, leftShin: -4,
+        rightThigh: 9, rightShin: 4,
+        kneeBend: 0.3,
+        leftArmReach: 0.52,
+        rightArmReach: 0.52
+    )
+
     static let armsWide = TaiChiPose(
         leftUpperArm: -78, leftForearm: -86,
         rightUpperArm: 78, rightForearm: 86,
@@ -73,19 +85,35 @@ enum TaiChiSequences {
         rightUpperArm: 150, rightForearm: 165,
         leftThigh: -9, leftShin: -4,
         rightThigh: 9, rightShin: 4,
-        kneeBend: 0.05
+        kneeBend: 0.05,
+        chestRise: 1.4
     )
 
     /// Cloud Hands: upper hand crosses the chest, lower hand sweeps the waist,
-    /// with the weight settling onto one leg.
+    /// with the weight settling onto one leg and the waist turning with it.
     static let cloudHandsLeft = TaiChiPose(
-        torsoLean: -6,
-        leftUpperArm: -28, leftForearm: 45,
-        rightUpperArm: 68, rightForearm: -140,
-        leftThigh: -14, leftShin: -2,
-        rightThigh: 5, rightShin: 8,
+        torsoLean: -5,
+        leftUpperArm: -26, leftForearm: 48,
+        rightUpperArm: 66, rightForearm: -138,
+        leftThigh: -15, leftShin: -2,
+        rightThigh: 4, rightShin: 9,
         weightShift: -0.5,
-        kneeBend: 0.35
+        kneeBend: 0.38,
+        bodyTurn: -18,
+        leftArmReach: 0.86,
+        rightArmReach: 0.92
+    )
+
+    /// The moment between the two sides of Cloud Hands, hands passing the
+    /// centre line. Stops the transition cutting straight across the body.
+    static let cloudHandsCentre = TaiChiPose(
+        leftUpperArm: -44, leftForearm: 22,
+        rightUpperArm: 44, rightForearm: -22,
+        leftThigh: -11, leftShin: -4,
+        rightThigh: 11, rightShin: 4,
+        kneeBend: 0.32,
+        leftArmReach: 0.88,
+        rightArmReach: 0.88
     )
 
     /// Gentle knee lift used for walking practice, weight on the other leg.
@@ -96,7 +124,10 @@ enum TaiChiSequences {
         leftThigh: -42, leftShin: -14,
         rightThigh: 6, rightShin: 3,
         weightShift: 0.28,
-        kneeBend: 0.2
+        kneeBend: 0.2,
+        bodyTurn: 8,
+        leftArmReach: 0.9,
+        rightArmReach: 0.78
     )
 
     static let seatedReady: TaiChiPose = seat(TaiChiPose(
@@ -110,10 +141,13 @@ enum TaiChiSequences {
     /// symmetrical weight-shifting movement of gentle Tai Chi.
     static let standingTaiChi = PoseSequence(keyframes: [
         PoseKeyframe(pose: standingReady, duration: 3.0),
-        PoseKeyframe(pose: armsWide, duration: 3.0),
-        PoseKeyframe(pose: cloudHandsLeft, duration: 3.5),
-        PoseKeyframe(pose: cloudHandsLeft.mirrored, duration: 3.5),
-        PoseKeyframe(pose: armsWide, duration: 3.0)
+        PoseKeyframe(pose: armsForward, duration: 2.6),
+        PoseKeyframe(pose: armsWide, duration: 2.4),
+        PoseKeyframe(pose: cloudHandsLeft, duration: 3.2),
+        PoseKeyframe(pose: cloudHandsCentre, duration: 1.6),
+        PoseKeyframe(pose: cloudHandsLeft.mirrored, duration: 3.2),
+        PoseKeyframe(pose: cloudHandsCentre, duration: 1.6),
+        PoseKeyframe(pose: armsWide, duration: 2.4)
     ])
 
     /// Slow arm raise and lower, paced to a comfortable breath cycle.
@@ -121,7 +155,8 @@ enum TaiChiSequences {
         PoseKeyframe(pose: standingReady, duration: 3.5),
         PoseKeyframe(pose: armsWide, duration: 3.0),
         PoseKeyframe(pose: armsOverhead, duration: 4.0),
-        PoseKeyframe(pose: armsWide, duration: 3.0)
+        PoseKeyframe(pose: armsWide, duration: 3.0),
+        PoseKeyframe(pose: armsForward, duration: 2.8)
     ])
 
     /// Stepping in place — deliberate, controlled knee lifts.
