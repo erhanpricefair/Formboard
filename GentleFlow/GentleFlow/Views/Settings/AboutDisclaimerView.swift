@@ -45,8 +45,8 @@ struct AboutDisclaimerView: View {
                 }
 
                 VStack(spacing: Theme.Spacing.sm) {
-                    Link("Privacy Policy", destination: URL(string: "https://gentleflow.example.com/privacy")!)
-                    Link("Terms of Use", destination: URL(string: "https://gentleflow.example.com/terms")!)
+                    Link("Privacy Policy", destination: AppLinks.privacyPolicy)
+                    Link("Terms of Use", destination: AppLinks.termsOfUse)
                 }
                 .gentleStyle(.bodyEmphasis, highContrast: highContrastEnabled)
             }

@@ -72,6 +72,10 @@ schemes:
         GentleFlow: all
     run:
       config: Debug
+      # Local StoreKit testing: lets the paywall show real prices and complete
+      # test purchases in the Simulator, before anything exists in App Store
+      # Connect. Has no effect on release builds.
+      storeKitConfiguration: GentleFlow/Supporting/GentleFlow.storekit
     test:
       config: Debug
       targets:

@@ -1,0 +1,89 @@
+{
+  "identifier" : "4A1C9F60-3E77-4C21-9E8A-8F2D5B7C1A03",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6470000000",
+    "_developerTeamID" : "",
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 0,
+    "_locale" : "en_AU",
+    "_storefront" : "AUS",
+    "_storeKitErrors" : [
+
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21B4E7C2-9D08-4F3A-B615-7C0E2A9D4F88",
+      "localizations" : [
+        {
+          "description" : "Full access to every Gentle Flow session, plus offline downloads.",
+          "displayName" : "Gentle Flow Premium",
+          "locale" : "en_AU"
+        }
+      ],
+      "name" : "Gentle Flow Premium",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "6.99",
+          "familyShareable" : true,
+          "groupNumber" : 1,
+          "internalID" : "9C3F1A55-2B76-4E90-8D14-5A7B3C6E2F41",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Every session, offline downloads, cancel any time.",
+              "displayName" : "Monthly",
+              "locale" : "en_AU"
+            }
+          ],
+          "productID" : "au.com.gentleflow.premium.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Gentle Flow Premium Monthly",
+          "subscriptionGroupID" : "21B4E7C2-9D08-4F3A-B615-7C0E2A9D4F88",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "49.99",
+          "familyShareable" : true,
+          "groupNumber" : 1,
+          "internalID" : "6E82D4B1-7F35-4A2C-9B08-1D5F4C7A3E96",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Every session, offline downloads, at our best value.",
+              "displayName" : "Yearly",
+              "locale" : "en_AU"
+            }
+          ],
+          "productID" : "au.com.gentleflow.premium.annual",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Gentle Flow Premium Yearly",
+          "subscriptionGroupID" : "21B4E7C2-9D08-4F3A-B615-7C0E2A9D4F88",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}
